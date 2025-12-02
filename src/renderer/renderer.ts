@@ -20,7 +20,6 @@ import type {
   ApiServiceName,
   FunFact,
   OnThisDay,
-  PlaygroundData,
   MP3Data,
   MP3Track,
 } from '../modules/shared/types';
@@ -322,12 +321,6 @@ let newsData: NewsData = {
 };
 
 // Playground module state
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const playgroundData: PlaygroundData = {
-  funFacts: [],
-  onThisDay: [],
-  lastUpdated: null,
-};
 let currentFunFact: FunFact | null = null;
 let currentOnThisDay: OnThisDay[] = [];
 
@@ -2167,18 +2160,6 @@ function renderBookmarks(): void {
       }
     });
   });
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getBookmarkIcon(type: string): string {
-  const icons: Record<string, string> = {
-    url: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
-    app: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-    game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
-    file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-    folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
-  };
-  return icons[type] || icons.file;
 }
 
 function getBookmarkEmoji(type: string): string {

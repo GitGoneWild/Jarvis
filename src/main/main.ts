@@ -1072,8 +1072,8 @@ function generateFallbackRecommendations(genre: string): MovieTVRecommendation[]
 // API Integrations Module IPC Handlers
 // ========================================
 
-// Helper function for API connection testing with common patterns
-async function testArrServiceConnection(baseUrl: string, apiKey: string, endpoint: string): Promise<{ success: boolean; error?: string }> {
+// Helper function for API connection testing with API key authentication
+async function testApiKeyServiceConnection(baseUrl: string, apiKey: string, endpoint: string): Promise<{ success: boolean; error?: string }> {
   if (!apiKey) return { success: false, error: 'API key not configured' };
   if (!baseUrl) return { success: false, error: 'Base URL not configured' };
   
@@ -1082,6 +1082,21 @@ async function testArrServiceConnection(baseUrl: string, apiKey: string, endpoin
     const response = await net.fetch(url.toString(), {
       headers: { 'X-Api-Key': apiKey },
     });
+    if (!response.ok) throw new Error('Connection failed');
+    return { success: true };
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Connection failed';
+    return { success: false, error };
+  }
+}
+
+// Helper function for API connection testing without authentication
+async function testPublicServiceConnection(baseUrl: string, endpoint: string): Promise<{ success: boolean; error?: string }> {
+  if (!baseUrl) return { success: false, error: 'URL not configured' };
+  
+  try {
+    const url = new URL(endpoint, baseUrl);
+    const response = await net.fetch(url.toString());
     if (!response.ok) throw new Error('Connection failed');
     return { success: true };
   } catch (err) {
@@ -1109,19 +1124,15 @@ ipcMain.handle('test-api-connection', async (_event, service: ApiServiceName): P
       }
       case 'sonarr': {
         const sonarrConfig = integration as typeof settings.modules.apiIntegrations.sonarr;
-        return testArrServiceConnection(sonarrConfig.baseUrl, sonarrConfig.apiKey, '/api/v3/system/status');
+        return testApiKeyServiceConnection(sonarrConfig.baseUrl, sonarrConfig.apiKey, '/api/v3/system/status');
       }
       case 'radarr': {
         const radarrConfig = integration as typeof settings.modules.apiIntegrations.radarr;
-        return testArrServiceConnection(radarrConfig.baseUrl, radarrConfig.apiKey, '/api/v3/system/status');
+        return testApiKeyServiceConnection(radarrConfig.baseUrl, radarrConfig.apiKey, '/api/v3/system/status');
       }
       case 'ollama': {
         const ollamaConfig = integration as typeof settings.modules.apiIntegrations.ollama;
-        if (!ollamaConfig.baseUrl) return { success: false, error: 'Ollama URL not configured' };
-        const url = new URL('/api/tags', ollamaConfig.baseUrl);
-        const response = await net.fetch(url.toString());
-        if (!response.ok) throw new Error('Connection failed');
-        return { success: true };
+        return testPublicServiceConnection(ollamaConfig.baseUrl, '/api/tags');
       }
       default:
         return { success: false, error: 'Unknown service' };

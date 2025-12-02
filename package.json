@@ -54,7 +54,7 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@types/node": "^22.9.0",
+    "@types/node": "^24.10.1",
     "electron": "^39.2.4",
     "electron-builder": "^26.0.12",
     "eslint": "^9.16.0",

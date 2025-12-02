@@ -21,6 +21,17 @@ import type {
 } from '../modules/shared/types';
 
 // ========================================
+// Constants
+// ========================================
+
+// Priority order for sorting (lower = higher priority)
+const PRIORITY_ORDER: Record<string, number> = {
+  high: 0,
+  medium: 1,
+  low: 2,
+};
+
+// ========================================
 // DOM Elements
 // ========================================
 
@@ -542,8 +553,7 @@ function renderTasks(): void {
       if (!b.dueDate) return -1;
       return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     } else if (sort === 'priority') {
-      const priorities = { high: 0, medium: 1, low: 2 };
-      return priorities[a.priority] - priorities[b.priority];
+      return PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
     } else {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
@@ -946,8 +956,7 @@ function updateDashboard(): void {
       if (aOverdue && !bOverdue) return -1;
       if (!aOverdue && bOverdue) return 1;
       // Then by priority
-      const priorities = { high: 0, medium: 1, low: 2 };
-      const priorityDiff = priorities[a.priority] - priorities[b.priority];
+      const priorityDiff = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
       if (priorityDiff !== 0) return priorityDiff;
       // Then by due date
       if (!a.dueDate) return 1;
@@ -964,7 +973,7 @@ function updateDashboard(): void {
           <div class="next-up-info">
             <div class="next-up-title">${escapeHtml(nextTask.title)}</div>
             <div class="next-up-meta ${isTaskOverdue ? 'overdue' : ''}">
-              ${isTaskOverdue ? '⚠️ Overdue: ' : ''}${nextTask.dueDate ? formatDate(nextTask.dueDate) : 'No due date'} 
+              ${isTaskOverdue ? '<span class="overdue-indicator">Overdue:</span> ' : ''}${nextTask.dueDate ? formatDate(nextTask.dueDate) : 'No due date'} 
               · ${nextTask.priority.charAt(0).toUpperCase() + nextTask.priority.slice(1)} priority
             </div>
           </div>

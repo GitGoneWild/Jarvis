@@ -61,6 +61,14 @@
   
   --border-color: #ccd0da;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --focus-shadow: rgba(30, 102, 245, 0.15);
+  --accent-primary-subtle: rgba(30, 102, 245, 0.1);
+  --accent-primary-glow: rgba(30, 102, 245, 0.3);
+}
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
 }
 
 /* Reset and base styles */
@@ -938,7 +946,7 @@ body {
 }
 
 .calendar-day.today {
-  background-color: rgba(137, 180, 250, 0.1);
+  background-color: var(--accent-primary-subtle);
 }
 
 .calendar-day.selected {
@@ -1238,7 +1246,7 @@ body {
 .setting-select:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(137, 180, 250, 0.15);
+  box-shadow: 0 0 0 3px var(--focus-shadow);
 }
 
 .setting-input {
@@ -1259,7 +1267,7 @@ body {
 .setting-input:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(137, 180, 250, 0.15);
+  box-shadow: 0 0 0 3px var(--focus-shadow);
 }
 
 /* Theme Selector */
@@ -1294,7 +1302,7 @@ body {
 
 .theme-option input:checked + .theme-preview {
   border-color: var(--accent-primary);
-  background-color: rgba(137, 180, 250, 0.1);
+  background-color: var(--accent-primary-subtle);
 }
 
 .theme-preview-icon {
@@ -1505,7 +1513,7 @@ body {
 .quick-action-pill:hover {
   background-color: var(--accent-secondary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(137, 180, 250, 0.3);
+  box-shadow: 0 4px 12px var(--accent-primary-glow);
 }
 
 .quick-action-pill.secondary {
@@ -1561,7 +1569,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(137, 180, 250, 0.15);
+  background-color: var(--focus-shadow);
   border-radius: var(--border-radius-md);
   color: var(--accent-primary);
   flex-shrink: 0;
@@ -1715,6 +1723,11 @@ body {
 .next-up-meta {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.next-up-meta .overdue-indicator {
+  color: var(--accent-error);
+  font-weight: 600;
 }
 
 /* Empty States Modern */

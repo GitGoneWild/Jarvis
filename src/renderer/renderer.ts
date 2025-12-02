@@ -3662,29 +3662,55 @@ async function handleRefreshFunFact(): Promise<void> {
     refreshBtn.disabled = true;
   }
   
+  // Show loading state
+  if (funFactContent) {
+    funFactContent.innerHTML = '<p class="fun-fact-text loading">Loading fun fact...</p>';
+  }
+  
   try {
     if (window.jarvisAPI) {
       currentFunFact = await window.jarvisAPI.fetchFunFact();
     } else {
-      // Mock data for browser testing
+      // Enhanced mock data for browser testing with variety of facts
+      const funFacts = [
+        { fact: 'A group of flamingos is called a "flamboyance".', category: 'animals', source: 'Nature Facts' },
+        { fact: 'Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still edible.', category: 'food', source: 'Science Daily' },
+        { fact: 'Octopuses have three hearts and blue blood.', category: 'animals', source: 'Marine Biology' },
+        { fact: 'The shortest war in history lasted only 38-45 minutes between Britain and Zanzibar.', category: 'history', source: 'Historical Records' },
+        { fact: 'A day on Venus is longer than a year on Venus.', category: 'space', source: 'NASA' },
+        { fact: 'Bananas are berries, but strawberries are not.', category: 'food', source: 'Botany Facts' },
+        { fact: 'The Eiffel Tower can grow up to 6 inches taller during the summer due to thermal expansion.', category: 'science', source: 'Engineering Facts' },
+        { fact: 'Cows have best friends and get stressed when separated.', category: 'animals', source: 'Animal Behavior Studies' },
+      ];
+      
+      const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
       currentFunFact = {
         id: `fact-${Date.now()}`,
-        fact: 'A group of flamingos is called a "flamboyance".',
-        category: 'random',
-        source: 'Nature Facts',
+        fact: randomFact.fact,
+        category: randomFact.category,
+        source: randomFact.source,
       };
     }
     
     if (funFactContent && currentFunFact) {
       funFactContent.innerHTML = `
         <p class="fun-fact-text">${escapeHtml(currentFunFact.fact)}</p>
-        ${currentFunFact.source ? `<span class="fun-fact-source">Source: ${escapeHtml(currentFunFact.source)}</span>` : ''}
+        <div class="fun-fact-footer">
+          ${currentFunFact.category ? `<span class="fun-fact-category">${escapeHtml(currentFunFact.category)}</span>` : ''}
+          ${currentFunFact.source ? `<span class="fun-fact-source">Source: ${escapeHtml(currentFunFact.source)}</span>` : ''}
+        </div>
       `;
     }
   } catch (error) {
     console.error('Failed to fetch fun fact:', error);
     if (funFactContent) {
-      funFactContent.innerHTML = '<p class="fun-fact-text">Failed to load fun fact. Try again!</p>';
+      funFactContent.innerHTML = `
+        <div class="playground-error">
+          <span class="error-icon">⚠️</span>
+          <p>Failed to load fun fact</p>
+          <button class="secondary-btn retry-btn" onclick="handleRefreshFunFact()">Try Again</button>
+        </div>
+      `;
     }
   } finally {
     if (refreshBtn) {
@@ -3701,23 +3727,61 @@ async function handleRefreshOnThisDay(): Promise<void> {
     refreshBtn.disabled = true;
   }
   
+  // Show loading state
+  if (onThisDayContent) {
+    onThisDayContent.innerHTML = '<div class="loading-state"><div class="scanning-spinner small"></div><p>Loading historical events...</p></div>';
+  }
+  
   try {
     if (window.jarvisAPI) {
       currentOnThisDay = await window.jarvisAPI.fetchOnThisDay();
     } else {
-      // Mock data for browser testing
-      currentOnThisDay = [
-        { id: '1', year: 1969, event: 'Apollo 11 landed on the Moon', category: 'historical' },
-        { id: '2', year: 1776, event: 'Declaration of Independence signed', category: 'historical' },
-        { id: '3', year: 1946, event: 'Famous person was born', category: 'birth' },
+      // Enhanced mock data - generate based on current date
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+      
+      type CategoryType = 'historical' | 'birth' | 'death' | 'holiday' | 'science' | 'technology' | 'invention';
+      
+      // Collection of historical events by date
+      const historicalEvents: Record<string, Array<{year: number; event: string; category: CategoryType}>> = {
+        '1-1': [{ year: 1863, event: 'Abraham Lincoln signs the Emancipation Proclamation', category: 'historical' }],
+        '7-4': [{ year: 1776, event: 'United States Declaration of Independence adopted', category: 'historical' }],
+        '7-20': [{ year: 1969, event: 'Apollo 11: Neil Armstrong and Buzz Aldrin become first humans to walk on the Moon', category: 'science' }],
+        '12-25': [{ year: 1991, event: 'Mikhail Gorbachev resigns as president of the Soviet Union', category: 'historical' }],
+      };
+      
+      // Default events if no specific date match
+      const defaultEvents: Array<{year: number; event: string; category: CategoryType}> = [
+        { year: 1969, event: 'Apollo 11 landed on the Moon - A giant leap for mankind', category: 'science' },
+        { year: 1989, event: 'The Berlin Wall begins to fall, unifying East and West Germany', category: 'historical' },
+        { year: 2004, event: 'Facebook was launched by Mark Zuckerberg', category: 'technology' },
+        { year: 1876, event: 'Alexander Graham Bell patents the telephone', category: 'invention' },
+        { year: 1903, event: 'Wright Brothers achieve first powered flight', category: 'science' },
       ];
+      
+      const dateKey = `${month}-${day}`;
+      const events = historicalEvents[dateKey] || defaultEvents;
+      
+      currentOnThisDay = events.map((e, i) => ({
+        id: `${i + 1}`,
+        year: e.year,
+        event: e.event,
+        category: e.category,
+      }));
     }
     
     renderOnThisDay();
   } catch (error) {
     console.error('Failed to fetch On This Day:', error);
     if (onThisDayContent) {
-      onThisDayContent.innerHTML = '<div class="empty-state"><p>Failed to load events. Try again!</p></div>';
+      onThisDayContent.innerHTML = `
+        <div class="playground-error">
+          <span class="error-icon">📅</span>
+          <p>Failed to load historical events</p>
+          <button class="secondary-btn retry-btn" onclick="handleRefreshOnThisDay()">Try Again</button>
+        </div>
+      `;
     }
   } finally {
     if (refreshBtn) {
@@ -3731,19 +3795,43 @@ function renderOnThisDay(): void {
   if (!onThisDayContent) return;
   
   if (currentOnThisDay.length === 0) {
-    onThisDayContent.innerHTML = '<div class="empty-state"><p>No events found for today.</p></div>';
+    onThisDayContent.innerHTML = `
+      <div class="empty-state-modern">
+        <div class="empty-icon-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <p class="empty-title">No events found</p>
+        <p class="empty-subtitle">Click refresh to try again</p>
+      </div>
+    `;
     return;
   }
   
-  onThisDayContent.innerHTML = currentOnThisDay.map(event => `
-    <div class="on-this-day-item">
-      <span class="on-this-day-year">${event.year}</span>
-      <div class="on-this-day-event">
-        ${escapeHtml(event.event)}
-        <span class="on-this-day-category ${event.category}">${event.category}</span>
-      </div>
+  // Show current date header
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  
+  onThisDayContent.innerHTML = `
+    <div class="on-this-day-header">
+      <span class="on-this-day-date">${dateStr}</span>
     </div>
-  `).join('');
+    <div class="on-this-day-list">
+      ${currentOnThisDay.map(event => `
+        <div class="on-this-day-item">
+          <span class="on-this-day-year">${event.year}</span>
+          <div class="on-this-day-event">
+            <p class="on-this-day-text">${escapeHtml(event.event)}</p>
+            <span class="on-this-day-category ${event.category}">${event.category}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
 // ========================================

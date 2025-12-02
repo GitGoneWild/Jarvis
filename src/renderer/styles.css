@@ -359,7 +359,7 @@ body {
   display: none;
   flex-direction: column;
   height: 100%;
-  padding: 24px 32px;
+  padding: 20px 24px;
   overflow-y: auto;
 }
 
@@ -368,19 +368,19 @@ body {
 }
 
 .section-header {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .section-header h1 {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .subtitle {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 /* ========================================
@@ -1669,39 +1669,39 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 .home-greeting h1 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .home-date {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .home-quick-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .quick-action-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
+  gap: 6px;
+  padding: 8px 14px;
   background-color: var(--accent-primary);
   border: none;
   border-radius: 50px;
   color: var(--bg-primary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -1725,29 +1725,29 @@ body {
 }
 
 .quick-action-pill svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Dashboard Modern Layout */
 .dashboard-modern {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 /* Status Cards Row */
 .status-cards-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 12px;
 }
 
 .status-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px;
+  gap: 12px;
+  padding: 14px 16px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
@@ -1757,12 +1757,12 @@ body {
 .status-card:hover {
   border-color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--shadow-color);
+  box-shadow: 0 6px 20px var(--shadow-color);
 }
 
 .status-card-icon {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1773,8 +1773,8 @@ body {
 }
 
 .status-card-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .status-card-icon.warning {
@@ -1794,7 +1794,7 @@ body {
 }
 
 .status-card-value {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
@@ -1827,22 +1827,22 @@ body {
 }
 
 .status-card-action svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 14px;
 }
 
 .dashboard-card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
-  padding: 20px;
+  padding: 16px;
   transition: all var(--transition-fast);
 }
 
@@ -1856,21 +1856,21 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .card-header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .card-icon {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
 }
 
 .card-header-modern .card-title {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -1882,14 +1882,14 @@ body {
 }
 
 .next-up-content {
-  min-height: 120px;
+  min-height: 100px;
 }
 
 .next-up-item {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 16px;
+  gap: 12px;
+  padding: 12px;
   background-color: var(--bg-tertiary);
   border-radius: var(--border-radius-md);
   border-left: 4px solid var(--accent-primary);
@@ -1915,6 +1915,7 @@ body {
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
+  font-size: 0.95rem;
 }
 
 .next-up-meta {

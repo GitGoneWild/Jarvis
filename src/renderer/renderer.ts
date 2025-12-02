@@ -1,5 +1,5 @@
 // Type declarations for Jarvis API exposed via preload
-import '../types/global';
+// Note: In browser context, jarvisAPI may not be available (only in Electron)
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar') as HTMLElement;
@@ -102,8 +102,15 @@ async function handleChatSubmit(): Promise<void> {
   typingIndicator.classList.add('active');
 
   try {
-    // Send to Jarvis and get response
-    const response = await window.jarvisAPI.sendQuery(message);
+    let response: string;
+    
+    // Check if running in Electron with jarvisAPI available
+    if (window.jarvisAPI && typeof window.jarvisAPI.sendQuery === 'function') {
+      response = await window.jarvisAPI.sendQuery(message);
+    } else {
+      // Fallback stub for browser testing
+      response = getStubResponse(message);
+    }
 
     // Simulate typing delay for more natural feel
     await delay(500 + Math.random() * 500);
@@ -118,6 +125,26 @@ async function handleChatSubmit(): Promise<void> {
     typingIndicator.classList.remove('active');
     addMessage('Sorry, I encountered an error. Please try again.', 'jarvis');
   }
+}
+
+// Stub response for browser testing (when not in Electron)
+function getStubResponse(message: string): string {
+  const lowerMessage = message.toLowerCase().trim();
+  
+  const responses: Record<string, string> = {
+    hello: "Hello! I'm Jarvis, your personal assistant. How can I help you today?",
+    help: 'I can help you with various tasks. Try asking me about the weather, your tasks, or just have a chat!',
+    time: `The current time is ${new Date().toLocaleTimeString()}.`,
+    date: `Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`,
+  };
+
+  for (const [key, response] of Object.entries(responses)) {
+    if (lowerMessage.includes(key)) {
+      return response;
+    }
+  }
+
+  return `I received your message: "${message}". I'm still learning, but I'm here to assist you!`;
 }
 
 // Add message to chat

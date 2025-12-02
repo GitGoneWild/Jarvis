@@ -5,7 +5,7 @@
   "main": "dist/main/main.js",
   "scripts": {
     "start": "npm run build && electron .",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.main.json && tsc -p tsconfig.renderer.json",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",

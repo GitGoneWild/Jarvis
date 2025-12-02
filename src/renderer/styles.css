@@ -20,6 +20,9 @@
   
   --border-color: #313244;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  --focus-shadow: rgba(137, 180, 250, 0.15);
+  --accent-primary-subtle: rgba(137, 180, 250, 0.1);
+  --accent-primary-glow: rgba(137, 180, 250, 0.3);
   
   --sidebar-width: 240px;
   --sidebar-collapsed-width: 60px;

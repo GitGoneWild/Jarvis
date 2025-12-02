@@ -5,6 +5,9 @@ node_modules/
 dist/
 release/
 
+# TypeScript build info
+*.tsbuildinfo
+
 # IDE
 .vscode/
 .idea/

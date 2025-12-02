@@ -29,15 +29,15 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "src/assets/icon.png"
+      "icon": "src/assets/icon.svg"
     },
     "mac": {
       "target": "dmg",
-      "icon": "src/assets/icon.png"
+      "icon": "src/assets/icon.svg"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "src/assets/icon.png"
+      "icon": "src/assets/icon.svg"
     }
   },
   "keywords": [

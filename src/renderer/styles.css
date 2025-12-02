@@ -509,9 +509,17 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background-color: var(--bg-tertiary);
   border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.preview-item:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-color);
+  transform: translateX(4px);
 }
 
 .preview-item-checkbox {
@@ -529,6 +537,7 @@ body {
 
 .preview-item-checkbox:hover {
   border-color: var(--accent-primary);
+  transform: scale(1.1);
 }
 
 .preview-item-checkbox.checked {
@@ -549,6 +558,7 @@ body {
 
 .preview-item-title {
   font-size: 0.9rem;
+  font-weight: 500;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -561,12 +571,14 @@ body {
 }
 
 .preview-item-meta {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
+  margin-top: 2px;
 }
 
 .preview-item-meta.overdue {
   color: var(--accent-error);
+  font-weight: 500;
 }
 
 .event-type-badge {
@@ -654,16 +666,22 @@ body {
 .task-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
+  gap: 14px;
+  padding: 18px 20px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-lg);
   transition: all var(--transition-fast);
 }
 
 .task-item:hover {
   border-color: var(--accent-primary);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transform: translateY(-2px);
+}
+
+.task-item.completed {
+  opacity: 0.7;
 }
 
 .task-checkbox {
@@ -682,6 +700,7 @@ body {
 
 .task-checkbox:hover {
   border-color: var(--accent-primary);
+  transform: scale(1.1);
 }
 
 .task-checkbox.checked {
@@ -993,16 +1012,24 @@ body {
 .day-events-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .event-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 14px;
+  padding: 14px 16px;
   background-color: var(--bg-tertiary);
   border-radius: var(--border-radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.event-item:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-color);
+  transform: translateX(4px);
 }
 
 .event-item-content {
@@ -1012,6 +1039,7 @@ body {
 .event-item-title {
   font-weight: 500;
   color: var(--text-primary);
+  margin-bottom: 2px;
 }
 
 .event-item-time {
@@ -1022,6 +1050,12 @@ body {
 .event-actions {
   display: flex;
   gap: 8px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.event-item:hover .event-actions {
+  opacity: 1;
 }
 
 /* ========================================

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>Jarvis - Personal Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+            <path d="M12 2V6M12 18V22M2 12H6M18 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="logo-text">Jarvis</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      <ul class="nav-list">
+        <li class="nav-item active" data-section="home">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="9,22 9,12 15,12 15,22" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="nav-label">Home</span>
+        </li>
+        <li class="nav-item" data-section="tasks">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="nav-label">Tasks</span>
+        </li>
+        <li class="nav-item" data-section="notes">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="14,2 14,8 20,8" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="16" y1="13" x2="8" y2="13" stroke-linecap="round"/>
+            <line x1="16" y1="17" x2="8" y2="17" stroke-linecap="round"/>
+            <line x1="10" y1="9" x2="8" y2="9" stroke-linecap="round"/>
+          </svg>
+          <span class="nav-label">Notes</span>
+        </li>
+        <li class="nav-item" data-section="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+          <span class="nav-label">Settings</span>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Home Section -->
+      <section class="content-section active" id="home-section">
+        <div class="section-header">
+          <h1>Welcome to Jarvis</h1>
+          <p class="subtitle">Your personal AI assistant</p>
+        </div>
+        
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="message jarvis">
+              <div class="message-avatar">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="12" r="10"/>
+                </svg>
+              </div>
+              <div class="message-content">
+                <span class="message-sender">Jarvis</span>
+                <p>Hello! I'm Jarvis, your personal assistant. How can I help you today?</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chat-input-container">
+            <div class="typing-indicator" id="typingIndicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <form class="chat-input-form" id="chatForm">
+              <input 
+                type="text" 
+                class="chat-input" 
+                id="chatInput" 
+                placeholder="Type a message or command..."
+                autocomplete="off"
+              >
+              <button type="submit" class="send-button" id="sendButton">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22,2 15,22 11,13 2,9"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tasks Section -->
+      <section class="content-section" id="tasks-section">
+        <div class="section-header">
+          <h1>Tasks</h1>
+          <p class="subtitle">Manage your to-do list</p>
+        </div>
+        <div class="placeholder-content">
+          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          </svg>
+          <p>Task management coming soon</p>
+          <span class="placeholder-hint">Use the chat to ask Jarvis to help with your tasks</span>
+        </div>
+      </section>
+
+      <!-- Notes Section -->
+      <section class="content-section" id="notes-section">
+        <div class="section-header">
+          <h1>Notes</h1>
+          <p class="subtitle">Your personal notepad</p>
+        </div>
+        <div class="placeholder-content">
+          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <p>Notes feature coming soon</p>
+          <span class="placeholder-hint">Store your thoughts and ideas here</span>
+        </div>
+      </section>
+
+      <!-- Settings Section -->
+      <section class="content-section" id="settings-section">
+        <div class="section-header">
+          <h1>Settings</h1>
+          <p class="subtitle">Customize your experience</p>
+        </div>
+        
+        <div class="settings-panel">
+          <div class="settings-group">
+            <h3 class="settings-group-title">Appearance</h3>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="themeToggle">Theme</label>
+                <span class="setting-description">Switch between dark and light mode</span>
+              </div>
+              <div class="theme-toggle-container">
+                <span class="theme-label">Dark</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="themeToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="theme-label">Light</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3 class="settings-group-title">Notifications</h3>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="notificationsToggle">Enable Notifications</label>
+                <span class="setting-description">Receive alerts and reminders from Jarvis</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="notificationsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="soundsToggle">Sound Effects</label>
+                <span class="setting-description">Play sounds for messages and alerts</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="soundsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3 class="settings-group-title">About</h3>
+            <div class="about-info">
+              <p><strong>Jarvis</strong> - Personal Assistant</p>
+              <p class="version">Version 1.0.0</p>
+              <p class="copyright">Built with Electron</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../../dist/renderer/renderer.js"></script>
+</body>
+</html>

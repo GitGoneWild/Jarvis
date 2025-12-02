@@ -1,5 +1,6 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import globals from 'globals';
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -9,34 +10,9 @@ export default tseslint.config(
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        window: 'readonly',
-        document: 'readonly',
-        process: 'readonly',
-        __dirname: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        exports: 'readonly',
-        console: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearTimeout: 'readonly',
-        clearInterval: 'readonly',
-        HTMLElement: 'readonly',
-        HTMLInputElement: 'readonly',
-        HTMLSelectElement: 'readonly',
-        HTMLTextAreaElement: 'readonly',
-        MouseEvent: 'readonly',
-        KeyboardEvent: 'readonly',
-        Event: 'readonly',
-        EventTarget: 'readonly',
-        FormData: 'readonly',
-        URL: 'readonly',
-        Audio: 'readonly',
-        MutationObserver: 'readonly',
-        MediaMetadata: 'readonly',
-        navigator: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
+        ...globals.browser,
+        ...globals.node,
+        ...globals.es2022,
       },
     },
     rules: {

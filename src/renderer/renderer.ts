@@ -128,6 +128,16 @@ const eventReminders = document.getElementById('eventReminders') as HTMLInputEle
 const checkUpdatesBtn = document.getElementById('checkUpdatesBtn') as HTMLButtonElement;
 const appVersion = document.getElementById('appVersion') as HTMLElement;
 
+// Module Toggle Settings
+const healthEnabledToggle = document.getElementById('healthEnabled') as HTMLInputElement;
+const bookmarksEnabledToggle = document.getElementById('bookmarksEnabled') as HTMLInputElement;
+const vpnEnabledToggle = document.getElementById('vpnEnabled') as HTMLInputElement;
+const toolsEnabledToggle = document.getElementById('toolsEnabled') as HTMLInputElement;
+const timerEnabledToggle = document.getElementById('timerEnabled') as HTMLInputElement;
+const newsEnabledToggle = document.getElementById('newsEnabled') as HTMLInputElement;
+const playgroundEnabledToggle = document.getElementById('playgroundEnabled') as HTMLInputElement;
+const mp3EnabledToggle = document.getElementById('mp3Enabled') as HTMLInputElement;
+
 // Health Module Elements
 const todayCalories = document.getElementById('todayCalories') as HTMLElement;
 const currentWeight = document.getElementById('currentWeight') as HTMLElement;
@@ -449,6 +459,9 @@ function applySettings(): void {
     sidebarToggle.setAttribute('aria-expanded', 'true');
   }
 
+  // Apply module visibility in navbar
+  updateNavbarModuleVisibility();
+
   // Navigate to default start page
   navigateToSection(settings.defaultStartPage);
 
@@ -457,6 +470,32 @@ function applySettings(): void {
     const platform = window.jarvisAPI.getPlatform();
     document.body.classList.add(`platform-${platform}`);
   }
+}
+
+// Update navbar visibility based on module settings
+function updateNavbarModuleVisibility(): void {
+  if (!settings?.modules) return;
+
+  // Map navbar sections to their module settings
+  const moduleMapping: Record<string, boolean> = {
+    'health': settings.modules.health?.enabled ?? true,
+    'vpn': settings.modules.vpn?.enabled ?? true,
+    'bookmarks': settings.modules.bookmarks?.enabled ?? true,
+    'tools': settings.modules.tools?.enabled ?? true,
+    'timers': settings.modules.timer?.enabled ?? true,
+    'news': settings.modules.news?.enabled ?? true,
+    'playground': settings.modules.playground?.enabled ?? true,
+    'mp3': settings.modules.mp3?.enabled ?? true,
+  };
+
+  // Update visibility of each nav item based on module settings
+  navItems.forEach((item) => {
+    const section = item.getAttribute('data-section');
+    if (section && section in moduleMapping) {
+      const isEnabled = moduleMapping[section];
+      item.style.display = isEnabled ? '' : 'none';
+    }
+  });
 }
 
 function applyTheme(theme: 'dark' | 'light' | 'system'): void {
@@ -487,6 +526,18 @@ function populateSettingsUI(): void {
   soundsEnabled.checked = settings.notifications.sounds;
   taskReminders.checked = settings.notifications.taskReminders;
   eventReminders.checked = settings.notifications.eventReminders;
+
+  // Populate module toggles
+  if (settings.modules) {
+    if (healthEnabledToggle) healthEnabledToggle.checked = settings.modules.health?.enabled ?? true;
+    if (bookmarksEnabledToggle) bookmarksEnabledToggle.checked = settings.modules.bookmarks?.enabled ?? true;
+    if (vpnEnabledToggle) vpnEnabledToggle.checked = settings.modules.vpn?.enabled ?? true;
+    if (toolsEnabledToggle) toolsEnabledToggle.checked = settings.modules.tools?.enabled ?? true;
+    if (timerEnabledToggle) timerEnabledToggle.checked = settings.modules.timer?.enabled ?? true;
+    if (newsEnabledToggle) newsEnabledToggle.checked = settings.modules.news?.enabled ?? true;
+    if (playgroundEnabledToggle) playgroundEnabledToggle.checked = settings.modules.playground?.enabled ?? true;
+    if (mp3EnabledToggle) mp3EnabledToggle.checked = settings.modules.mp3?.enabled ?? true;
+  }
 }
 
 // ========================================
@@ -1309,6 +1360,23 @@ function formatRelativeTime(dateStr: string): string {
 // ========================================
 
 function navigateToSection(sectionId: string): void {
+  // Check if the target module is disabled - if so, redirect to home
+  const moduleMapping: Record<string, boolean | undefined> = {
+    'health': settings?.modules?.health?.enabled,
+    'vpn': settings?.modules?.vpn?.enabled,
+    'bookmarks': settings?.modules?.bookmarks?.enabled,
+    'tools': settings?.modules?.tools?.enabled,
+    'timers': settings?.modules?.timer?.enabled,
+    'news': settings?.modules?.news?.enabled,
+    'playground': settings?.modules?.playground?.enabled,
+    'mp3': settings?.modules?.mp3?.enabled,
+  };
+
+  // If the module is explicitly disabled, redirect to home
+  if (sectionId in moduleMapping && moduleMapping[sectionId] === false) {
+    sectionId = 'home';
+  }
+
   navItems.forEach((item) => {
     item.classList.remove('active');
     if (item.getAttribute('data-section') === sectionId) {
@@ -1580,6 +1648,71 @@ function setupEventListeners(): void {
   eventReminders.addEventListener('change', () => {
     settings.notifications.eventReminders = eventReminders.checked;
     saveSettings();
+  });
+
+  // Module toggle event listeners
+  healthEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.health) {
+      settings.modules.health.enabled = healthEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  bookmarksEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.bookmarks) {
+      settings.modules.bookmarks.enabled = bookmarksEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  vpnEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.vpn) {
+      settings.modules.vpn.enabled = vpnEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  toolsEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.tools) {
+      settings.modules.tools.enabled = toolsEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  timerEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.timer) {
+      settings.modules.timer.enabled = timerEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  newsEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.news) {
+      settings.modules.news.enabled = newsEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  playgroundEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.playground) {
+      settings.modules.playground.enabled = playgroundEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  mp3EnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.mp3) {
+      settings.modules.mp3.enabled = mp3EnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
   });
 
   // System theme change listener
@@ -2327,25 +2460,81 @@ function renderTools(): void {
 async function handleScanTools(): Promise<void> {
   if (scanToolsBtn) {
     scanToolsBtn.disabled = true;
-    scanToolsBtn.textContent = 'Scanning...';
+    scanToolsBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinning">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      Scanning...
+    `;
+  }
+  
+  // Show scanning indicator in the tools grid
+  if (toolsGrid) {
+    toolsGrid.innerHTML = `
+      <div class="scanning-indicator">
+        <div class="scanning-spinner"></div>
+        <p>Scanning for DevOps tools...</p>
+        <span>This may take a few seconds</span>
+      </div>
+    `;
   }
   
   try {
     if (window.jarvisAPI) {
       toolsData.detectedTools = await window.jarvisAPI.scanTools();
     } else {
-      // Mock scan for browser testing
+      // Mock scan for browser testing - simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
       toolsData.detectedTools = [
         { name: 'node', displayName: 'Node.js', installed: true, version: '18.0.0', path: null, docsUrl: 'https://nodejs.org/docs', lastChecked: new Date().toISOString() },
         { name: 'python', displayName: 'Python', installed: true, version: '3.11.0', path: null, docsUrl: 'https://docs.python.org', lastChecked: new Date().toISOString() },
+        { name: 'docker', displayName: 'Docker', installed: true, version: '24.0.0', path: null, docsUrl: 'https://docs.docker.com', lastChecked: new Date().toISOString() },
+        { name: 'go', displayName: 'Go', installed: false, version: '', path: null, docsUrl: 'https://go.dev/doc/', lastChecked: new Date().toISOString() },
+        { name: 'kubectl', displayName: 'kubectl', installed: false, version: '', path: null, docsUrl: 'https://kubernetes.io/docs/', lastChecked: new Date().toISOString() },
       ];
       localStorage.setItem('jarvis-tools', JSON.stringify(toolsData));
     }
     toolsData.lastFullScan = new Date().toISOString();
     renderTools();
-    showToast('Tool scan complete', 'success');
-  } catch {
-    showToast('Failed to scan tools', 'error');
+    
+    // Show success with count
+    const installedCount = toolsData.detectedTools.filter(t => t.installed).length;
+    const totalCount = toolsData.detectedTools.length;
+    showToast(`Scan complete: ${installedCount} of ${totalCount} tools installed`, 'success');
+  } catch (error) {
+    console.error('Tool scan failed:', error);
+    
+    // Show specific error message based on error type
+    let errorMessage = 'Failed to scan tools. ';
+    if (error instanceof Error) {
+      if (error.message.includes('permission')) {
+        errorMessage += 'Check file permissions and try again.';
+      } else if (error.message.includes('timeout')) {
+        errorMessage += 'The scan timed out. Try again later.';
+      } else {
+        errorMessage += 'Please try again or check the console for details.';
+      }
+    } else {
+      errorMessage += 'Please try again or check the console for details.';
+    }
+    
+    showToast(errorMessage, 'error');
+    
+    // Show error state in the grid
+    if (toolsGrid) {
+      toolsGrid.innerHTML = `
+        <div class="empty-state error-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Scan failed</p>
+          <span>Click "Scan Tools" to try again</span>
+        </div>
+      `;
+    }
   } finally {
     if (scanToolsBtn) {
       scanToolsBtn.disabled = false;
@@ -2421,8 +2610,225 @@ async function handleDownloadUpdate(): Promise<void> {
 // VPN Module Functions
 // ========================================
 
+// VPN state
+let vpnProfiles: Array<{
+  id: string;
+  name: string;
+  type: string;
+  status: 'disconnected' | 'connecting' | 'connected';
+}> = [];
+
+async function loadVPNData(): Promise<void> {
+  try {
+    if (window.jarvisAPI) {
+      const vpnData = await window.jarvisAPI.getVPNData();
+      // Use the data from the API
+      if (vpnData && vpnData.profiles) {
+        vpnProfiles = vpnData.profiles.map(p => ({
+          id: p.id,
+          name: p.name,
+          type: 'OpenVPN',
+          status: 'disconnected' as const,
+        }));
+      }
+    }
+    renderVPNProfiles();
+  } catch (error) {
+    console.error('Failed to load VPN data:', error);
+  }
+}
+
+function renderVPNProfiles(): void {
+  const vpnProfilesList = document.getElementById('vpnProfilesList');
+  if (!vpnProfilesList) return;
+
+  if (vpnProfiles.length === 0) {
+    vpnProfilesList.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <p>No VPN profiles</p>
+        <span>Import an OVPN configuration file to get started</span>
+      </div>
+    `;
+    return;
+  }
+
+  vpnProfilesList.innerHTML = vpnProfiles.map(profile => `
+    <div class="vpn-profile-item" data-id="${profile.id}">
+      <div class="vpn-profile-info">
+        <div class="vpn-profile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="vpn-profile-details">
+          <span class="vpn-profile-name">${escapeHtml(profile.name)}</span>
+          <span class="vpn-profile-type">${escapeHtml(profile.type)}</span>
+        </div>
+      </div>
+      <div class="vpn-profile-actions">
+        <span class="vpn-profile-status ${profile.status}">${profile.status}</span>
+        <button class="vpn-connect-btn ${profile.status === 'connected' ? 'disconnect' : ''}" data-id="${profile.id}">
+          ${profile.status === 'connected' ? 'Disconnect' : 'Connect'}
+        </button>
+        <button class="task-action-btn delete" data-id="${profile.id}" aria-label="Delete profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  // Add event listeners for connect/disconnect buttons
+  vpnProfilesList.querySelectorAll('.vpn-connect-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      const profile = vpnProfiles.find(p => p.id === id);
+      if (profile) {
+        if (profile.status === 'connected') {
+          await handleVPNDisconnect();
+        } else {
+          await handleVPNConnect(id);
+        }
+      }
+    });
+  });
+
+  // Add event listeners for delete buttons
+  vpnProfilesList.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      if (confirm('Are you sure you want to delete this VPN profile?')) {
+        await handleDeleteVPNProfile(id);
+      }
+    });
+  });
+}
+
 async function handleImportVPNProfile(): Promise<void> {
-  showToast('VPN profile import requires full Electron integration', 'info');
+  if (window.jarvisAPI) {
+    // In a full implementation, this would open a file dialog
+    showToast('Select an OVPN file to import', 'info');
+    // For now, show a placeholder since file dialog requires more integration
+    showToast('VPN profile import requires selecting a file from your system', 'info');
+  } else {
+    // Demo mode - add a mock profile
+    const mockProfile = {
+      id: `vpn-${Date.now()}`,
+      name: `Demo VPN ${vpnProfiles.length + 1}`,
+      type: 'OpenVPN',
+      status: 'disconnected' as const,
+    };
+    vpnProfiles.push(mockProfile);
+    renderVPNProfiles();
+    showToast('Demo VPN profile added', 'success');
+  }
+}
+
+async function handleVPNConnect(profileId: string): Promise<void> {
+  const profile = vpnProfiles.find(p => p.id === profileId);
+  if (!profile) return;
+
+  profile.status = 'connecting';
+  renderVPNProfiles();
+  updateVPNStatus('connecting', profile.name);
+
+  try {
+    if (window.jarvisAPI) {
+      const success = await window.jarvisAPI.connectVPN(profileId);
+      if (success) {
+        profile.status = 'connected';
+        updateVPNStatus('connected', profile.name);
+        showToast(`Connected to ${profile.name}`, 'success');
+      } else {
+        profile.status = 'disconnected';
+        updateVPNStatus('disconnected', null);
+        showToast('Failed to connect to VPN', 'error');
+      }
+    } else {
+      // Demo mode - simulate connection
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      profile.status = 'connected';
+      updateVPNStatus('connected', profile.name);
+      showToast(`Connected to ${profile.name}`, 'success');
+    }
+  } catch (error) {
+    console.error('VPN connection failed:', error);
+    profile.status = 'disconnected';
+    updateVPNStatus('disconnected', null);
+    showToast('VPN connection failed', 'error');
+  }
+
+  renderVPNProfiles();
+}
+
+async function handleVPNDisconnect(): Promise<void> {
+  const connectedProfile = vpnProfiles.find(p => p.status === 'connected');
+  
+  try {
+    if (window.jarvisAPI) {
+      await window.jarvisAPI.disconnectVPN();
+    } else {
+      // Demo mode - simulate disconnection
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    vpnProfiles.forEach(p => p.status = 'disconnected');
+    updateVPNStatus('disconnected', null);
+    renderVPNProfiles();
+    showToast(connectedProfile ? `Disconnected from ${connectedProfile.name}` : 'VPN disconnected', 'info');
+  } catch (error) {
+    console.error('VPN disconnection failed:', error);
+    showToast('Failed to disconnect VPN', 'error');
+  }
+}
+
+async function handleDeleteVPNProfile(profileId: string): Promise<void> {
+  const profile = vpnProfiles.find(p => p.id === profileId);
+  if (!profile) return;
+
+  try {
+    if (window.jarvisAPI) {
+      await window.jarvisAPI.deleteVPNProfile(profileId);
+    }
+    vpnProfiles = vpnProfiles.filter(p => p.id !== profileId);
+    renderVPNProfiles();
+    showToast(`Deleted profile: ${profile.name}`, 'info');
+  } catch (error) {
+    console.error('Failed to delete VPN profile:', error);
+    showToast('Failed to delete VPN profile', 'error');
+  }
+}
+
+function updateVPNStatus(status: 'disconnected' | 'connecting' | 'connected', profileName: string | null): void {
+  const statusIndicator = document.getElementById('vpnStatusIndicator');
+  const statusLabel = document.getElementById('vpnStatusLabel');
+  const activeProfile = document.getElementById('vpnActiveProfile');
+  const statusDetails = document.getElementById('vpnStatusDetails');
+  const statusIcon = statusIndicator?.querySelector('.vpn-status-icon');
+
+  if (statusLabel) {
+    statusLabel.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  if (activeProfile) {
+    activeProfile.textContent = profileName ? `Connected to: ${profileName}` : 'No active connection';
+  }
+
+  if (statusIcon) {
+    statusIcon.classList.remove('disconnected', 'connecting', 'connected');
+    statusIcon.classList.add(status);
+  }
+
+  if (statusDetails) {
+    statusDetails.style.display = status === 'connected' ? 'flex' : 'none';
+  }
 }
 
 // ========================================
@@ -3497,6 +3903,7 @@ async function init(): Promise<void> {
   await loadIntegrationsData();
   await loadPlaygroundData();
   await loadMP3Data();
+  await loadVPNData();
   setupEventListeners();
   setupNewModuleEventListeners();
   renderCalendar();

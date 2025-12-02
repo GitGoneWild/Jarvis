@@ -2532,12 +2532,39 @@ select:focus {
 
 .vpn-profile-info {
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vpn-profile-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-hover);
+  border-radius: var(--border-radius-md);
+  color: var(--accent-primary);
+}
+
+.vpn-profile-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.vpn-profile-details {
+  display: flex;
   flex-direction: column;
 }
 
 .vpn-profile-name {
   font-weight: 500;
   color: var(--text-primary);
+}
+
+.vpn-profile-type {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .vpn-profile-meta {
@@ -2547,7 +2574,69 @@ select:focus {
 
 .vpn-profile-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
+}
+
+.vpn-profile-status {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.vpn-profile-status.disconnected {
+  background-color: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.vpn-profile-status.connecting {
+  background-color: rgba(249, 226, 175, 0.2);
+  color: var(--accent-warning);
+}
+
+.vpn-profile-status.connected {
+  background-color: rgba(166, 227, 161, 0.2);
+  color: var(--accent-success);
+}
+
+.vpn-connect-btn {
+  padding: 8px 16px;
+  background-color: var(--accent-primary);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.vpn-connect-btn:hover {
+  filter: brightness(1.1);
+}
+
+.vpn-connect-btn.disconnect {
+  background-color: var(--accent-error);
+}
+
+.vpn-status-icon.disconnected {
+  color: var(--text-muted);
+}
+
+.vpn-status-icon.connecting {
+  color: var(--accent-warning);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.vpn-status-icon.connected {
+  color: var(--accent-success);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ========================================
@@ -4574,4 +4663,63 @@ select:focus {
   .quick-access-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* ========================================
+   Scanning Indicator Styles
+   ======================================== */
+.scanning-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.scanning-indicator p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-top: 20px;
+  color: var(--text-primary);
+}
+
+.scanning-indicator span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.scanning-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Error state in tools grid */
+.error-state {
+  color: var(--accent-error);
+}
+
+.error-state .empty-icon {
+  color: var(--accent-error);
+}
+
+/* Settings group description */
+.settings-group-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
 }

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeTheme, shell, net } from 'electron';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import { exec } from 'child_process';
@@ -26,6 +26,9 @@ import type {
 import { defaultModuleSettings as defaultModules } from '../modules/shared/types';
 
 const execAsync = promisify(exec);
+
+// GitHub repository for auto-update checks
+const GITHUB_REPO = 'GitGoneWild/Jarvis';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -542,13 +545,16 @@ ipcMain.handle('delete-vpn-profile', (_event, id: string): boolean => {
 });
 
 ipcMain.handle('connect-vpn', async (_event, _profileId: string): Promise<boolean> => {
-  // VPN connection logic would be implemented here
-  // This is a placeholder - actual implementation requires OpenVPN or similar
+  // Note: VPN connection requires OpenVPN client installation and proper system configuration
+  // This is a placeholder for future implementation
+  console.log('VPN connection not yet implemented. Requires OpenVPN client integration.');
   return false;
 });
 
 ipcMain.handle('disconnect-vpn', async (): Promise<boolean> => {
-  // VPN disconnection logic would be implemented here
+  // Note: VPN disconnection requires OpenVPN client integration
+  // This is a placeholder for future implementation
+  console.log('VPN disconnection not yet implemented. Requires OpenVPN client integration.');
   return false;
 });
 
@@ -633,11 +639,9 @@ ipcMain.handle('open-tool-docs', async (_event, toolName: ToolName): Promise<voi
 // Updater Module IPC Handlers
 // ========================================
 
-const GITHUB_REPO = 'GitGoneWild/Jarvis';
-
 ipcMain.handle('check-for-updates', async (): Promise<UpdateInfo | null> => {
   try {
-    const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+    const response = await net.fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
     if (!response.ok) return null;
 
     const release = await response.json() as {
@@ -680,12 +684,16 @@ function compareVersions(v1: string, v2: string): number {
 }
 
 ipcMain.handle('download-update', async (): Promise<boolean> => {
-  // Placeholder - actual implementation would use electron-updater
+  // Note: Full auto-update requires electron-updater package integration
+  // This is a placeholder that returns false indicating manual update is needed
+  console.log('Auto-download not implemented. Please download update manually from GitHub.');
   return false;
 });
 
 ipcMain.handle('install-update', async (): Promise<void> => {
-  // Placeholder - actual implementation would use electron-updater
+  // Note: Full auto-update requires electron-updater package integration
+  // This is a placeholder - users should download and install manually
+  console.log('Auto-install not implemented. Please install update manually.');
 });
 
 // ========================================
@@ -694,7 +702,7 @@ ipcMain.handle('install-update', async (): Promise<void> => {
 
 ipcMain.handle('validate-real-debrid-key', async (_event, apiKey: string): Promise<RealDebridAccount | null> => {
   try {
-    const response = await fetch('https://api.real-debrid.com/rest/1.0/user', {
+    const response = await net.fetch('https://api.real-debrid.com/rest/1.0/user', {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },

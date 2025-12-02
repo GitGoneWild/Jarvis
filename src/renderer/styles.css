@@ -3459,3 +3459,597 @@ select:focus {
     font-size: 2rem;
   }
 }
+
+/* ========================================
+   Playground Section Styles
+   ======================================== */
+
+.playground-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.playground-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.playground-card.recommender-card {
+  grid-column: span 2;
+}
+
+.fun-fact-content {
+  padding: 20px 0;
+}
+
+.fun-fact-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.fun-fact-source {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.on-this-day-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.on-this-day-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.on-this-day-item:last-child {
+  border-bottom: none;
+}
+
+.on-this-day-year {
+  font-weight: 600;
+  color: var(--accent-color);
+  min-width: 50px;
+}
+
+.on-this-day-event {
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.on-this-day-category {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.on-this-day-category.historical {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.on-this-day-category.birth {
+  background: var(--accent-green);
+  color: white;
+}
+
+.on-this-day-category.death {
+  background: var(--text-muted);
+  color: white;
+}
+
+/* ========================================
+   MP3 Player Section Styles
+   ======================================== */
+
+.mp3-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto auto;
+  gap: 24px;
+}
+
+.mp3-now-playing-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  grid-row: span 2;
+}
+
+.mp3-library-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.mp3-history-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.mp3-player-display {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.mp3-album-art {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mp3-album-art svg {
+  width: 80px;
+  height: 80px;
+  color: var(--text-muted);
+}
+
+.mp3-album-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp3-track-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.mp3-track-artist {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.mp3-track-album {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.mp3-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mp3-time-current,
+.mp3-time-total {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  min-width: 40px;
+}
+
+.mp3-progress-slider {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.mp3-progress-fill {
+  height: 100%;
+  background: var(--accent-color);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.mp3-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.mp3-control-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.mp3-control-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--accent-color);
+}
+
+.mp3-control-btn.mp3-play-btn {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-color);
+  color: white;
+}
+
+.mp3-control-btn.mp3-play-btn:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.mp3-control-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mp3-control-btn.mp3-play-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.mp3-control-btn.active {
+  color: var(--accent-color);
+}
+
+.mp3-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.mp3-volume-control svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.mp3-volume-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.mp3-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mp3-library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mp3-library-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.mp3-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.mp3-search-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.mp3-search-box input {
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  width: 150px;
+}
+
+.mp3-track-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.mp3-track-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mp3-track-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.mp3-track-item.playing {
+  background: var(--accent-color-alpha);
+}
+
+.mp3-track-item-cover {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp3-track-item-cover svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.mp3-track-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mp3-track-item-title {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp3-track-item-artist {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.mp3-track-item-duration {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.mp3-history-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Ollama Integration Styles */
+.ollama-config {
+  padding: 12px 0;
+}
+
+.ollama-models {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.ollama-models h4 {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.models-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.model-tag {
+  padding: 4px 12px;
+  background: var(--accent-color-alpha);
+  border-radius: 16px;
+  font-size: 0.85rem;
+  color: var(--accent-color);
+}
+
+/* Responsive adjustments for Playground and MP3 */
+@media (max-width: 1200px) {
+  .playground-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .playground-card.recommender-card {
+    grid-column: span 1;
+  }
+  
+  .mp3-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .mp3-now-playing-card {
+    grid-row: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .mp3-library-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .mp3-library-actions {
+    flex-direction: column;
+  }
+  
+  .mp3-search-box input {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Home Page News Bulletins & Health Alerts
+   ======================================== */
+
+.news-bulletins-card,
+.health-alerts-card {
+  grid-column: span 1;
+}
+
+.news-bulletins-content,
+.health-alerts-content {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.news-bulletin-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.news-bulletin-item:hover {
+  background: var(--bg-tertiary);
+  margin: 0 -12px;
+  padding: 10px 12px;
+}
+
+.news-bulletin-item:last-child {
+  border-bottom: none;
+}
+
+.news-bulletin-source {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.news-bulletin-title {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-bulletin-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Health Alert Items */
+.health-alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--accent-color);
+}
+
+.health-alert-item.urgent {
+  border-left-color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.health-alert-item.warning {
+  border-left-color: var(--warning-color);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.health-alert-item.info {
+  border-left-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.health-alert-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.health-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.health-alert-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.health-alert-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.health-alert-action {
+  margin-top: 8px;
+}
+
+.health-alert-action button {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.health-alert-action button:hover {
+  background: var(--accent-hover);
+}
+
+@media (max-width: 1200px) {
+  .news-bulletins-card,
+  .health-alerts-card {
+    grid-column: span 1;
+  }
+}

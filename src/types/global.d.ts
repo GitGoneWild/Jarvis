@@ -21,7 +21,6 @@ import type {
   FunFact,
   OnThisDay,
   MP3Data,
-  MP3Track,
   MP3Folder,
 } from '../modules/shared/types';
 
@@ -80,6 +79,8 @@ export interface StoreSchema {
   tools: ToolsData;
   timer: TimerData;
   news: NewsData;
+  playground: PlaygroundData;
+  mp3: MP3Data;
 }
 
 // Jarvis API exposed via preload
@@ -169,6 +170,16 @@ export interface JarvisAPI {
   getLastFMRecentTracks: () => Promise<LastFMRecentTrack[]>;
   getSonarrStatus: () => Promise<SonarrStatus | null>;
   getRadarrStatus: () => Promise<RadarrStatus | null>;
+  getOllamaStatus: () => Promise<OllamaStatus | null>;
+
+  // Playground Module
+  getPlaygroundData: () => Promise<PlaygroundData>;
+  fetchFunFact: () => Promise<FunFact | null>;
+  fetchOnThisDay: () => Promise<OnThisDay[]>;
+
+  // MP3 Module
+  getMP3Data: () => Promise<MP3Data>;
+  addMP3Folder: (folderPath: string) => Promise<MP3Folder | null>;
 
   // Window controls
   minimizeWindow: () => void;

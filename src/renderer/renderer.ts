@@ -18,6 +18,11 @@ import type {
   MovieTVRecommendation,
   RecommendationAnswer,
   ApiServiceName,
+  FunFact,
+  OnThisDay,
+  PlaygroundData,
+  MP3Data,
+  MP3Track,
 } from '../modules/shared/types';
 
 // ========================================
@@ -314,6 +319,31 @@ let newsData: NewsData = {
   articles: [],
   sports: [],
   lastUpdated: null,
+};
+
+// Playground module state
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const playgroundData: PlaygroundData = {
+  funFacts: [],
+  onThisDay: [],
+  lastUpdated: null,
+};
+let currentFunFact: FunFact | null = null;
+let currentOnThisDay: OnThisDay[] = [];
+
+// MP3 module state
+let mp3Data: MP3Data = {
+  folders: [],
+  tracks: [],
+  playHistory: [],
+  playbackState: {
+    currentTrackId: null,
+    isPlaying: false,
+    currentTime: 0,
+    volume: 0.7,
+    shuffle: false,
+    repeat: 'none',
+  },
 };
 
 // Recommender module state
@@ -1133,6 +1163,152 @@ function updateDashboard(): void {
       `).join('');
     }
   }
+
+  // Render news bulletins on home page
+  renderNewsBulletins();
+  
+  // Render health alerts on home page
+  renderHealthAlerts();
+}
+
+function renderNewsBulletins(): void {
+  const newsBulletinsContent = document.getElementById('newsBulletinsContent');
+  if (!newsBulletinsContent) return;
+
+  if (newsData.articles.length === 0) {
+    newsBulletinsContent.innerHTML = `
+      <div class="empty-state-modern">
+        <div class="empty-icon-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2z"/>
+            <line x1="10" y1="6" x2="18" y2="6"/>
+            <line x1="10" y1="10" x2="18" y2="10"/>
+          </svg>
+        </div>
+        <p class="empty-title">No news yet</p>
+        <p class="empty-subtitle">Visit News page to load headlines</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Display top 5 news articles
+  const topNews = newsData.articles.slice(0, 5);
+  newsBulletinsContent.innerHTML = topNews.map(article => `
+    <div class="news-bulletin-item" data-url="${escapeHtml(article.url || '')}">
+      <div class="news-bulletin-content">
+        <span class="news-bulletin-source">${escapeHtml(article.source || 'News')}</span>
+        <div class="news-bulletin-title">${escapeHtml(article.title)}</div>
+        ${article.publishedAt ? `<span class="news-bulletin-time">${formatRelativeTime(article.publishedAt)}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  // Add click handlers to open articles
+  newsBulletinsContent.querySelectorAll('.news-bulletin-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const url = (item as HTMLElement).dataset.url;
+      if (url) {
+        window.open(url, '_blank');
+      }
+    });
+  });
+}
+
+function renderHealthAlerts(): void {
+  const healthAlertsContent = document.getElementById('healthAlertsContent');
+  if (!healthAlertsContent) return;
+
+  const alerts: Array<{ type: string; icon: string; title: string; description: string; priority: 'urgent' | 'warning' | 'info' }> = [];
+
+  // Check for medications due today
+  if (healthData.medications && healthData.medications.length > 0) {
+    const activeMeds = healthData.medications.filter(med => med.active !== false);
+    
+    activeMeds.forEach(med => {
+      alerts.push({
+        type: 'medication',
+        icon: '💊',
+        title: med.name,
+        description: `Take ${med.dosage} - ${med.frequency}`,
+        priority: 'info',
+      });
+    });
+  }
+
+  // Check weight tracking - remind if no recent entries
+  if (healthData.weightEntries && healthData.weightEntries.length > 0) {
+    const lastWeight = healthData.weightEntries[healthData.weightEntries.length - 1];
+    const lastDate = new Date(lastWeight.date);
+    const daysSince = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysSince > 7) {
+      alerts.push({
+        type: 'reminder',
+        icon: '⚖️',
+        title: 'Log Your Weight',
+        description: `Last logged ${daysSince} days ago`,
+        priority: 'warning',
+      });
+    }
+  }
+
+  // Check blood pressure - remind if no recent entries
+  if (healthData.bloodPressureEntries && healthData.bloodPressureEntries.length > 0) {
+    const lastBP = healthData.bloodPressureEntries[healthData.bloodPressureEntries.length - 1];
+    const lastDate = new Date(lastBP.date);
+    const daysSince = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysSince > 3) {
+      alerts.push({
+        type: 'reminder',
+        icon: '❤️',
+        title: 'Check Blood Pressure',
+        description: `Last checked ${daysSince} days ago`,
+        priority: 'warning',
+      });
+    }
+  }
+
+  if (alerts.length === 0) {
+    healthAlertsContent.innerHTML = `
+      <div class="empty-state-modern">
+        <div class="empty-icon-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <p class="empty-title">All good!</p>
+        <p class="empty-subtitle">No health alerts today</p>
+      </div>
+    `;
+    return;
+  }
+
+  healthAlertsContent.innerHTML = alerts.map(alert => `
+    <div class="health-alert-item ${alert.priority}">
+      <div class="health-alert-icon">${alert.icon}</div>
+      <div class="health-alert-content">
+        <div class="health-alert-title">${escapeHtml(alert.title)}</div>
+        <div class="health-alert-description">${escapeHtml(alert.description)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
 }
 
 // ========================================
@@ -2962,6 +3138,249 @@ function spawnConfetti(): void {
 }
 
 // ========================================
+// Playground Module Functions
+// ========================================
+
+async function loadPlaygroundData(): Promise<void> {
+  // Load initial data for playground
+  await handleRefreshFunFact();
+  await handleRefreshOnThisDay();
+}
+
+async function handleRefreshFunFact(): Promise<void> {
+  const funFactContent = document.getElementById('funFactContent');
+  const refreshBtn = document.getElementById('refreshFunFactBtn') as HTMLButtonElement;
+  
+  if (refreshBtn) {
+    refreshBtn.disabled = true;
+  }
+  
+  try {
+    if (window.jarvisAPI) {
+      currentFunFact = await window.jarvisAPI.fetchFunFact();
+    } else {
+      // Mock data for browser testing
+      currentFunFact = {
+        id: `fact-${Date.now()}`,
+        fact: 'A group of flamingos is called a "flamboyance".',
+        category: 'random',
+        source: 'Nature Facts',
+      };
+    }
+    
+    if (funFactContent && currentFunFact) {
+      funFactContent.innerHTML = `
+        <p class="fun-fact-text">${escapeHtml(currentFunFact.fact)}</p>
+        ${currentFunFact.source ? `<span class="fun-fact-source">Source: ${escapeHtml(currentFunFact.source)}</span>` : ''}
+      `;
+    }
+  } catch (error) {
+    console.error('Failed to fetch fun fact:', error);
+    if (funFactContent) {
+      funFactContent.innerHTML = '<p class="fun-fact-text">Failed to load fun fact. Try again!</p>';
+    }
+  } finally {
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+    }
+  }
+}
+
+async function handleRefreshOnThisDay(): Promise<void> {
+  const onThisDayContent = document.getElementById('onThisDayContent');
+  const refreshBtn = document.getElementById('refreshOnThisDayBtn') as HTMLButtonElement;
+  
+  if (refreshBtn) {
+    refreshBtn.disabled = true;
+  }
+  
+  try {
+    if (window.jarvisAPI) {
+      currentOnThisDay = await window.jarvisAPI.fetchOnThisDay();
+    } else {
+      // Mock data for browser testing
+      currentOnThisDay = [
+        { id: '1', year: 1969, event: 'Apollo 11 landed on the Moon', category: 'historical' },
+        { id: '2', year: 1776, event: 'Declaration of Independence signed', category: 'historical' },
+        { id: '3', year: 1946, event: 'Famous person was born', category: 'birth' },
+      ];
+    }
+    
+    renderOnThisDay();
+  } catch (error) {
+    console.error('Failed to fetch On This Day:', error);
+    if (onThisDayContent) {
+      onThisDayContent.innerHTML = '<div class="empty-state"><p>Failed to load events. Try again!</p></div>';
+    }
+  } finally {
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+    }
+  }
+}
+
+function renderOnThisDay(): void {
+  const onThisDayContent = document.getElementById('onThisDayContent');
+  if (!onThisDayContent) return;
+  
+  if (currentOnThisDay.length === 0) {
+    onThisDayContent.innerHTML = '<div class="empty-state"><p>No events found for today.</p></div>';
+    return;
+  }
+  
+  onThisDayContent.innerHTML = currentOnThisDay.map(event => `
+    <div class="on-this-day-item">
+      <span class="on-this-day-year">${event.year}</span>
+      <div class="on-this-day-event">
+        ${escapeHtml(event.event)}
+        <span class="on-this-day-category ${event.category}">${event.category}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ========================================
+// MP3 Module Functions
+// ========================================
+
+async function loadMP3Data(): Promise<void> {
+  if (window.jarvisAPI) {
+    mp3Data = await window.jarvisAPI.getMP3Data();
+  } else {
+    const saved = localStorage.getItem('jarvis-mp3');
+    if (saved) mp3Data = JSON.parse(saved);
+  }
+  renderMP3Library();
+  renderMP3History();
+}
+
+function renderMP3Library(): void {
+  const trackList = document.getElementById('mp3TrackList');
+  if (!trackList) return;
+  
+  if (mp3Data.tracks.length === 0) {
+    trackList.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/>
+          <circle cx="18" cy="16" r="3"/>
+        </svg>
+        <p>No music yet</p>
+        <span>Click "Add Folder" to import your music collection</span>
+      </div>
+    `;
+    return;
+  }
+  
+  trackList.innerHTML = mp3Data.tracks.map(track => `
+    <div class="mp3-track-item${mp3Data.playbackState.currentTrackId === track.id ? ' playing' : ''}" data-id="${track.id}">
+      <div class="mp3-track-item-cover">
+        ${track.coverArt 
+          ? `<img src="${track.coverArt}" alt="${escapeHtml(track.album || 'Album')}">`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>`
+        }
+      </div>
+      <div class="mp3-track-item-info">
+        <div class="mp3-track-item-title">${escapeHtml(track.title)}</div>
+        <div class="mp3-track-item-artist">${escapeHtml(track.artist)}</div>
+      </div>
+      <span class="mp3-track-item-duration">${formatMP3Duration(track.duration)}</span>
+    </div>
+  `).join('');
+  
+  // Add click handlers
+  trackList.querySelectorAll('.mp3-track-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = (item as HTMLElement).dataset.id;
+      if (id) playMP3Track(id);
+    });
+  });
+}
+
+function formatMP3Duration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function playMP3Track(trackId: string): void {
+  const track = mp3Data.tracks.find(t => t.id === trackId);
+  if (!track) return;
+  
+  mp3Data.playbackState.currentTrackId = trackId;
+  mp3Data.playbackState.isPlaying = true;
+  
+  updateMP3PlayerDisplay(track);
+  renderMP3Library();
+  showToast(`Now playing: ${track.title}`, 'info');
+}
+
+function updateMP3PlayerDisplay(track: MP3Track | null): void {
+  const titleEl = document.getElementById('mp3TrackTitle');
+  const artistEl = document.getElementById('mp3TrackArtist');
+  const albumEl = document.getElementById('mp3TrackAlbum');
+  const albumArt = document.getElementById('mp3AlbumArt');
+  const totalTime = document.getElementById('mp3TimeTotal');
+  
+  if (!track) {
+    if (titleEl) titleEl.textContent = 'No track playing';
+    if (artistEl) artistEl.textContent = '--';
+    if (albumEl) albumEl.textContent = '--';
+    if (totalTime) totalTime.textContent = '0:00';
+    return;
+  }
+  
+  if (titleEl) titleEl.textContent = track.title;
+  if (artistEl) artistEl.textContent = track.artist;
+  if (albumEl) albumEl.textContent = track.album || '--';
+  if (totalTime) totalTime.textContent = formatMP3Duration(track.duration);
+  
+  if (albumArt && track.coverArt) {
+    albumArt.innerHTML = `<img src="${track.coverArt}" alt="${escapeHtml(track.album || 'Album')}">`;
+  }
+}
+
+function renderMP3History(): void {
+  const historyList = document.getElementById('mp3HistoryList');
+  if (!historyList) return;
+  
+  if (mp3Data.playHistory.length === 0) {
+    historyList.innerHTML = '<div class="empty-state"><p>No listening history yet</p></div>';
+    return;
+  }
+  
+  const recentHistory = mp3Data.playHistory.slice(-10).reverse();
+  
+  historyList.innerHTML = recentHistory.map(entry => {
+    const track = mp3Data.tracks.find(t => t.id === entry.trackId);
+    if (!track) return '';
+    
+    return `
+      <div class="mp3-track-item" data-id="${track.id}">
+        <div class="mp3-track-item-cover">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="mp3-track-item-info">
+          <div class="mp3-track-item-title">${escapeHtml(track.title)}</div>
+          <div class="mp3-track-item-artist">${escapeHtml(track.artist)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function handleAddMP3Folder(): Promise<void> {
+  showToast('Folder import requires full Electron integration', 'info');
+}
+
+// ========================================
 // Initialization
 // ========================================
 
@@ -2975,6 +3394,8 @@ async function init(): Promise<void> {
   await loadTimerData();
   await loadNewsData();
   await loadIntegrationsData();
+  await loadPlaygroundData();
+  await loadMP3Data();
   setupEventListeners();
   setupNewModuleEventListeners();
   renderCalendar();
@@ -3001,6 +3422,16 @@ function setupNewModuleEventListeners(): void {
   // Recommender Module
   if (restartQuestionnaireBtn) restartQuestionnaireBtn.addEventListener('click', handleRestartQuestionnaire);
   if (newRecommendationsBtn) newRecommendationsBtn.addEventListener('click', handleRestartQuestionnaire);
+  
+  // Playground Module
+  const refreshFunFactBtn = document.getElementById('refreshFunFactBtn');
+  const refreshOnThisDayBtn = document.getElementById('refreshOnThisDayBtn');
+  if (refreshFunFactBtn) refreshFunFactBtn.addEventListener('click', handleRefreshFunFact);
+  if (refreshOnThisDayBtn) refreshOnThisDayBtn.addEventListener('click', handleRefreshOnThisDay);
+  
+  // MP3 Module
+  const mp3AddFolderBtn = document.getElementById('mp3AddFolderBtn');
+  if (mp3AddFolderBtn) mp3AddFolderBtn.addEventListener('click', handleAddMP3Folder);
   
   // API Integrations
   document.querySelectorAll('.test-connection-btn').forEach(btn => {

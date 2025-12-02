@@ -131,18 +131,24 @@
             </svg>
             <span class="nav-label">News</span>
           </li>
-          <li class="nav-item" data-section="recommender" role="menuitem" tabindex="0" aria-label="Recommender">
+          <li class="nav-item" data-section="playground" role="menuitem" tabindex="0" aria-label="Playground">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-              <line x1="7" y1="2" x2="7" y2="22"/>
-              <line x1="17" y1="2" x2="17" y2="22"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <line x1="2" y1="7" x2="7" y2="7"/>
-              <line x1="2" y1="17" x2="7" y2="17"/>
-              <line x1="17" y1="17" x2="22" y2="17"/>
-              <line x1="17" y1="7" x2="22" y2="7"/>
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+              <line x1="9" y1="9" x2="9.01" y2="9"/>
+              <line x1="15" y1="9" x2="15.01" y2="9"/>
             </svg>
-            <span class="nav-label">Recommender</span>
+            <span class="nav-label">Playground</span>
+          </li>
+          <li class="nav-item" data-section="mp3" role="menuitem" tabindex="0" aria-label="MP3 Player">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/>
+              <circle cx="18" cy="16" r="3"/>
+            </svg>
+            <span class="nav-label">MP3</span>
           </li>
           <li class="nav-item" data-section="integrations" role="menuitem" tabindex="0" aria-label="Integrations">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -368,6 +374,52 @@
                     <div class="important-events-list" id="importantEventsList">
                       <p class="highlight-empty">No important events</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- News Bulletins Card -->
+              <div class="dashboard-card news-bulletins-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">📰</span>
+                    <h3 class="card-title">Latest News</h3>
+                  </div>
+                  <button class="see-all-btn" data-navigate="news">View All</button>
+                </div>
+                <div class="news-bulletins-content" id="newsBulletinsContent">
+                  <div class="empty-state-modern">
+                    <div class="empty-icon-container">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2z"/>
+                        <line x1="10" y1="6" x2="18" y2="6"/>
+                        <line x1="10" y1="10" x2="18" y2="10"/>
+                      </svg>
+                    </div>
+                    <p class="empty-title">No news yet</p>
+                    <p class="empty-subtitle">Visit News page to load headlines</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Health Alerts Card -->
+              <div class="dashboard-card health-alerts-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">💊</span>
+                    <h3 class="card-title">Health Alerts</h3>
+                  </div>
+                  <button class="see-all-btn" data-navigate="health">View All</button>
+                </div>
+                <div class="health-alerts-content" id="healthAlertsContent">
+                  <div class="empty-state-modern">
+                    <div class="empty-icon-container">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      </svg>
+                    </div>
+                    <p class="empty-title">All good!</p>
+                    <p class="empty-subtitle">No medications due</p>
                   </div>
                 </div>
               </div>
@@ -1307,52 +1359,235 @@
           </div>
         </section>
 
-        <!-- Recommender Section -->
-        <section class="content-section" id="recommender-section">
+        <!-- Playground Section -->
+        <section class="content-section" id="playground-section">
           <div class="section-header">
-            <h1>Movie & TV Recommender</h1>
-            <p class="subtitle">Discover your next favorite show or movie</p>
+            <h1>Playground</h1>
+            <p class="subtitle">Fun Facts, On This Day, and Movie/TV Recommendations</p>
           </div>
           
-          <div class="recommender-container">
-            <!-- Questionnaire -->
-            <div class="questionnaire-card" id="questionnaireCard">
-              <h3 class="card-title">🎬 What would you like to watch?</h3>
-              <p class="questionnaire-intro">Answer these questions to get personalized recommendations</p>
-              
-              <div class="questionnaire-progress" id="questionnaireProgress">
-                <div class="progress-bar">
-                  <div class="progress-fill" id="questionProgressFill" style="width: 0%"></div>
+          <div class="playground-container">
+            <!-- Fun Fact Card -->
+            <div class="playground-card fun-fact-card">
+              <div class="card-header-modern">
+                <div class="card-header-left">
+                  <span class="card-icon">🎲</span>
+                  <h3 class="card-title">Fun Fact</h3>
                 </div>
-                <span class="progress-text" id="progressText">Question 1 of 5</span>
+                <button class="secondary-btn" id="refreshFunFactBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                  </svg>
+                  New Fact
+                </button>
               </div>
-
-              <div class="question-container" id="questionContainer">
-                <div class="question-text" id="currentQuestion">What genre are you in the mood for?</div>
-                <div class="options-grid" id="optionsGrid">
-                  <button class="option-btn" data-value="Action">Action</button>
-                  <button class="option-btn" data-value="Comedy">Comedy</button>
-                  <button class="option-btn" data-value="Drama">Drama</button>
-                  <button class="option-btn" data-value="Horror">Horror</button>
-                  <button class="option-btn" data-value="Sci-Fi">Sci-Fi</button>
-                  <button class="option-btn" data-value="Romance">Romance</button>
-                  <button class="option-btn" data-value="Documentary">Documentary</button>
-                </div>
-              </div>
-
-              <div class="questionnaire-actions" id="questionnaireActions">
-                <button class="secondary-btn" id="restartQuestionnaireBtn" style="display: none;">Start Over</button>
+              <div class="fun-fact-content" id="funFactContent">
+                <p class="fun-fact-text">Click "New Fact" to get a random fun fact!</p>
+                <span class="fun-fact-source"></span>
               </div>
             </div>
 
-            <!-- Recommendations -->
-            <div class="recommendations-card" id="recommendationsCard" style="display: none;">
-              <div class="card-header">
-                <h3 class="card-title">🎯 Your Recommendations</h3>
-                <button class="secondary-btn" id="newRecommendationsBtn">Get New Recommendations</button>
+            <!-- On This Day Card -->
+            <div class="playground-card on-this-day-card">
+              <div class="card-header-modern">
+                <div class="card-header-left">
+                  <span class="card-icon">📅</span>
+                  <h3 class="card-title">On This Day</h3>
+                </div>
+                <button class="secondary-btn" id="refreshOnThisDayBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                  </svg>
+                  Refresh
+                </button>
               </div>
-              <div class="recommendations-grid" id="recommendationsGrid">
-                <!-- Recommendations will be inserted here -->
+              <div class="on-this-day-content" id="onThisDayContent">
+                <div class="empty-state">
+                  <p>Loading events from history...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Movie/TV Recommender Card -->
+            <div class="playground-card recommender-card">
+              <div class="card-header-modern">
+                <div class="card-header-left">
+                  <span class="card-icon">🎬</span>
+                  <h3 class="card-title">Movie & TV Recommender</h3>
+                </div>
+              </div>
+              
+              <div class="recommender-container">
+                <!-- Questionnaire -->
+                <div class="questionnaire-card" id="questionnaireCard">
+                  <p class="questionnaire-intro">Answer these questions to get personalized recommendations</p>
+                  
+                  <div class="questionnaire-progress" id="questionnaireProgress">
+                    <div class="progress-bar">
+                      <div class="progress-fill" id="questionProgressFill" style="width: 0%"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">Question 1 of 5</span>
+                  </div>
+
+                  <div class="question-container" id="questionContainer">
+                    <div class="question-text" id="currentQuestion">What genre are you in the mood for?</div>
+                    <div class="options-grid" id="optionsGrid">
+                      <button class="option-btn" data-value="Action">Action</button>
+                      <button class="option-btn" data-value="Comedy">Comedy</button>
+                      <button class="option-btn" data-value="Drama">Drama</button>
+                      <button class="option-btn" data-value="Horror">Horror</button>
+                      <button class="option-btn" data-value="Sci-Fi">Sci-Fi</button>
+                      <button class="option-btn" data-value="Romance">Romance</button>
+                      <button class="option-btn" data-value="Documentary">Documentary</button>
+                    </div>
+                  </div>
+
+                  <div class="questionnaire-actions" id="questionnaireActions">
+                    <button class="secondary-btn" id="restartQuestionnaireBtn" style="display: none;">Start Over</button>
+                  </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="recommendations-card" id="recommendationsCard" style="display: none;">
+                  <div class="card-header">
+                    <h3 class="card-title">🎯 Your Recommendations</h3>
+                    <button class="secondary-btn" id="newRecommendationsBtn">Get New Recommendations</button>
+                  </div>
+                  <div class="recommendations-grid" id="recommendationsGrid">
+                    <!-- Recommendations will be inserted here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MP3 Section -->
+        <section class="content-section" id="mp3-section">
+          <div class="section-header">
+            <h1>MP3 Player</h1>
+            <p class="subtitle">Your personal music library</p>
+          </div>
+          
+          <div class="mp3-container">
+            <!-- Now Playing Card -->
+            <div class="mp3-now-playing-card">
+              <div class="mp3-player-display">
+                <div class="mp3-album-art" id="mp3AlbumArt">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </div>
+                <div class="mp3-track-info">
+                  <div class="mp3-track-title" id="mp3TrackTitle">No track playing</div>
+                  <div class="mp3-track-artist" id="mp3TrackArtist">--</div>
+                  <div class="mp3-track-album" id="mp3TrackAlbum">--</div>
+                </div>
+              </div>
+              
+              <div class="mp3-progress-bar">
+                <span class="mp3-time-current" id="mp3TimeCurrent">0:00</span>
+                <div class="mp3-progress-slider">
+                  <div class="mp3-progress-fill" id="mp3ProgressFill" style="width: 0%"></div>
+                </div>
+                <span class="mp3-time-total" id="mp3TimeTotal">0:00</span>
+              </div>
+              
+              <div class="mp3-controls">
+                <button class="mp3-control-btn" id="mp3ShuffleBtn" aria-label="Shuffle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="16 3 21 3 21 8"/>
+                    <line x1="4" y1="20" x2="21" y2="3"/>
+                    <polyline points="21 16 21 21 16 21"/>
+                    <line x1="15" y1="15" x2="21" y2="21"/>
+                    <line x1="4" y1="4" x2="9" y2="9"/>
+                  </svg>
+                </button>
+                <button class="mp3-control-btn" id="mp3PrevBtn" aria-label="Previous">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="19 20 9 12 19 4 19 20"/>
+                    <line x1="5" y1="19" x2="5" y2="5"/>
+                  </svg>
+                </button>
+                <button class="mp3-control-btn mp3-play-btn" id="mp3PlayBtn" aria-label="Play">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                </button>
+                <button class="mp3-control-btn" id="mp3NextBtn" aria-label="Next">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 4 15 12 5 20 5 4"/>
+                    <line x1="19" y1="5" x2="19" y2="19"/>
+                  </svg>
+                </button>
+                <button class="mp3-control-btn" id="mp3RepeatBtn" aria-label="Repeat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="17 1 21 5 17 9"/>
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                    <polyline points="7 23 3 19 7 15"/>
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="mp3-volume-control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                </svg>
+                <input type="range" id="mp3VolumeSlider" min="0" max="100" value="70" class="mp3-volume-slider">
+              </div>
+            </div>
+
+            <!-- Library Section -->
+            <div class="mp3-library-card">
+              <div class="mp3-library-header">
+                <h3 class="card-title">Library</h3>
+                <div class="mp3-library-actions">
+                  <button class="primary-btn" id="mp3AddFolderBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                    </svg>
+                    Add Folder
+                  </button>
+                  <div class="mp3-search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="mp3SearchInput" placeholder="Search tracks...">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mp3-track-list" id="mp3TrackList">
+                <div class="empty-state">
+                  <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 18V5l12-2v13"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="16" r="3"/>
+                  </svg>
+                  <p>No music yet</p>
+                  <span>Click "Add Folder" to import your music collection</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Continue Listening / History -->
+            <div class="mp3-history-card">
+              <div class="card-header-modern">
+                <div class="card-header-left">
+                  <span class="card-icon">🕐</span>
+                  <h3 class="card-title">Continue Listening</h3>
+                </div>
+              </div>
+              <div class="mp3-history-list" id="mp3HistoryList">
+                <div class="empty-state">
+                  <p>No listening history yet</p>
+                </div>
               </div>
             </div>
           </div>
@@ -1439,6 +1674,33 @@
                     <span class="stat-value" id="radarrQueueCount">0</span>
                     <span class="stat-label">In Queue</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ollama Integration -->
+            <div class="integration-card" data-service="ollama">
+              <div class="integration-header">
+                <div class="integration-icon">🤖</div>
+                <div class="integration-info">
+                  <h3>Ollama</h3>
+                  <span class="integration-status" id="ollamaStatus">Not configured</span>
+                </div>
+                <button class="secondary-btn test-connection-btn" data-service="ollama">Test Connection</button>
+              </div>
+              <div class="integration-details" id="ollamaDetails">
+                <div class="ollama-config">
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="ollamaBaseUrl">Base URL</label>
+                      <span class="setting-description">Ollama server address (e.g., http://localhost:11434)</span>
+                    </div>
+                    <input type="text" id="ollamaBaseUrl" class="setting-input" placeholder="http://localhost:11434">
+                  </div>
+                </div>
+                <div class="ollama-models" id="ollamaModels" style="display: none;">
+                  <h4>Available Models</h4>
+                  <div class="models-list" id="ollamaModelsList"></div>
                 </div>
               </div>
             </div>

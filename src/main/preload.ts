@@ -17,6 +17,19 @@ import type {
   VPNData,
   BookmarksData,
   ToolsData,
+  TimerData,
+  ActivityTimer,
+  ActiveTimer,
+  NewsData,
+  NewsArticle,
+  SportsScore,
+  MovieTVRecommendation,
+  RecommendationAnswer,
+  ApiServiceName,
+  LastFMUserInfo,
+  LastFMRecentTrack,
+  SonarrStatus,
+  RadarrStatus,
 } from '../modules/shared/types';
 
 // Callback storage for window state changes
@@ -102,6 +115,36 @@ contextBridge.exposeInMainWorld('jarvisAPI', {
   // Real-Debrid Module
   validateRealDebridKey: (apiKey: string): Promise<RealDebridAccount | null> =>
     ipcRenderer.invoke('validate-real-debrid-key', apiKey),
+
+  // Timer Module
+  getTimerData: (): Promise<TimerData> => ipcRenderer.invoke('get-timer-data'),
+  startTimer: (name: string, category: string, tags?: string[]): Promise<ActiveTimer> =>
+    ipcRenderer.invoke('start-timer', name, category, tags),
+  stopTimer: (notes?: string): Promise<ActivityTimer | null> =>
+    ipcRenderer.invoke('stop-timer', notes),
+  getActiveTimer: (): Promise<ActiveTimer | null> => ipcRenderer.invoke('get-active-timer'),
+  getActivities: (startDate?: string, endDate?: string): Promise<ActivityTimer[]> =>
+    ipcRenderer.invoke('get-activities', startDate, endDate),
+  deleteActivity: (id: string): Promise<boolean> => ipcRenderer.invoke('delete-activity', id),
+  updateActivity: (id: string, updates: Partial<ActivityTimer>): Promise<ActivityTimer | null> =>
+    ipcRenderer.invoke('update-activity', id, updates),
+
+  // News Module
+  getNewsData: (): Promise<NewsData> => ipcRenderer.invoke('get-news-data'),
+  fetchNews: (): Promise<NewsArticle[]> => ipcRenderer.invoke('fetch-news'),
+  fetchSportsScores: (): Promise<SportsScore[]> => ipcRenderer.invoke('fetch-sports-scores'),
+
+  // Recommender Module
+  getRecommendations: (answers: RecommendationAnswer[]): Promise<MovieTVRecommendation[]> =>
+    ipcRenderer.invoke('get-recommendations', answers),
+
+  // API Integrations Module
+  testApiConnection: (service: ApiServiceName): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke('test-api-connection', service),
+  getLastFMUserInfo: (): Promise<LastFMUserInfo | null> => ipcRenderer.invoke('get-lastfm-user-info'),
+  getLastFMRecentTracks: (): Promise<LastFMRecentTrack[]> => ipcRenderer.invoke('get-lastfm-recent-tracks'),
+  getSonarrStatus: (): Promise<SonarrStatus | null> => ipcRenderer.invoke('get-sonarr-status'),
+  getRadarrStatus: (): Promise<RadarrStatus | null> => ipcRenderer.invoke('get-radarr-status'),
 
   // Window controls
   minimizeWindow: (): void => ipcRenderer.send('minimize-window'),

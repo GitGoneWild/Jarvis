@@ -115,6 +115,44 @@
             </svg>
             <span class="nav-label">Tools</span>
           </li>
+          <li class="nav-item" data-section="timers" role="menuitem" tabindex="0" aria-label="Timers">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span class="nav-label">Timers</span>
+          </li>
+          <li class="nav-item" data-section="news" role="menuitem" tabindex="0" aria-label="News">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/>
+              <line x1="10" y1="6" x2="18" y2="6"/>
+              <line x1="10" y1="10" x2="18" y2="10"/>
+              <line x1="10" y1="14" x2="18" y2="14"/>
+            </svg>
+            <span class="nav-label">News</span>
+          </li>
+          <li class="nav-item" data-section="recommender" role="menuitem" tabindex="0" aria-label="Recommender">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+              <line x1="7" y1="2" x2="7" y2="22"/>
+              <line x1="17" y1="2" x2="17" y2="22"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <line x1="2" y1="7" x2="7" y2="7"/>
+              <line x1="2" y1="17" x2="7" y2="17"/>
+              <line x1="17" y1="17" x2="22" y2="17"/>
+              <line x1="17" y1="7" x2="22" y2="7"/>
+            </svg>
+            <span class="nav-label">Recommender</span>
+          </li>
+          <li class="nav-item" data-section="integrations" role="menuitem" tabindex="0" aria-label="Integrations">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 16v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h8"/>
+              <path d="M21 12h-5a2 2 0 00-2 2v5"/>
+              <polyline points="16 8 21 3 16 8"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+            </svg>
+            <span class="nav-label">Integrations</span>
+          </li>
           <li class="nav-item" data-section="settings" role="menuitem" tabindex="0" aria-label="Settings">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
@@ -414,6 +452,127 @@
             </div>
 
             <div class="settings-group">
+              <h3 class="settings-group-title">Timer Settings</h3>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="timerEnabled">Enable Timer Module</label>
+                  <span class="setting-description">Track time spent on activities</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="timerEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="timerShowInCalendar">Show in Calendar</label>
+                  <span class="setting-description">Display timer activities in calendar view</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="timerShowInCalendar" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <h3 class="settings-group-title">News Settings</h3>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="newsEnabled">Enable News Module</label>
+                  <span class="setting-description">Show news dashboard</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="newsEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="newsShowSports">Show Sports News</label>
+                  <span class="setting-description">Include sports headlines</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="newsShowSports" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="newsRefreshInterval">Refresh Interval</label>
+                  <span class="setting-description">How often to refresh news</span>
+                </div>
+                <select id="newsRefreshInterval" class="setting-select">
+                  <option value="5">5 minutes</option>
+                  <option value="15" selected>15 minutes</option>
+                  <option value="30">30 minutes</option>
+                  <option value="60">1 hour</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <h3 class="settings-group-title">API Integrations</h3>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="lastfmApiKey">Last.fm API Key</label>
+                  <span class="setting-description">Your Last.fm API key</span>
+                </div>
+                <input type="password" id="lastfmApiKey" class="setting-input" placeholder="Enter API key">
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="lastfmUsername">Last.fm Username</label>
+                  <span class="setting-description">Your Last.fm username</span>
+                </div>
+                <input type="text" id="lastfmUsername" class="setting-input" placeholder="Enter username">
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="sonarrBaseUrl">Sonarr Base URL</label>
+                  <span class="setting-description">e.g., http://localhost:8989</span>
+                </div>
+                <input type="text" id="sonarrBaseUrl" class="setting-input" placeholder="http://localhost:8989">
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="sonarrApiKey">Sonarr API Key</label>
+                  <span class="setting-description">Your Sonarr API key</span>
+                </div>
+                <input type="password" id="sonarrApiKey" class="setting-input" placeholder="Enter API key">
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="radarrBaseUrl">Radarr Base URL</label>
+                  <span class="setting-description">e.g., http://localhost:7878</span>
+                </div>
+                <input type="text" id="radarrBaseUrl" class="setting-input" placeholder="http://localhost:7878">
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="radarrApiKey">Radarr API Key</label>
+                  <span class="setting-description">Your Radarr API key</span>
+                </div>
+                <input type="password" id="radarrApiKey" class="setting-input" placeholder="Enter API key">
+              </div>
+
+              <div class="setting-item">
+                <button class="secondary-btn" id="saveApiIntegrationsBtn">Save API Settings</button>
+              </div>
+            </div>
+
+            <div class="settings-group">
               <h3 class="settings-group-title">About</h3>
               <div class="about-info">
                 <p><strong>Jarvis</strong> - Personal Productivity App</p>
@@ -654,6 +813,305 @@
                 <p>No tools detected yet</p>
                 <span>Click "Scan Tools" to detect installed DevOps tools</span>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Timers Section -->
+        <section class="content-section" id="timers-section">
+          <div class="section-header">
+            <h1>Activity Timers</h1>
+            <p class="subtitle">Track time spent on activities</p>
+          </div>
+          
+          <div class="timers-container">
+            <!-- Active Timer Card -->
+            <div class="timer-card active-timer-card">
+              <div class="timer-header">
+                <h3 class="card-title">⏱️ Active Timer</h3>
+                <div class="timer-controls">
+                  <button class="primary-btn" id="startTimerBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Start Timer
+                  </button>
+                  <button class="secondary-btn" id="stopTimerBtn" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="6" y="4" width="4" height="16"/>
+                      <rect x="14" y="4" width="4" height="16"/>
+                    </svg>
+                    Stop Timer
+                  </button>
+                </div>
+              </div>
+              <div class="active-timer-display" id="activeTimerDisplay">
+                <div class="timer-status-idle">
+                  <span class="timer-idle-text">No timer running</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timer Form -->
+            <div class="timer-form-card" id="timerFormCard" style="display: none;">
+              <h3 class="card-title">New Timer</h3>
+              <form id="timerForm" class="timer-form">
+                <div class="form-group">
+                  <label for="timerName">Activity Name *</label>
+                  <input type="text" id="timerName" required placeholder="e.g., Working on Project X">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="timerCategory">Category</label>
+                    <select id="timerCategory">
+                      <option value="Work">Work</option>
+                      <option value="Exercise">Exercise</option>
+                      <option value="Learning">Learning</option>
+                      <option value="Personal">Personal</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="timerTags">Tags (comma-separated)</label>
+                    <input type="text" id="timerTags" placeholder="e.g., productive, focus">
+                  </div>
+                </div>
+                <div class="modal-actions">
+                  <button type="button" class="secondary-btn" id="cancelTimerBtn">Cancel</button>
+                  <button type="submit" class="primary-btn">Start</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Activity History -->
+            <div class="dashboard-card activities-card">
+              <div class="card-header">
+                <h3 class="card-title">📊 Activity History</h3>
+                <div class="activity-filters">
+                  <select id="activityCategoryFilter" aria-label="Filter by category">
+                    <option value="all">All Categories</option>
+                    <option value="Work">Work</option>
+                    <option value="Exercise">Exercise</option>
+                    <option value="Learning">Learning</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="activities-list" id="activitiesList">
+                <div class="empty-state">
+                  <p>No activities recorded yet</p>
+                  <span>Start a timer to track your activities</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Daily Summary -->
+            <div class="dashboard-card daily-summary-card">
+              <h3 class="card-title">📅 Today's Summary</h3>
+              <div class="summary-stats" id="timerSummaryStats">
+                <div class="summary-stat">
+                  <span class="summary-value" id="totalTimeToday">0h 0m</span>
+                  <span class="summary-label">Total Time</span>
+                </div>
+                <div class="summary-stat">
+                  <span class="summary-value" id="activitiesCountToday">0</span>
+                  <span class="summary-label">Activities</span>
+                </div>
+                <div class="summary-stat">
+                  <span class="summary-value" id="topCategoryToday">--</span>
+                  <span class="summary-label">Top Category</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- News Section -->
+        <section class="content-section" id="news-section">
+          <div class="section-header">
+            <h1>News Dashboard</h1>
+            <p class="subtitle">Stay updated with global headlines and sports</p>
+          </div>
+          
+          <div class="news-container">
+            <div class="news-toolbar">
+              <button class="primary-btn" id="refreshNewsBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <polyline points="23 20 23 14 17 14"/>
+                  <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                </svg>
+                Refresh News
+              </button>
+              <span class="news-last-updated" id="newsLastUpdated">Never updated</span>
+            </div>
+
+            <div class="news-grid">
+              <!-- Headlines Section -->
+              <div class="news-section headlines-section">
+                <h3 class="news-section-title">🌍 Global Headlines</h3>
+                <div class="news-articles" id="newsArticlesList">
+                  <div class="empty-state">
+                    <p>No news articles yet</p>
+                    <span>Click "Refresh News" to load latest headlines</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sports Section -->
+              <div class="news-section sports-section">
+                <h3 class="news-section-title">⚽ Sports</h3>
+                <div class="sports-list" id="sportsScoresList">
+                  <div class="empty-state">
+                    <p>No sports news yet</p>
+                    <span>Click "Refresh News" to load sports updates</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recommender Section -->
+        <section class="content-section" id="recommender-section">
+          <div class="section-header">
+            <h1>Movie & TV Recommender</h1>
+            <p class="subtitle">Discover your next favorite show or movie</p>
+          </div>
+          
+          <div class="recommender-container">
+            <!-- Questionnaire -->
+            <div class="questionnaire-card" id="questionnaireCard">
+              <h3 class="card-title">🎬 What would you like to watch?</h3>
+              <p class="questionnaire-intro">Answer these questions to get personalized recommendations</p>
+              
+              <div class="questionnaire-progress" id="questionnaireProgress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="questionProgressFill" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="progressText">Question 1 of 5</span>
+              </div>
+
+              <div class="question-container" id="questionContainer">
+                <div class="question-text" id="currentQuestion">What genre are you in the mood for?</div>
+                <div class="options-grid" id="optionsGrid">
+                  <button class="option-btn" data-value="Action">Action</button>
+                  <button class="option-btn" data-value="Comedy">Comedy</button>
+                  <button class="option-btn" data-value="Drama">Drama</button>
+                  <button class="option-btn" data-value="Horror">Horror</button>
+                  <button class="option-btn" data-value="Sci-Fi">Sci-Fi</button>
+                  <button class="option-btn" data-value="Romance">Romance</button>
+                  <button class="option-btn" data-value="Documentary">Documentary</button>
+                </div>
+              </div>
+
+              <div class="questionnaire-actions" id="questionnaireActions">
+                <button class="secondary-btn" id="restartQuestionnaireBtn" style="display: none;">Start Over</button>
+              </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendations-card" id="recommendationsCard" style="display: none;">
+              <div class="card-header">
+                <h3 class="card-title">🎯 Your Recommendations</h3>
+                <button class="secondary-btn" id="newRecommendationsBtn">Get New Recommendations</button>
+              </div>
+              <div class="recommendations-grid" id="recommendationsGrid">
+                <!-- Recommendations will be inserted here -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Integrations Section -->
+        <section class="content-section" id="integrations-section">
+          <div class="section-header">
+            <h1>API Integrations</h1>
+            <p class="subtitle">Connect your favorite services</p>
+          </div>
+          
+          <div class="integrations-container">
+            <!-- LastFM Integration -->
+            <div class="integration-card" data-service="lastfm">
+              <div class="integration-header">
+                <div class="integration-icon">🎵</div>
+                <div class="integration-info">
+                  <h3>Last.fm</h3>
+                  <span class="integration-status" id="lastfmStatus">Not configured</span>
+                </div>
+                <button class="secondary-btn test-connection-btn" data-service="lastfm">Test Connection</button>
+              </div>
+              <div class="integration-details" id="lastfmDetails">
+                <div class="integration-user" id="lastfmUser" style="display: none;">
+                  <img id="lastfmUserImage" src="" alt="User avatar" class="user-avatar">
+                  <div class="user-info">
+                    <span class="user-name" id="lastfmUsername"></span>
+                    <span class="user-meta" id="lastfmPlayCount"></span>
+                  </div>
+                </div>
+                <div class="recent-tracks" id="lastfmRecentTracks" style="display: none;">
+                  <h4>Recently Played</h4>
+                  <div class="tracks-list" id="lastfmTracksList"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sonarr Integration -->
+            <div class="integration-card" data-service="sonarr">
+              <div class="integration-header">
+                <div class="integration-icon">📺</div>
+                <div class="integration-info">
+                  <h3>Sonarr</h3>
+                  <span class="integration-status" id="sonarrStatus">Not configured</span>
+                </div>
+                <button class="secondary-btn test-connection-btn" data-service="sonarr">Test Connection</button>
+              </div>
+              <div class="integration-details" id="sonarrDetails">
+                <div class="sonarr-stats" id="sonarrStats" style="display: none;">
+                  <div class="stat-item">
+                    <span class="stat-value" id="sonarrSeriesCount">0</span>
+                    <span class="stat-label">Series</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value" id="sonarrEpisodeCount">0</span>
+                    <span class="stat-label">Episodes</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value" id="sonarrQueueCount">0</span>
+                    <span class="stat-label">In Queue</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Radarr Integration -->
+            <div class="integration-card" data-service="radarr">
+              <div class="integration-header">
+                <div class="integration-icon">🎬</div>
+                <div class="integration-info">
+                  <h3>Radarr</h3>
+                  <span class="integration-status" id="radarrStatus">Not configured</span>
+                </div>
+                <button class="secondary-btn test-connection-btn" data-service="radarr">Test Connection</button>
+              </div>
+              <div class="integration-details" id="radarrDetails">
+                <div class="radarr-stats" id="radarrStats" style="display: none;">
+                  <div class="stat-item">
+                    <span class="stat-value" id="radarrMovieCount">0</span>
+                    <span class="stat-label">Movies</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value" id="radarrQueueCount">0</span>
+                    <span class="stat-label">In Queue</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Configuration Note -->
+            <div class="integration-config-note">
+              <p>⚙️ Configure API keys in <strong>Settings</strong> → <strong>API Integrations</strong></p>
             </div>
           </div>
         </section>

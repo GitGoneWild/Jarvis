@@ -1,10 +1,28 @@
-import type { ModuleSettings, HealthData, VPNData, BookmarksData, ToolsData } from '../modules/shared/types';
+import type {
+  ModuleSettings,
+  HealthData,
+  VPNData,
+  BookmarksData,
+  ToolsData,
+  TimerData,
+  NewsData,
+  ActivityTimer,
+  ActiveTimer,
+  NewsArticle,
+  SportsScore,
+  MovieTVRecommendation,
+  LastFMUserInfo,
+  LastFMRecentTrack,
+  SonarrStatus,
+  RadarrStatus,
+  ApiServiceName,
+} from '../modules/shared/types';
 
 // User Settings
 export interface UserSettings {
   theme: 'dark' | 'light' | 'system';
   sidebarExpanded: boolean;
-  defaultStartPage: 'home' | 'tasks' | 'calendar' | 'settings' | 'health' | 'vpn' | 'bookmarks' | 'tools';
+  defaultStartPage: 'home' | 'tasks' | 'calendar' | 'settings' | 'health' | 'vpn' | 'bookmarks' | 'tools' | 'timers' | 'news' | 'recommender' | 'integrations';
   notifications: {
     enabled: boolean;
     sounds: boolean;
@@ -53,6 +71,8 @@ export interface StoreSchema {
   vpn: VPNData;
   bookmarks: BookmarksData;
   tools: ToolsData;
+  timer: TimerData;
+  news: NewsData;
 }
 
 // Jarvis API exposed via preload
@@ -118,6 +138,30 @@ export interface JarvisAPI {
 
   // Real-Debrid Module
   validateRealDebridKey: (apiKey: string) => Promise<import('../modules/shared/types').RealDebridAccount | null>;
+
+  // Timer Module
+  getTimerData: () => Promise<TimerData>;
+  startTimer: (name: string, category: string, tags?: string[]) => Promise<ActiveTimer>;
+  stopTimer: (notes?: string) => Promise<ActivityTimer | null>;
+  getActiveTimer: () => Promise<ActiveTimer | null>;
+  getActivities: (startDate?: string, endDate?: string) => Promise<ActivityTimer[]>;
+  deleteActivity: (id: string) => Promise<boolean>;
+  updateActivity: (id: string, updates: Partial<ActivityTimer>) => Promise<ActivityTimer | null>;
+
+  // News Module
+  getNewsData: () => Promise<NewsData>;
+  fetchNews: () => Promise<NewsArticle[]>;
+  fetchSportsScores: () => Promise<SportsScore[]>;
+
+  // Recommender Module
+  getRecommendations: (answers: import('../modules/shared/types').RecommendationAnswer[]) => Promise<MovieTVRecommendation[]>;
+
+  // API Integrations Module
+  testApiConnection: (service: ApiServiceName) => Promise<{ success: boolean; error?: string }>;
+  getLastFMUserInfo: () => Promise<LastFMUserInfo | null>;
+  getLastFMRecentTracks: () => Promise<LastFMRecentTrack[]>;
+  getSonarrStatus: () => Promise<SonarrStatus | null>;
+  getRadarrStatus: () => Promise<RadarrStatus | null>;
 
   // Window controls
   minimizeWindow: () => void;

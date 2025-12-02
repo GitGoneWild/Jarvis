@@ -2711,23 +2711,126 @@ function renderNewsArticles(): void {
         <span>Click "Refresh News" to load latest headlines</span>
       </div>
     `;
+    
+    // Clear other sections
+    const featuredCard = document.getElementById('featuredNewsCard');
+    const topStories = document.getElementById('topStoriesList');
+    if (featuredCard) {
+      featuredCard.innerHTML = `
+        <div class="featured-news-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2z"/>
+            <line x1="10" y1="6" x2="18" y2="6"/>
+            <line x1="10" y1="10" x2="18" y2="10"/>
+          </svg>
+          <p>Refresh to load featured news</p>
+        </div>
+      `;
+    }
+    if (topStories) {
+      topStories.innerHTML = '<div class="empty-state-small"><p>No stories yet</p></div>';
+    }
     return;
   }
   
-  newsArticlesList.innerHTML = newsData.articles.map(article => `
-    <div class="news-article" data-url="${escapeHtml(article.url)}">
-      ${article.imageUrl ? `<img src="${escapeHtml(article.imageUrl)}" alt="" class="news-article-image">` : ''}
-      <div class="news-article-content">
-        <div class="news-article-title">${escapeHtml(article.title)}</div>
-        <div class="news-article-meta">
-          <span class="news-article-source">${escapeHtml(article.source)}</span>
-          <span>${formatDate(article.publishedAt)}</span>
+  // Render featured article (first article)
+  const featuredCard = document.getElementById('featuredNewsCard');
+  if (featuredCard && newsData.articles.length > 0) {
+    const featured = newsData.articles[0];
+    featuredCard.innerHTML = `
+      <div class="featured-news-content" data-url="${escapeHtml(featured.url || '')}">
+        ${featured.imageUrl ? `<img src="${escapeHtml(featured.imageUrl)}" alt="" class="featured-news-image">` : ''}
+        <span class="featured-news-source">${escapeHtml(featured.source || 'News')}</span>
+        <div class="featured-news-title">${escapeHtml(featured.title)}</div>
+        <div class="featured-news-description">${escapeHtml(featured.description || '')}</div>
+        <span class="featured-news-time">${featured.publishedAt ? formatRelativeTime(featured.publishedAt) : ''}</span>
+      </div>
+    `;
+    featuredCard.querySelector('.featured-news-content')?.addEventListener('click', () => {
+      if (featured.url) window.open(featured.url, '_blank');
+    });
+  }
+  
+  // Render top stories (articles 1-5)
+  const topStories = document.getElementById('topStoriesList');
+  if (topStories) {
+    const top = newsData.articles.slice(1, 6);
+    if (top.length === 0) {
+      topStories.innerHTML = '<div class="empty-state-small"><p>No stories yet</p></div>';
+    } else {
+      topStories.innerHTML = top.map(article => `
+        <div class="top-story-item" data-url="${escapeHtml(article.url || '')}">
+          <div class="top-story-title">${escapeHtml(article.title)}</div>
+          <div class="top-story-meta">
+            <span>${escapeHtml(article.source || 'News')}</span>
+            <span>${article.publishedAt ? formatRelativeTime(article.publishedAt) : ''}</span>
+          </div>
         </div>
+      `).join('');
+      topStories.querySelectorAll('.top-story-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const url = (item as HTMLElement).dataset.url;
+          if (url) window.open(url, '_blank');
+        });
+      });
+    }
+  }
+  
+  // Render category articles (world, tech, entertainment)
+  const categories = [
+    { id: 'worldNewsList', category: 'general' },
+    { id: 'techNewsList', category: 'technology' },
+    { id: 'entertainmentNewsList', category: 'entertainment' },
+  ];
+  
+  categories.forEach(({ id, category }) => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    
+    const categoryArticles = newsData.articles.filter(a => 
+      a.category?.toLowerCase() === category || 
+      (category === 'general' && !a.category)
+    ).slice(0, 4);
+    
+    if (categoryArticles.length === 0) {
+      // Show some articles anyway if category is empty
+      const fallbackArticles = newsData.articles.slice(0, 4);
+      container.innerHTML = fallbackArticles.map(article => `
+        <div class="category-article-item" data-url="${escapeHtml(article.url || '')}">
+          <div class="category-article-title">${escapeHtml(article.title)}</div>
+          <div class="category-article-source">${escapeHtml(article.source || 'News')}</div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = categoryArticles.map(article => `
+        <div class="category-article-item" data-url="${escapeHtml(article.url || '')}">
+          <div class="category-article-title">${escapeHtml(article.title)}</div>
+          <div class="category-article-source">${escapeHtml(article.source || 'News')}</div>
+        </div>
+      `).join('');
+    }
+    
+    container.querySelectorAll('.category-article-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const url = (item as HTMLElement).dataset.url;
+        if (url) window.open(url, '_blank');
+      });
+    });
+  });
+  
+  // Render all headlines
+  newsArticlesList.innerHTML = newsData.articles.map(article => `
+    <div class="news-article-card" data-url="${escapeHtml(article.url || '')}">
+      <div class="news-article-title">${escapeHtml(article.title)}</div>
+      <div class="news-article-description">${escapeHtml(article.description || '')}</div>
+      <div class="news-article-meta">
+        <span>${escapeHtml(article.source || 'News')}</span>
+        <span>${article.publishedAt ? formatRelativeTime(article.publishedAt) : ''}</span>
       </div>
     </div>
   `).join('');
   
-  newsArticlesList.querySelectorAll('.news-article').forEach(article => {
+  newsArticlesList.querySelectorAll('.news-article-card').forEach(article => {
     article.addEventListener('click', () => {
       const url = (article as HTMLElement).dataset.url;
       if (url) window.open(url, '_blank');
@@ -2740,18 +2843,17 @@ function renderSportsScores(): void {
   
   if (newsData.sports.length === 0) {
     sportsScoresList.innerHTML = `
-      <div class="empty-state">
-        <p>No sports news yet</p>
-        <span>Click "Refresh News" to load sports updates</span>
+      <div class="empty-state-small">
+        <p>No sports updates</p>
       </div>
     `;
     return;
   }
   
   sportsScoresList.innerHTML = newsData.sports.map(item => `
-    <div class="sports-item">
-      <div class="sports-item-title">${escapeHtml(item.homeTeam)}</div>
-      <div class="sports-item-meta">${item.competition} • ${formatDate(item.startTime)}</div>
+    <div class="category-article-item">
+      <div class="category-article-title">${escapeHtml(item.homeTeam)} vs ${escapeHtml(item.awayTeam)}</div>
+      <div class="category-article-source">${escapeHtml(item.competition)} • ${item.status === 'finished' ? `${item.homeScore}-${item.awayScore}` : item.status}</div>
     </div>
   `).join('');
 }

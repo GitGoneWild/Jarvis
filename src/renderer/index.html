@@ -90,6 +90,31 @@
             </svg>
             <span class="nav-label">Calendar</span>
           </li>
+          <li class="nav-item" data-section="health" role="menuitem" tabindex="0" aria-label="Health">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="nav-label">Health</span>
+          </li>
+          <li class="nav-item" data-section="bookmarks" role="menuitem" tabindex="0" aria-label="Bookmarks">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="nav-label">Bookmarks</span>
+          </li>
+          <li class="nav-item" data-section="vpn" role="menuitem" tabindex="0" aria-label="VPN">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span class="nav-label">VPN</span>
+          </li>
+          <li class="nav-item" data-section="tools" role="menuitem" tabindex="0" aria-label="Tools">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+            <span class="nav-label">Tools</span>
+          </li>
           <li class="nav-item" data-section="settings" role="menuitem" tabindex="0" aria-label="Settings">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
@@ -392,8 +417,242 @@
               <h3 class="settings-group-title">About</h3>
               <div class="about-info">
                 <p><strong>Jarvis</strong> - Personal Productivity App</p>
-                <p class="version">Version 1.0.0</p>
+                <p class="version" id="appVersion">Version 1.0.0</p>
                 <p class="copyright">Built with Electron</p>
+                <button class="secondary-btn update-check-btn" id="checkUpdatesBtn" style="margin-top: 12px;">
+                  Check for Updates
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Health Section -->
+        <section class="content-section" id="health-section">
+          <div class="section-header">
+            <h1>Health Manager</h1>
+            <p class="subtitle">Track your wellness journey</p>
+          </div>
+          
+          <div class="health-dashboard">
+            <!-- Health Stats Overview -->
+            <div class="dashboard-card health-overview">
+              <h3 class="card-title">Today's Overview</h3>
+              <div class="health-stats-grid">
+                <div class="health-stat">
+                  <span class="health-stat-icon">🍽️</span>
+                  <div class="health-stat-content">
+                    <span class="health-stat-value" id="todayCalories">0</span>
+                    <span class="health-stat-label">Calories</span>
+                  </div>
+                </div>
+                <div class="health-stat">
+                  <span class="health-stat-icon">⚖️</span>
+                  <div class="health-stat-content">
+                    <span class="health-stat-value" id="currentWeight">--</span>
+                    <span class="health-stat-label">Weight</span>
+                  </div>
+                </div>
+                <div class="health-stat">
+                  <span class="health-stat-icon">😴</span>
+                  <div class="health-stat-content">
+                    <span class="health-stat-value" id="lastSleep">--</span>
+                    <span class="health-stat-label">Sleep</span>
+                  </div>
+                </div>
+                <div class="health-stat">
+                  <span class="health-stat-icon">❤️</span>
+                  <div class="health-stat-content">
+                    <span class="health-stat-value" id="lastBP">--</span>
+                    <span class="health-stat-label">Blood Pressure</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Add Section -->
+            <div class="dashboard-card health-quick-add">
+              <h3 class="card-title">Quick Add</h3>
+              <div class="quick-action-buttons">
+                <button class="quick-action-btn" id="addMealBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                  </svg>
+                  <span>Add Meal</span>
+                </button>
+                <button class="quick-action-btn" id="addWeightBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                  </svg>
+                  <span>Log Weight</span>
+                </button>
+                <button class="quick-action-btn" id="addSleepBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                  </svg>
+                  <span>Log Sleep</span>
+                </button>
+                <button class="quick-action-btn" id="addBPBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                  </svg>
+                  <span>Log BP</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Medications -->
+            <div class="dashboard-card medications-card">
+              <div class="card-header">
+                <h3 class="card-title">💊 Medications</h3>
+                <button class="primary-btn" id="addMedicationBtn">Add Medication</button>
+              </div>
+              <div class="medications-list" id="medicationsList">
+                <div class="empty-state">
+                  <p>No medications added</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Meals -->
+            <div class="dashboard-card meals-card">
+              <div class="card-header">
+                <h3 class="card-title">🍽️ Recent Meals</h3>
+              </div>
+              <div class="meals-list" id="mealsList">
+                <div class="empty-state">
+                  <p>No meals logged today</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bookmarks Section -->
+        <section class="content-section" id="bookmarks-section">
+          <div class="section-header">
+            <h1>Bookmarks</h1>
+            <p class="subtitle">Quick access to your favorite apps, sites, and games</p>
+          </div>
+          
+          <div class="bookmarks-container">
+            <div class="bookmarks-toolbar">
+              <button class="primary-btn" id="addBookmarkBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                </svg>
+                Add Bookmark
+              </button>
+              <div class="bookmarks-filter">
+                <select id="bookmarkCategoryFilter" aria-label="Filter by category">
+                  <option value="all">All Categories</option>
+                </select>
+                <select id="bookmarkTypeFilter" aria-label="Filter by type">
+                  <option value="all">All Types</option>
+                  <option value="url">URLs</option>
+                  <option value="app">Applications</option>
+                  <option value="game">Games</option>
+                  <option value="file">Files</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="bookmarks-grid" id="bookmarksGrid">
+              <div class="empty-state">
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+                <p>No bookmarks yet</p>
+                <span>Click "Add Bookmark" to create your first bookmark</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VPN Section -->
+        <section class="content-section" id="vpn-section">
+          <div class="section-header">
+            <h1>VPN Manager</h1>
+            <p class="subtitle">Manage your VPN connections</p>
+          </div>
+          
+          <div class="vpn-container">
+            <!-- VPN Status Card -->
+            <div class="vpn-status-card">
+              <div class="vpn-status-indicator" id="vpnStatusIndicator">
+                <div class="vpn-status-icon disconnected">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <div class="vpn-status-text">
+                  <span class="vpn-status-label" id="vpnStatusLabel">Disconnected</span>
+                  <span class="vpn-status-profile" id="vpnActiveProfile">No active connection</span>
+                </div>
+              </div>
+              <div class="vpn-status-details" id="vpnStatusDetails" style="display: none;">
+                <div class="vpn-detail-item">
+                  <span class="vpn-detail-label">External IP</span>
+                  <span class="vpn-detail-value" id="vpnExternalIP">--</span>
+                </div>
+                <div class="vpn-detail-item">
+                  <span class="vpn-detail-label">Upload</span>
+                  <span class="vpn-detail-value" id="vpnUploadSpeed">0 KB/s</span>
+                </div>
+                <div class="vpn-detail-item">
+                  <span class="vpn-detail-label">Download</span>
+                  <span class="vpn-detail-value" id="vpnDownloadSpeed">0 KB/s</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- VPN Profiles -->
+            <div class="vpn-profiles-card">
+              <div class="card-header">
+                <h3 class="card-title">VPN Profiles</h3>
+                <button class="primary-btn" id="importVPNProfileBtn">Import OVPN</button>
+              </div>
+              <div class="vpn-profiles-list" id="vpnProfilesList">
+                <div class="empty-state">
+                  <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <p>No VPN profiles</p>
+                  <span>Import an OVPN configuration file to get started</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="content-section" id="tools-section">
+          <div class="section-header">
+            <h1>DevOps Tools</h1>
+            <p class="subtitle">Detected development tools on your system</p>
+          </div>
+          
+          <div class="tools-container">
+            <div class="tools-toolbar">
+              <button class="primary-btn" id="scanToolsBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                Scan Tools
+              </button>
+              <span class="tools-last-scan" id="toolsLastScan">Never scanned</span>
+            </div>
+            
+            <div class="tools-grid" id="toolsGrid">
+              <div class="empty-state">
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+                <p>No tools detected yet</p>
+                <span>Click "Scan Tools" to detect installed DevOps tools</span>
               </div>
             </div>
           </div>
@@ -514,6 +773,327 @@
           <button type="submit" class="primary-btn">Save Event</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Meal Modal -->
+  <div class="modal-overlay" id="mealModal">
+    <div class="modal" role="dialog" aria-labelledby="mealModalTitle">
+      <div class="modal-header">
+        <h2 id="mealModalTitle">Add Meal</h2>
+        <button class="modal-close" id="closeMealModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="mealForm">
+        <input type="hidden" id="mealId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="mealDate">Date *</label>
+            <input type="date" id="mealDate" required>
+          </div>
+          <div class="form-group">
+            <label for="mealTime">Time *</label>
+            <input type="time" id="mealTime" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="mealItems">Items (comma-separated) *</label>
+          <input type="text" id="mealItems" required placeholder="e.g., Chicken breast, Rice, Salad">
+        </div>
+        <div class="form-group">
+          <label for="mealCalories">Calories</label>
+          <input type="number" id="mealCalories" min="0" placeholder="e.g., 500">
+        </div>
+        <div class="form-group">
+          <label for="mealNotes">Notes</label>
+          <textarea id="mealNotes" rows="2" placeholder="Additional notes"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelMealBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Meal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Weight Modal -->
+  <div class="modal-overlay" id="weightModal">
+    <div class="modal" role="dialog" aria-labelledby="weightModalTitle">
+      <div class="modal-header">
+        <h2 id="weightModalTitle">Log Weight</h2>
+        <button class="modal-close" id="closeWeightModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="weightForm">
+        <input type="hidden" id="weightId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="weightDate">Date *</label>
+            <input type="date" id="weightDate" required>
+          </div>
+          <div class="form-group">
+            <label for="weightValue">Weight *</label>
+            <input type="number" id="weightValue" step="0.1" min="0" required placeholder="e.g., 70.5">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="weightUnit">Unit</label>
+          <select id="weightUnit">
+            <option value="kg">Kilograms (kg)</option>
+            <option value="lbs">Pounds (lbs)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="weightNotes">Notes</label>
+          <textarea id="weightNotes" rows="2" placeholder="Additional notes"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelWeightBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Weight</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sleep Modal -->
+  <div class="modal-overlay" id="sleepModal">
+    <div class="modal" role="dialog" aria-labelledby="sleepModalTitle">
+      <div class="modal-header">
+        <h2 id="sleepModalTitle">Log Sleep</h2>
+        <button class="modal-close" id="closeSleepModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="sleepForm">
+        <input type="hidden" id="sleepId">
+        <div class="form-group">
+          <label for="sleepDate">Date *</label>
+          <input type="date" id="sleepDate" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sleepStartTime">Bedtime *</label>
+            <input type="time" id="sleepStartTime" required>
+          </div>
+          <div class="form-group">
+            <label for="sleepEndTime">Wake Time *</label>
+            <input type="time" id="sleepEndTime" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="sleepQuality">Quality</label>
+          <select id="sleepQuality">
+            <option value="poor">Poor</option>
+            <option value="fair">Fair</option>
+            <option value="good" selected>Good</option>
+            <option value="excellent">Excellent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sleepNotes">Notes</label>
+          <textarea id="sleepNotes" rows="2" placeholder="Additional notes"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelSleepBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Sleep</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Blood Pressure Modal -->
+  <div class="modal-overlay" id="bpModal">
+    <div class="modal" role="dialog" aria-labelledby="bpModalTitle">
+      <div class="modal-header">
+        <h2 id="bpModalTitle">Log Blood Pressure</h2>
+        <button class="modal-close" id="closeBPModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="bpForm">
+        <input type="hidden" id="bpId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bpDate">Date *</label>
+            <input type="date" id="bpDate" required>
+          </div>
+          <div class="form-group">
+            <label for="bpTime">Time *</label>
+            <input type="time" id="bpTime" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bpSystolic">Systolic (mmHg) *</label>
+            <input type="number" id="bpSystolic" min="0" max="300" required placeholder="e.g., 120">
+          </div>
+          <div class="form-group">
+            <label for="bpDiastolic">Diastolic (mmHg) *</label>
+            <input type="number" id="bpDiastolic" min="0" max="200" required placeholder="e.g., 80">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="bpPulse">Pulse (bpm)</label>
+          <input type="number" id="bpPulse" min="0" max="250" placeholder="e.g., 72">
+        </div>
+        <div class="form-group">
+          <label for="bpNotes">Notes</label>
+          <textarea id="bpNotes" rows="2" placeholder="Additional notes"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelBPBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Blood Pressure</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Medication Modal -->
+  <div class="modal-overlay" id="medicationModal">
+    <div class="modal" role="dialog" aria-labelledby="medicationModalTitle">
+      <div class="modal-header">
+        <h2 id="medicationModalTitle">Add Medication</h2>
+        <button class="modal-close" id="closeMedicationModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="medicationForm">
+        <input type="hidden" id="medicationId">
+        <div class="form-group">
+          <label for="medicationName">Name *</label>
+          <input type="text" id="medicationName" required placeholder="e.g., Aspirin">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="medicationDosage">Dosage *</label>
+            <input type="text" id="medicationDosage" required placeholder="e.g., 100mg">
+          </div>
+          <div class="form-group">
+            <label for="medicationFrequency">Frequency</label>
+            <select id="medicationFrequency">
+              <option value="daily">Once daily</option>
+              <option value="twice-daily">Twice daily</option>
+              <option value="three-times-daily">Three times daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="as-needed">As needed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="medicationTimes">Times (comma-separated)</label>
+          <input type="text" id="medicationTimes" placeholder="e.g., 08:00, 20:00">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="medicationStartDate">Start Date</label>
+            <input type="date" id="medicationStartDate">
+          </div>
+          <div class="form-group">
+            <label for="medicationEndDate">End Date (optional)</label>
+            <input type="date" id="medicationEndDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="medicationNotes">Notes</label>
+          <textarea id="medicationNotes" rows="2" placeholder="Additional notes"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelMedicationBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Medication</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bookmark Modal -->
+  <div class="modal-overlay" id="bookmarkModal">
+    <div class="modal" role="dialog" aria-labelledby="bookmarkModalTitle">
+      <div class="modal-header">
+        <h2 id="bookmarkModalTitle">Add Bookmark</h2>
+        <button class="modal-close" id="closeBookmarkModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="bookmarkForm">
+        <input type="hidden" id="bookmarkId">
+        <div class="form-group">
+          <label for="bookmarkLabel">Label *</label>
+          <input type="text" id="bookmarkLabel" required placeholder="e.g., GitHub">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookmarkType">Type</label>
+            <select id="bookmarkType">
+              <option value="url">URL</option>
+              <option value="app">Application</option>
+              <option value="game">Game</option>
+              <option value="file">File</option>
+              <option value="folder">Folder</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bookmarkCategory">Category</label>
+            <select id="bookmarkCategory">
+              <option value="General">General</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Entertainment">Entertainment</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="bookmarkTarget">Target (URL or Path) *</label>
+          <input type="text" id="bookmarkTarget" required placeholder="https://github.com or /path/to/app">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelBookmarkBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Bookmark</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Modal -->
+  <div class="modal-overlay" id="updateModal">
+    <div class="modal" role="dialog" aria-labelledby="updateModalTitle">
+      <div class="modal-header">
+        <h2 id="updateModalTitle">Update Available</h2>
+        <button class="modal-close" id="closeUpdateModal" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-form">
+        <div class="update-info">
+          <p class="update-version-info">
+            <span id="currentVersionDisplay">v1.0.0</span>
+            <span>→</span>
+            <span id="latestVersionDisplay" class="new-version">v1.1.0</span>
+          </p>
+          <div class="update-notes" id="updateNotes">
+            <p>Loading release notes...</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="ignoreUpdateBtn">Ignore</button>
+          <button type="button" class="primary-btn" id="downloadUpdateBtn">Update Now</button>
+        </div>
+      </div>
     </div>
   </div>
 

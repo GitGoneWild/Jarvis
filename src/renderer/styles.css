@@ -1470,3 +1470,524 @@ select:focus {
     flex-direction: column;
   }
 }
+
+/* ========================================
+   Health Module Styles
+   ======================================== */
+.health-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  flex: 1;
+}
+
+.health-overview {
+  grid-column: span 2;
+}
+
+.health-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.health-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+}
+
+.health-stat-icon {
+  font-size: 2rem;
+}
+
+.health-stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.health-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.health-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.health-quick-add {
+  grid-column: span 2;
+}
+
+.medications-card,
+.meals-card {
+  min-height: 200px;
+}
+
+.medications-list,
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.medication-item,
+.meal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+}
+
+.medication-info,
+.meal-info {
+  flex: 1;
+}
+
+.medication-name,
+.meal-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.medication-dosage,
+.meal-calories {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.medication-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.medication-status.active {
+  background-color: var(--accent-success);
+  color: var(--bg-primary);
+}
+
+.medication-status.inactive {
+  background-color: var(--text-muted);
+  color: var(--bg-primary);
+}
+
+/* ========================================
+   Bookmarks Module Styles
+   ======================================== */
+.bookmarks-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bookmarks-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bookmarks-filter {
+  display: flex;
+  gap: 12px;
+}
+
+.bookmarks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  flex: 1;
+}
+
+.bookmark-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bookmark-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.bookmark-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+}
+
+.bookmark-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.bookmark-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.bookmark-type {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.bookmark-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.bookmark-card:hover .bookmark-actions {
+  opacity: 1;
+}
+
+/* ========================================
+   VPN Module Styles
+   ======================================== */
+.vpn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vpn-status-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+}
+
+.vpn-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.vpn-status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+}
+
+.vpn-status-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.vpn-status-icon.disconnected {
+  background-color: var(--accent-error);
+  color: white;
+}
+
+.vpn-status-icon.connected {
+  background-color: var(--accent-success);
+  color: white;
+}
+
+.vpn-status-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.vpn-status-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.vpn-status-profile {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.vpn-status-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.vpn-detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vpn-detail-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.vpn-detail-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.vpn-profiles-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+}
+
+.vpn-profiles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vpn-profile-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+
+.vpn-profile-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.vpn-profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.vpn-profile-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.vpn-profile-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.vpn-profile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ========================================
+   Tools Module Styles
+   ======================================== */
+.tools-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tools-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tools-last-scan {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  flex: 1;
+}
+
+.tool-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.tool-card:hover {
+  border-color: var(--accent-primary);
+}
+
+.tool-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  font-size: 1.5rem;
+}
+
+.tool-info {
+  flex: 1;
+}
+
+.tool-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.tool-version {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.tool-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tool-status.installed {
+  background-color: var(--accent-success);
+  color: var(--bg-primary);
+}
+
+.tool-status.missing {
+  background-color: var(--accent-error);
+  color: white;
+}
+
+.tool-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ========================================
+   Update Modal Styles
+   ======================================== */
+.update-info {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.update-version-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+}
+
+.new-version {
+  color: var(--accent-success);
+  font-weight: 600;
+}
+
+.update-notes {
+  text-align: left;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.update-check-btn {
+  display: inline-flex;
+}
+
+/* ========================================
+   Responsive Styles for New Modules
+   ======================================== */
+@media (max-width: 768px) {
+  .health-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .health-overview,
+  .health-quick-add {
+    grid-column: span 1;
+  }
+
+  .bookmarks-toolbar,
+  .tools-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bookmarks-filter {
+    flex-direction: column;
+  }
+
+  .vpn-status-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   Easter Egg Styles
+   ======================================== */
+.konami-activated {
+  animation: rainbow 2s linear infinite;
+}
+
+@keyframes rainbow {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.matrix-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+}
+
+.matrix-effect.active {
+  display: block;
+}

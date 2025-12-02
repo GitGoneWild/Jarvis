@@ -1081,34 +1081,88 @@
           </div>
           
           <div class="bookmarks-container">
-            <div class="bookmarks-toolbar">
-              <button class="primary-btn" id="addBookmarkBtn">
+            <div class="bookmarks-toolbar-modern">
+              <div class="bookmarks-search-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
                 </svg>
-                Add Bookmark
-              </button>
-              <div class="bookmarks-filter">
-                <select id="bookmarkCategoryFilter" aria-label="Filter by category">
-                  <option value="all">All Categories</option>
-                </select>
-                <select id="bookmarkTypeFilter" aria-label="Filter by type">
-                  <option value="all">All Types</option>
-                  <option value="url">URLs</option>
-                  <option value="app">Applications</option>
-                  <option value="game">Games</option>
-                  <option value="file">Files</option>
-                </select>
+                <input type="text" id="bookmarkSearchInput" placeholder="Search bookmarks...">
+              </div>
+              <div class="bookmarks-actions">
+                <div class="bookmarks-filter">
+                  <select id="bookmarkCategoryFilter" aria-label="Filter by category">
+                    <option value="all">All Categories</option>
+                  </select>
+                  <select id="bookmarkTypeFilter" aria-label="Filter by type">
+                    <option value="all">All Types</option>
+                    <option value="url">URLs</option>
+                    <option value="app">Applications</option>
+                    <option value="game">Games</option>
+                    <option value="file">Files</option>
+                  </select>
+                </div>
+                <button class="primary-btn" id="addBookmarkBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                  </svg>
+                  Add Bookmark
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Access - Popular Sites -->
+            <div class="bookmarks-quick-access">
+              <h3 class="bookmarks-section-title">Quick Access</h3>
+              <div class="quick-access-grid">
+                <button class="quick-access-btn" data-url="https://google.com" data-label="Google">
+                  <span class="quick-access-icon">🔍</span>
+                  <span class="quick-access-label">Google</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://youtube.com" data-label="YouTube">
+                  <span class="quick-access-icon">▶️</span>
+                  <span class="quick-access-label">YouTube</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://amazon.com" data-label="Amazon">
+                  <span class="quick-access-icon">📦</span>
+                  <span class="quick-access-label">Amazon</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://netflix.com" data-label="Netflix">
+                  <span class="quick-access-icon">🎬</span>
+                  <span class="quick-access-label">Netflix</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://reddit.com" data-label="Reddit">
+                  <span class="quick-access-icon">🔥</span>
+                  <span class="quick-access-label">Reddit</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://github.com" data-label="GitHub">
+                  <span class="quick-access-icon">💻</span>
+                  <span class="quick-access-label">GitHub</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://twitter.com" data-label="Twitter/X">
+                  <span class="quick-access-icon">🐦</span>
+                  <span class="quick-access-label">Twitter</span>
+                </button>
+                <button class="quick-access-btn" data-url="https://primevideo.com" data-label="Prime Video">
+                  <span class="quick-access-icon">📺</span>
+                  <span class="quick-access-label">Prime Video</span>
+                </button>
               </div>
             </div>
             
-            <div class="bookmarks-grid" id="bookmarksGrid">
-              <div class="empty-state">
-                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
-                <p>No bookmarks yet</p>
-                <span>Click "Add Bookmark" to create your first bookmark</span>
+            <!-- User Bookmarks -->
+            <div class="bookmarks-user-section">
+              <h3 class="bookmarks-section-title">My Bookmarks</h3>
+              <div class="bookmarks-grid-modern" id="bookmarksGrid">
+                <div class="empty-state-modern">
+                  <div class="empty-icon-container">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
+                  <p class="empty-title">No bookmarks yet</p>
+                  <p class="empty-subtitle">Click "Add Bookmark" to save your favorites</p>
+                </div>
               </div>
             </div>
           </div>

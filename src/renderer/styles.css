@@ -4354,3 +4354,224 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   Modern Bookmarks Module Styles
+   ======================================== */
+
+.bookmarks-toolbar-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.bookmarks-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  flex: 1;
+  max-width: 400px;
+}
+
+.bookmarks-search-box svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.bookmarks-search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.bookmarks-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.bookmarks-quick-access {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.bookmarks-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.quick-access-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-access-btn:hover {
+  transform: translateY(-2px);
+  background: var(--accent-color-alpha);
+  border-color: var(--accent-color);
+}
+
+.quick-access-icon {
+  font-size: 1.75rem;
+}
+
+.quick-access-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.bookmarks-user-section {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.bookmarks-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.bookmark-card-modern {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bookmark-card-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
+}
+
+.bookmark-card-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-color-alpha);
+  border-radius: 10px;
+  font-size: 1.25rem;
+}
+
+.bookmark-card-icon.url { background: rgba(59, 130, 246, 0.1); }
+.bookmark-card-icon.app { background: rgba(16, 185, 129, 0.1); }
+.bookmark-card-icon.game { background: rgba(139, 92, 246, 0.1); }
+.bookmark-card-icon.file { background: rgba(245, 158, 11, 0.1); }
+
+.bookmark-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookmark-card-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookmark-card-category {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.bookmark-card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.bookmark-card-modern:hover .bookmark-card-actions {
+  opacity: 1;
+}
+
+.bookmark-action-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.bookmark-action-btn:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.bookmark-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 768px) {
+  .bookmarks-toolbar-modern {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .bookmarks-search-box {
+    max-width: 100%;
+  }
+  
+  .bookmarks-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .bookmarks-filter {
+    width: 100%;
+  }
+  
+  .quick-access-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

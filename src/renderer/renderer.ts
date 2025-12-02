@@ -2088,11 +2088,21 @@ function renderBookmarks(): void {
   const categoryFilter = bookmarkCategoryFilter?.value || 'all';
   const typeFilter = bookmarkTypeFilter?.value || 'all';
   
+  // Apply search filter
+  const searchInput = document.getElementById('bookmarkSearchInput') as HTMLInputElement;
+  const searchTerm = searchInput?.value?.toLowerCase() || '';
+  
   if (categoryFilter !== 'all') {
     filtered = filtered.filter(b => b.category === categoryFilter);
   }
   if (typeFilter !== 'all') {
     filtered = filtered.filter(b => b.type === typeFilter);
+  }
+  if (searchTerm) {
+    filtered = filtered.filter(b => 
+      b.label.toLowerCase().includes(searchTerm) || 
+      b.category.toLowerCase().includes(searchTerm)
+    );
   }
   
   // Sort by order
@@ -2100,33 +2110,36 @@ function renderBookmarks(): void {
   
   if (filtered.length === 0) {
     bookmarksGrid.innerHTML = `
-      <div class="empty-state">
-        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-        </svg>
-        <p>No bookmarks yet</p>
-        <span>Click "Add Bookmark" to create your first bookmark</span>
+      <div class="empty-state-modern">
+        <div class="empty-icon-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <p class="empty-title">No bookmarks yet</p>
+        <p class="empty-subtitle">Click "Add Bookmark" to save your favorites</p>
       </div>
     `;
     return;
   }
   
   bookmarksGrid.innerHTML = filtered.map(bookmark => `
-    <div class="bookmark-card" data-id="${bookmark.id}">
-      <div class="bookmark-icon">
-        ${getBookmarkIcon(bookmark.type)}
+    <div class="bookmark-card-modern" data-id="${bookmark.id}">
+      <div class="bookmark-card-icon ${bookmark.type}">
+        ${getBookmarkEmoji(bookmark.type)}
       </div>
-      <span class="bookmark-label">${escapeHtml(bookmark.label)}</span>
-      <span class="bookmark-type">${bookmark.type}</span>
-      <div class="bookmark-actions">
-        <button class="task-action-btn launch" data-id="${bookmark.id}" aria-label="Launch bookmark">
+      <div class="bookmark-card-info">
+        <div class="bookmark-card-label">${escapeHtml(bookmark.label)}</div>
+        <div class="bookmark-card-category">${escapeHtml(bookmark.category)}</div>
+      </div>
+      <div class="bookmark-card-actions">
+        <button class="bookmark-action-btn edit-btn" data-id="${bookmark.id}" aria-label="Edit bookmark">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
         </button>
-        <button class="task-action-btn delete" data-id="${bookmark.id}" aria-label="Delete bookmark">
+        <button class="bookmark-action-btn delete-btn" data-id="${bookmark.id}" aria-label="Delete bookmark">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3,6 5,6 21,6"/>
             <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -2137,22 +2150,15 @@ function renderBookmarks(): void {
   `).join('');
   
   // Add event listeners
-  bookmarksGrid.querySelectorAll('.bookmark-card').forEach(card => {
-    card.addEventListener('dblclick', async (e) => {
-      const id = (e.currentTarget as HTMLElement).dataset.id!;
+  bookmarksGrid.querySelectorAll('.bookmark-card-modern').forEach(card => {
+    card.addEventListener('click', async (e) => {
+      if ((e.target as HTMLElement).closest('.bookmark-card-actions')) return;
+      const id = (card as HTMLElement).dataset.id!;
       await launchBookmark(id);
     });
   });
   
-  bookmarksGrid.querySelectorAll('.task-action-btn.launch').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const id = (e.currentTarget as HTMLElement).dataset.id!;
-      await launchBookmark(id);
-    });
-  });
-  
-  bookmarksGrid.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+  bookmarksGrid.querySelectorAll('.bookmark-action-btn.delete-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const id = (e.currentTarget as HTMLElement).dataset.id!;
@@ -2163,6 +2169,7 @@ function renderBookmarks(): void {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getBookmarkIcon(type: string): string {
   const icons: Record<string, string> = {
     url: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
@@ -2172,6 +2179,17 @@ function getBookmarkIcon(type: string): string {
     folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
   };
   return icons[type] || icons.file;
+}
+
+function getBookmarkEmoji(type: string): string {
+  const emojis: Record<string, string> = {
+    url: '🌐',
+    app: '📱',
+    game: '🎮',
+    file: '📄',
+    folder: '📁',
+  };
+  return emojis[type] || '🔗';
 }
 
 function openAddBookmarkModal(): void {
@@ -3534,6 +3552,22 @@ function setupNewModuleEventListeners(): void {
   // MP3 Module
   const mp3AddFolderBtn = document.getElementById('mp3AddFolderBtn');
   if (mp3AddFolderBtn) mp3AddFolderBtn.addEventListener('click', handleAddMP3Folder);
+  
+  // Bookmarks quick access
+  document.querySelectorAll('.quick-access-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const url = (btn as HTMLElement).dataset.url;
+      if (url) window.open(url, '_blank');
+    });
+  });
+  
+  // Bookmark search
+  const bookmarkSearchInput = document.getElementById('bookmarkSearchInput') as HTMLInputElement;
+  if (bookmarkSearchInput) {
+    bookmarkSearchInput.addEventListener('input', () => {
+      renderBookmarks();
+    });
+  }
   
   // API Integrations
   document.querySelectorAll('.test-connection-btn').forEach(btn => {

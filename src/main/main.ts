@@ -35,6 +35,12 @@ import type {
   LastFMRecentTrack,
   SonarrStatus,
   RadarrStatus,
+  OllamaStatus,
+  PlaygroundData,
+  FunFact,
+  OnThisDay,
+  MP3Data,
+  MP3Folder,
 } from '../modules/shared/types';
 import { defaultModuleSettings as defaultModules } from '../modules/shared/types';
 
@@ -121,6 +127,26 @@ const defaultNewsData: NewsData = {
   lastUpdated: null,
 };
 
+const defaultPlaygroundDataStore: PlaygroundData = {
+  funFacts: [],
+  onThisDay: [],
+  lastUpdated: null,
+};
+
+const defaultMP3DataStore: MP3Data = {
+  folders: [],
+  tracks: [],
+  playHistory: [],
+  playbackState: {
+    currentTrackId: null,
+    isPlaying: false,
+    currentTime: 0,
+    volume: 0.7,
+    shuffle: false,
+    repeat: 'none',
+  },
+};
+
 // Initialize electron-store
 const store = new Store<StoreSchema>({
   defaults: {
@@ -133,6 +159,8 @@ const store = new Store<StoreSchema>({
     tools: defaultToolsData,
     timer: defaultTimerData,
     news: defaultNewsData,
+    playground: defaultPlaygroundDataStore,
+    mp3: defaultMP3DataStore,
   },
 });
 
@@ -1044,40 +1072,67 @@ function generateFallbackRecommendations(genre: string): MovieTVRecommendation[]
 // API Integrations Module IPC Handlers
 // ========================================
 
+// Helper function for API connection testing with API key authentication
+async function testApiKeyServiceConnection(baseUrl: string, apiKey: string, endpoint: string): Promise<{ success: boolean; error?: string }> {
+  if (!apiKey) return { success: false, error: 'API key not configured' };
+  if (!baseUrl) return { success: false, error: 'Base URL not configured' };
+  
+  try {
+    const url = new URL(endpoint, baseUrl);
+    const response = await net.fetch(url.toString(), {
+      headers: { 'X-Api-Key': apiKey },
+    });
+    if (!response.ok) throw new Error('Connection failed');
+    return { success: true };
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Connection failed';
+    return { success: false, error };
+  }
+}
+
+// Helper function for API connection testing without authentication
+async function testPublicServiceConnection(baseUrl: string, endpoint: string): Promise<{ success: boolean; error?: string }> {
+  if (!baseUrl) return { success: false, error: 'URL not configured' };
+  
+  try {
+    const url = new URL(endpoint, baseUrl);
+    const response = await net.fetch(url.toString());
+    if (!response.ok) throw new Error('Connection failed');
+    return { success: true };
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Connection failed';
+    return { success: false, error };
+  }
+}
+
 ipcMain.handle('test-api-connection', async (_event, service: ApiServiceName): Promise<{ success: boolean; error?: string }> => {
   const settings = store.get('settings', defaultSettings);
   const integration = settings.modules.apiIntegrations[service];
   
-  if (!integration.apiKey) {
-    return { success: false, error: 'API key not configured' };
-  }
-  
   try {
     switch (service) {
       case 'lastfm': {
+        const lastfmConfig = integration as typeof settings.modules.apiIntegrations.lastfm;
+        if (!lastfmConfig.apiKey) {
+          return { success: false, error: 'API key not configured' };
+        }
         const response = await net.fetch(
-          `https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${encodeURIComponent(integration.username || '')}&api_key=${encodeURIComponent(integration.apiKey)}&format=json`
+          `https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${encodeURIComponent(lastfmConfig.username || '')}&api_key=${encodeURIComponent(lastfmConfig.apiKey)}&format=json`
         );
         if (!response.ok) throw new Error('Invalid API key or username');
         return { success: true };
       }
       case 'sonarr': {
-        if (!integration.baseUrl) return { success: false, error: 'Base URL not configured' };
-        const url = new URL('/api/v3/system/status', integration.baseUrl);
-        const response = await net.fetch(url.toString(), {
-          headers: { 'X-Api-Key': integration.apiKey },
-        });
-        if (!response.ok) throw new Error('Connection failed');
-        return { success: true };
+        const sonarrConfig = integration as typeof settings.modules.apiIntegrations.sonarr;
+        return testApiKeyServiceConnection(sonarrConfig.baseUrl, sonarrConfig.apiKey, '/api/v3/system/status');
       }
       case 'radarr': {
-        if (!integration.baseUrl) return { success: false, error: 'Base URL not configured' };
-        const url = new URL('/api/v3/system/status', integration.baseUrl);
-        const response = await net.fetch(url.toString(), {
-          headers: { 'X-Api-Key': integration.apiKey },
-        });
-        if (!response.ok) throw new Error('Connection failed');
-        return { success: true };
+        const radarrConfig = integration as typeof settings.modules.apiIntegrations.radarr;
+        return testApiKeyServiceConnection(radarrConfig.baseUrl, radarrConfig.apiKey, '/api/v3/system/status');
+      }
+      case 'ollama': {
+        const ollamaConfig = integration as typeof settings.modules.apiIntegrations.ollama;
+        return testPublicServiceConnection(ollamaConfig.baseUrl, '/api/tags');
       }
       default:
         return { success: false, error: 'Unknown service' };
@@ -1243,6 +1298,156 @@ ipcMain.handle('get-radarr-status', async (): Promise<RadarrStatus | null> => {
     };
   } catch (error) {
     console.error('Failed to get Radarr status:', error);
+    return null;
+  }
+});
+
+// ========================================
+// Ollama Integration IPC Handlers
+// ========================================
+
+ipcMain.handle('get-ollama-status', async (): Promise<OllamaStatus | null> => {
+  const settings = store.get('settings', defaultSettings);
+  const integration = settings.modules.apiIntegrations.ollama;
+  
+  if (!integration.baseUrl) return null;
+  
+  try {
+    const tagsUrl = new URL('/api/tags', integration.baseUrl);
+    const response = await net.fetch(tagsUrl.toString());
+    
+    if (!response.ok) return null;
+    
+    const data = await response.json() as { models: Array<{ name: string }> };
+    
+    return {
+      version: 'Connected',
+      models: data.models?.map(m => m.name) || [],
+      isRunning: true,
+    };
+  } catch (error) {
+    console.error('Failed to get Ollama status:', error);
+    return null;
+  }
+});
+
+// ========================================
+// Playground Module IPC Handlers
+// ========================================
+
+const defaultPlaygroundData: PlaygroundData = {
+  funFacts: [],
+  onThisDay: [],
+  lastUpdated: null,
+};
+
+ipcMain.handle('get-playground-data', (): PlaygroundData => {
+  return defaultPlaygroundData;
+});
+
+ipcMain.handle('fetch-fun-fact', async (): Promise<FunFact | null> => {
+  try {
+    const response = await net.fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en');
+    
+    if (!response.ok) return null;
+    
+    const data = await response.json() as { id: string; text: string; source: string };
+    
+    return {
+      id: data.id || `fact-${Date.now()}`,
+      fact: sanitizeHtml(data.text),
+      category: 'random',
+      source: data.source || null,
+    };
+  } catch (error) {
+    console.error('Failed to fetch fun fact:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('fetch-on-this-day', async (): Promise<OnThisDay[]> => {
+  try {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    
+    const response = await net.fetch(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${month}/${day}`);
+    
+    if (!response.ok) return [];
+    
+    const data = await response.json() as {
+      events?: Array<{ year: number; text: string }>;
+      births?: Array<{ year: number; text: string }>;
+    };
+    
+    const events: OnThisDay[] = [];
+    
+    // Add historical events
+    if (data.events) {
+      data.events.slice(0, 5).forEach((event, index) => {
+        events.push({
+          id: `event-${index}`,
+          year: event.year,
+          event: sanitizeHtml(event.text),
+          category: 'historical',
+        });
+      });
+    }
+    
+    // Add notable births
+    if (data.births) {
+      data.births.slice(0, 3).forEach((birth, index) => {
+        events.push({
+          id: `birth-${index}`,
+          year: birth.year,
+          event: sanitizeHtml(birth.text),
+          category: 'birth',
+        });
+      });
+    }
+    
+    return events;
+  } catch (error) {
+    console.error('Failed to fetch On This Day data:', error);
+    return [];
+  }
+});
+
+// ========================================
+// MP3 Module IPC Handlers
+// ========================================
+
+const defaultMP3Data: MP3Data = {
+  folders: [],
+  tracks: [],
+  playHistory: [],
+  playbackState: {
+    currentTrackId: null,
+    isPlaying: false,
+    currentTime: 0,
+    volume: 0.7,
+    shuffle: false,
+    repeat: 'none',
+  },
+};
+
+ipcMain.handle('get-mp3-data', (): MP3Data => {
+  return defaultMP3Data;
+});
+
+ipcMain.handle('add-mp3-folder', async (_event, folderPath: string): Promise<MP3Folder | null> => {
+  try {
+    const folder: MP3Folder = {
+      id: generateId(),
+      path: folderPath,
+      name: path.basename(folderPath),
+      trackCount: 0,
+      addedAt: new Date().toISOString(),
+    };
+    
+    return folder;
+  } catch (error) {
+    console.error('Failed to add MP3 folder:', error);
     return null;
   }
 });

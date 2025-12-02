@@ -3459,3 +3459,1119 @@ select:focus {
     font-size: 2rem;
   }
 }
+
+/* ========================================
+   Playground Section Styles
+   ======================================== */
+
+.playground-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.playground-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.playground-card.recommender-card {
+  grid-column: span 2;
+}
+
+.fun-fact-content {
+  padding: 20px 0;
+}
+
+.fun-fact-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.fun-fact-source {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.on-this-day-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.on-this-day-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.on-this-day-item:last-child {
+  border-bottom: none;
+}
+
+.on-this-day-year {
+  font-weight: 600;
+  color: var(--accent-color);
+  min-width: 50px;
+}
+
+.on-this-day-event {
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.on-this-day-category {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.on-this-day-category.historical {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.on-this-day-category.birth {
+  background: var(--accent-green);
+  color: white;
+}
+
+.on-this-day-category.death {
+  background: var(--text-muted);
+  color: white;
+}
+
+/* ========================================
+   MP3 Player Section Styles
+   ======================================== */
+
+.mp3-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto auto;
+  gap: 24px;
+}
+
+.mp3-now-playing-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  grid-row: span 2;
+}
+
+.mp3-library-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.mp3-history-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.mp3-player-display {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.mp3-album-art {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mp3-album-art svg {
+  width: 80px;
+  height: 80px;
+  color: var(--text-muted);
+}
+
+.mp3-album-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp3-track-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.mp3-track-artist {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.mp3-track-album {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.mp3-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mp3-time-current,
+.mp3-time-total {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  min-width: 40px;
+}
+
+.mp3-progress-slider {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.mp3-progress-fill {
+  height: 100%;
+  background: var(--accent-color);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.mp3-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.mp3-control-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.mp3-control-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--accent-color);
+}
+
+.mp3-control-btn.mp3-play-btn {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-color);
+  color: white;
+}
+
+.mp3-control-btn.mp3-play-btn:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.mp3-control-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mp3-control-btn.mp3-play-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.mp3-control-btn.active {
+  color: var(--accent-color);
+}
+
+.mp3-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.mp3-volume-control svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.mp3-volume-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.mp3-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mp3-library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mp3-library-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.mp3-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.mp3-search-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.mp3-search-box input {
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  width: 150px;
+}
+
+.mp3-track-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.mp3-track-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mp3-track-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.mp3-track-item.playing {
+  background: var(--accent-color-alpha);
+}
+
+.mp3-track-item-cover {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp3-track-item-cover svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.mp3-track-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mp3-track-item-title {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp3-track-item-artist {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.mp3-track-item-duration {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.mp3-history-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Ollama Integration Styles */
+.ollama-config {
+  padding: 12px 0;
+}
+
+.ollama-models {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.ollama-models h4 {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.models-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.model-tag {
+  padding: 4px 12px;
+  background: var(--accent-color-alpha);
+  border-radius: 16px;
+  font-size: 0.85rem;
+  color: var(--accent-color);
+}
+
+/* Responsive adjustments for Playground and MP3 */
+@media (max-width: 1200px) {
+  .playground-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .playground-card.recommender-card {
+    grid-column: span 1;
+  }
+  
+  .mp3-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .mp3-now-playing-card {
+    grid-row: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .mp3-library-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .mp3-library-actions {
+    flex-direction: column;
+  }
+  
+  .mp3-search-box input {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Home Page News Bulletins & Health Alerts
+   ======================================== */
+
+.news-bulletins-card,
+.health-alerts-card {
+  grid-column: span 1;
+}
+
+.news-bulletins-content,
+.health-alerts-content {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.news-bulletin-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.news-bulletin-item:hover {
+  background: var(--bg-tertiary);
+  margin: 0 -12px;
+  padding: 10px 12px;
+}
+
+.news-bulletin-item:last-child {
+  border-bottom: none;
+}
+
+.news-bulletin-source {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.news-bulletin-title {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-bulletin-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Health Alert Items */
+.health-alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--accent-color);
+}
+
+.health-alert-item.urgent {
+  border-left-color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.health-alert-item.warning {
+  border-left-color: var(--warning-color);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.health-alert-item.info {
+  border-left-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.health-alert-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.health-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.health-alert-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.health-alert-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.health-alert-action {
+  margin-top: 8px;
+}
+
+.health-alert-action button {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.health-alert-action button:hover {
+  background: var(--accent-hover);
+}
+
+@media (max-width: 1200px) {
+  .news-bulletins-card,
+  .health-alerts-card {
+    grid-column: span 1;
+  }
+}
+
+/* ========================================
+   News Dashboard Redesign Styles
+   ======================================== */
+
+.news-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.news-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.news-toolbar-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Featured News Section */
+.news-featured-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.news-featured-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  min-height: 300px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.news-featured-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.featured-news-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.featured-news-placeholder svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+}
+
+.featured-news-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.featured-news-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: var(--bg-tertiary);
+}
+
+.featured-news-source {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.featured-news-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.featured-news-description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.featured-news-time {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+/* Top Stories Sidebar */
+.news-top-stories {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.news-category-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-stories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.top-story-item {
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.top-story-item:hover {
+  background: var(--accent-color-alpha);
+}
+
+.top-story-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.top-story-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+}
+
+/* News Categories Grid */
+.news-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.news-category-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.news-category-card.sports-card {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(16, 185, 129, 0.1) 100%);
+}
+
+.news-category-articles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.category-article-item {
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.category-article-item:hover {
+  background: var(--accent-color-alpha);
+}
+
+.category-article-title {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.category-article-source {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* All Headlines Section */
+.news-all-headlines {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.news-articles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.news-article-card {
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.news-article-card:hover {
+  transform: translateY(-2px);
+  background: var(--accent-color-alpha);
+}
+
+.news-article-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.news-article-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.news-article-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.empty-state-small {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Responsive News Dashboard */
+@media (max-width: 1400px) {
+  .news-categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .news-featured-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .news-categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .news-articles-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   Modern Bookmarks Module Styles
+   ======================================== */
+
+.bookmarks-toolbar-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.bookmarks-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  flex: 1;
+  max-width: 400px;
+}
+
+.bookmarks-search-box svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.bookmarks-search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.bookmarks-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.bookmarks-quick-access {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.bookmarks-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.quick-access-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-access-btn:hover {
+  transform: translateY(-2px);
+  background: var(--accent-color-alpha);
+  border-color: var(--accent-color);
+}
+
+.quick-access-icon {
+  font-size: 1.75rem;
+}
+
+.quick-access-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.bookmarks-user-section {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.bookmarks-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.bookmark-card-modern {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bookmark-card-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
+}
+
+.bookmark-card-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-color-alpha);
+  border-radius: 10px;
+  font-size: 1.25rem;
+}
+
+.bookmark-card-icon.url { background: rgba(59, 130, 246, 0.1); }
+.bookmark-card-icon.app { background: rgba(16, 185, 129, 0.1); }
+.bookmark-card-icon.game { background: rgba(139, 92, 246, 0.1); }
+.bookmark-card-icon.file { background: rgba(245, 158, 11, 0.1); }
+
+.bookmark-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookmark-card-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookmark-card-category {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.bookmark-card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.bookmark-card-modern:hover .bookmark-card-actions {
+  opacity: 1;
+}
+
+.bookmark-action-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.bookmark-action-btn:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.bookmark-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 768px) {
+  .bookmarks-toolbar-modern {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .bookmarks-search-box {
+    max-width: 100%;
+  }
+  
+  .bookmarks-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .bookmarks-filter {
+    width: 100%;
+  }
+  
+  .quick-access-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

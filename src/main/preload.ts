@@ -30,6 +30,12 @@ import type {
   LastFMRecentTrack,
   SonarrStatus,
   RadarrStatus,
+  OllamaStatus,
+  PlaygroundData,
+  FunFact,
+  OnThisDay,
+  MP3Data,
+  MP3Folder,
 } from '../modules/shared/types';
 
 // Callback storage for window state changes
@@ -145,6 +151,16 @@ contextBridge.exposeInMainWorld('jarvisAPI', {
   getLastFMRecentTracks: (): Promise<LastFMRecentTrack[]> => ipcRenderer.invoke('get-lastfm-recent-tracks'),
   getSonarrStatus: (): Promise<SonarrStatus | null> => ipcRenderer.invoke('get-sonarr-status'),
   getRadarrStatus: (): Promise<RadarrStatus | null> => ipcRenderer.invoke('get-radarr-status'),
+  getOllamaStatus: (): Promise<OllamaStatus | null> => ipcRenderer.invoke('get-ollama-status'),
+
+  // Playground Module
+  getPlaygroundData: (): Promise<PlaygroundData> => ipcRenderer.invoke('get-playground-data'),
+  fetchFunFact: (): Promise<FunFact | null> => ipcRenderer.invoke('fetch-fun-fact'),
+  fetchOnThisDay: (): Promise<OnThisDay[]> => ipcRenderer.invoke('fetch-on-this-day'),
+
+  // MP3 Module
+  getMP3Data: (): Promise<MP3Data> => ipcRenderer.invoke('get-mp3-data'),
+  addMP3Folder: (folderPath: string): Promise<MP3Folder | null> => ipcRenderer.invoke('add-mp3-folder', folderPath),
 
   // Window controls
   minimizeWindow: (): void => ipcRenderer.send('minimize-window'),

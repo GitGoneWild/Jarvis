@@ -116,7 +116,7 @@ export interface RecommenderSettings {
 // API Service Integrations Module Types
 // ========================================
 
-export type ApiServiceName = 'lastfm' | 'sonarr' | 'radarr';
+export type ApiServiceName = 'lastfm' | 'sonarr' | 'radarr' | 'ollama';
 
 export interface ApiServiceConfig {
   name: ApiServiceName;
@@ -127,6 +127,12 @@ export interface ApiServiceConfig {
   status: 'not_configured' | 'connected' | 'error';
   lastTested: string | null;
   errorMessage: string | null;
+}
+
+export interface OllamaStatus {
+  version: string;
+  models: string[];
+  isRunning: boolean;
 }
 
 export interface LastFMUserInfo {
@@ -163,6 +169,89 @@ export interface ApiIntegrationsSettings {
   lastfm: Omit<ApiServiceConfig, 'name' | 'displayName'> & { username: string };
   sonarr: Omit<ApiServiceConfig, 'name' | 'displayName'>;
   radarr: Omit<ApiServiceConfig, 'name' | 'displayName'>;
+  ollama: Omit<ApiServiceConfig, 'name' | 'displayName' | 'apiKey'>;
+}
+
+// ========================================
+// Playground Module Types
+// ========================================
+
+export interface FunFact {
+  id: string;
+  fact: string;
+  category: string;
+  source: string | null;
+}
+
+export interface OnThisDay {
+  id: string;
+  year: number;
+  event: string;
+  category: 'historical' | 'birth' | 'death' | 'holiday';
+}
+
+export interface PlaygroundData {
+  funFacts: FunFact[];
+  onThisDay: OnThisDay[];
+  lastUpdated: string | null;
+}
+
+export interface PlaygroundSettings {
+  enabled: boolean;
+  showFunFacts: boolean;
+  showOnThisDay: boolean;
+  showRecommender: boolean;
+}
+
+// ========================================
+// MP3 Module Types
+// ========================================
+
+export interface MP3Track {
+  id: string;
+  filePath: string;
+  title: string;
+  artist: string;
+  album: string;
+  duration: number; // in seconds
+  genre: string | null;
+  year: number | null;
+  trackNumber: number | null;
+  coverArt: string | null; // base64 encoded image
+  addedAt: string;
+  lastPlayedAt: string | null;
+  playCount: number;
+}
+
+export interface MP3Folder {
+  id: string;
+  path: string;
+  name: string;
+  trackCount: number;
+  addedAt: string;
+}
+
+export interface MP3PlaybackState {
+  currentTrackId: string | null;
+  isPlaying: boolean;
+  currentTime: number;
+  volume: number;
+  shuffle: boolean;
+  repeat: 'none' | 'one' | 'all';
+}
+
+export interface MP3Data {
+  folders: MP3Folder[];
+  tracks: MP3Track[];
+  playHistory: Array<{ trackId: string; playedAt: string }>;
+  playbackState: MP3PlaybackState;
+}
+
+export interface MP3Settings {
+  enabled: boolean;
+  defaultVolume: number;
+  continueListening: boolean;
+  showHistory: boolean;
 }
 
 // ========================================
@@ -404,6 +493,8 @@ export interface ModuleSettings {
   news: NewsSettings;
   recommender: RecommenderSettings;
   apiIntegrations: ApiIntegrationsSettings;
+  playground: PlaygroundSettings;
+  mp3: MP3Settings;
 }
 
 // Default Settings for all modules
@@ -488,5 +579,23 @@ export const defaultModuleSettings: ModuleSettings = {
       lastTested: null,
       errorMessage: null,
     },
+    ollama: {
+      baseUrl: 'http://localhost:11434',
+      status: 'not_configured',
+      lastTested: null,
+      errorMessage: null,
+    },
+  },
+  playground: {
+    enabled: true,
+    showFunFacts: true,
+    showOnThisDay: true,
+    showRecommender: true,
+  },
+  mp3: {
+    enabled: true,
+    defaultVolume: 0.7,
+    continueListening: true,
+    showHistory: true,
   },
 };

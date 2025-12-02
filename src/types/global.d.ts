@@ -16,13 +16,20 @@ import type {
   SonarrStatus,
   RadarrStatus,
   ApiServiceName,
+  OllamaStatus,
+  PlaygroundData,
+  FunFact,
+  OnThisDay,
+  MP3Data,
+  MP3Track,
+  MP3Folder,
 } from '../modules/shared/types';
 
 // User Settings
 export interface UserSettings {
   theme: 'dark' | 'light' | 'system';
   sidebarExpanded: boolean;
-  defaultStartPage: 'home' | 'tasks' | 'calendar' | 'settings' | 'health' | 'vpn' | 'bookmarks' | 'tools' | 'timers' | 'news' | 'recommender' | 'integrations';
+  defaultStartPage: 'home' | 'tasks' | 'calendar' | 'settings' | 'health' | 'vpn' | 'bookmarks' | 'tools' | 'timers' | 'news' | 'playground' | 'integrations' | 'mp3';
   notifications: {
     enabled: boolean;
     sounds: boolean;

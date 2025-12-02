@@ -1,14 +1,17 @@
+import type { ModuleSettings, HealthData, VPNData, BookmarksData, ToolsData } from '../modules/shared/types';
+
 // User Settings
 export interface UserSettings {
   theme: 'dark' | 'light' | 'system';
   sidebarExpanded: boolean;
-  defaultStartPage: 'home' | 'tasks' | 'calendar' | 'settings';
+  defaultStartPage: 'home' | 'tasks' | 'calendar' | 'settings' | 'health' | 'vpn' | 'bookmarks' | 'tools';
   notifications: {
     enabled: boolean;
     sounds: boolean;
     taskReminders: boolean;
     eventReminders: boolean;
   };
+  modules: ModuleSettings;
 }
 
 // Task
@@ -46,6 +49,10 @@ export interface StoreSchema {
   settings: UserSettings;
   tasks: Task[];
   events: CalendarEvent[];
+  health: HealthData;
+  vpn: VPNData;
+  bookmarks: BookmarksData;
+  tools: ToolsData;
 }
 
 // Jarvis API exposed via preload
@@ -66,6 +73,52 @@ export interface JarvisAPI {
   updateEvent: (id: string, updates: Partial<CalendarEvent>) => Promise<CalendarEvent | null>;
   deleteEvent: (id: string) => Promise<boolean>;
 
+  // Health Module
+  getHealthData: () => Promise<HealthData>;
+  createMeal: (meal: Omit<import('../modules/shared/types').Meal, 'id' | 'createdAt' | 'updatedAt'>) => Promise<import('../modules/shared/types').Meal>;
+  updateMeal: (id: string, updates: Partial<import('../modules/shared/types').Meal>) => Promise<import('../modules/shared/types').Meal | null>;
+  deleteMeal: (id: string) => Promise<boolean>;
+  createWeightEntry: (entry: Omit<import('../modules/shared/types').WeightEntry, 'id' | 'createdAt' | 'updatedAt'>) => Promise<import('../modules/shared/types').WeightEntry>;
+  updateWeightEntry: (id: string, updates: Partial<import('../modules/shared/types').WeightEntry>) => Promise<import('../modules/shared/types').WeightEntry | null>;
+  deleteWeightEntry: (id: string) => Promise<boolean>;
+  createSleepEntry: (entry: Omit<import('../modules/shared/types').SleepEntry, 'id' | 'createdAt' | 'updatedAt'>) => Promise<import('../modules/shared/types').SleepEntry>;
+  updateSleepEntry: (id: string, updates: Partial<import('../modules/shared/types').SleepEntry>) => Promise<import('../modules/shared/types').SleepEntry | null>;
+  deleteSleepEntry: (id: string) => Promise<boolean>;
+  createBloodPressureEntry: (entry: Omit<import('../modules/shared/types').BloodPressureEntry, 'id' | 'createdAt' | 'updatedAt'>) => Promise<import('../modules/shared/types').BloodPressureEntry>;
+  updateBloodPressureEntry: (id: string, updates: Partial<import('../modules/shared/types').BloodPressureEntry>) => Promise<import('../modules/shared/types').BloodPressureEntry | null>;
+  deleteBloodPressureEntry: (id: string) => Promise<boolean>;
+  createMedication: (med: Omit<import('../modules/shared/types').Medication, 'id' | 'createdAt' | 'updatedAt'>) => Promise<import('../modules/shared/types').Medication>;
+  updateMedication: (id: string, updates: Partial<import('../modules/shared/types').Medication>) => Promise<import('../modules/shared/types').Medication | null>;
+  deleteMedication: (id: string) => Promise<boolean>;
+
+  // Bookmarks Module
+  getBookmarksData: () => Promise<BookmarksData>;
+  createBookmark: (bookmark: Omit<import('../modules/shared/types').Bookmark, 'id' | 'createdAt' | 'updatedAt'>) => Promise<import('../modules/shared/types').Bookmark>;
+  updateBookmark: (id: string, updates: Partial<import('../modules/shared/types').Bookmark>) => Promise<import('../modules/shared/types').Bookmark | null>;
+  deleteBookmark: (id: string) => Promise<boolean>;
+  launchBookmark: (id: string) => Promise<boolean>;
+
+  // VPN Module
+  getVPNData: () => Promise<VPNData>;
+  importVPNProfile: (configPath: string, name: string) => Promise<import('../modules/shared/types').VPNProfile>;
+  deleteVPNProfile: (id: string) => Promise<boolean>;
+  connectVPN: (profileId: string) => Promise<boolean>;
+  disconnectVPN: () => Promise<boolean>;
+  getVPNStatus: () => Promise<import('../modules/shared/types').VPNStatus>;
+
+  // Tools Module
+  getToolsData: () => Promise<ToolsData>;
+  scanTools: () => Promise<import('../modules/shared/types').DetectedTool[]>;
+  openToolDocs: (toolName: import('../modules/shared/types').ToolName) => Promise<void>;
+
+  // Updater Module
+  checkForUpdates: () => Promise<import('../modules/shared/types').UpdateInfo | null>;
+  downloadUpdate: () => Promise<boolean>;
+  installUpdate: () => Promise<void>;
+
+  // Real-Debrid Module
+  validateRealDebridKey: (apiKey: string) => Promise<import('../modules/shared/types').RealDebridAccount | null>;
+
   // Window controls
   minimizeWindow: () => void;
   maximizeWindow: () => void;
@@ -75,6 +128,7 @@ export interface JarvisAPI {
 
   // Platform
   getPlatform: () => string;
+  getAppVersion: () => string;
 }
 
 declare global {

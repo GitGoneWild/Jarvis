@@ -1,5 +1,18 @@
 // Type declarations for Jarvis API exposed via preload
 import type { UserSettings, Task, CalendarEvent, EventType } from '../types/global';
+import type {
+  Meal,
+  WeightEntry,
+  SleepEntry,
+  BloodPressureEntry,
+  Medication,
+  Bookmark,
+  DetectedTool,
+  HealthData,
+  BookmarksData,
+  ToolsData,
+  UpdateInfo,
+} from '../modules/shared/types';
 
 // ========================================
 // DOM Elements
@@ -82,6 +95,123 @@ const notificationsEnabled = document.getElementById('notificationsEnabled') as 
 const soundsEnabled = document.getElementById('soundsEnabled') as HTMLInputElement;
 const taskReminders = document.getElementById('taskReminders') as HTMLInputElement;
 const eventReminders = document.getElementById('eventReminders') as HTMLInputElement;
+const checkUpdatesBtn = document.getElementById('checkUpdatesBtn') as HTMLButtonElement;
+const appVersion = document.getElementById('appVersion') as HTMLElement;
+
+// Health Module Elements
+const todayCalories = document.getElementById('todayCalories') as HTMLElement;
+const currentWeight = document.getElementById('currentWeight') as HTMLElement;
+const lastSleep = document.getElementById('lastSleep') as HTMLElement;
+const lastBP = document.getElementById('lastBP') as HTMLElement;
+const addMealBtn = document.getElementById('addMealBtn') as HTMLButtonElement;
+const addWeightBtn = document.getElementById('addWeightBtn') as HTMLButtonElement;
+const addSleepBtn = document.getElementById('addSleepBtn') as HTMLButtonElement;
+const addBPBtn = document.getElementById('addBPBtn') as HTMLButtonElement;
+const addMedicationBtn = document.getElementById('addMedicationBtn') as HTMLButtonElement;
+const medicationsList = document.getElementById('medicationsList') as HTMLElement;
+const mealsList = document.getElementById('mealsList') as HTMLElement;
+
+// Health Modals
+const mealModal = document.getElementById('mealModal') as HTMLElement;
+const mealForm = document.getElementById('mealForm') as HTMLFormElement;
+const mealIdInput = document.getElementById('mealId') as HTMLInputElement;
+const mealDateInput = document.getElementById('mealDate') as HTMLInputElement;
+const mealTimeInput = document.getElementById('mealTime') as HTMLInputElement;
+const mealItemsInput = document.getElementById('mealItems') as HTMLInputElement;
+const mealCaloriesInput = document.getElementById('mealCalories') as HTMLInputElement;
+const mealNotesInput = document.getElementById('mealNotes') as HTMLTextAreaElement;
+const closeMealModal = document.getElementById('closeMealModal') as HTMLButtonElement;
+const cancelMealBtn = document.getElementById('cancelMealBtn') as HTMLButtonElement;
+
+const weightModal = document.getElementById('weightModal') as HTMLElement;
+const weightForm = document.getElementById('weightForm') as HTMLFormElement;
+const weightIdInput = document.getElementById('weightId') as HTMLInputElement;
+const weightDateInput = document.getElementById('weightDate') as HTMLInputElement;
+const weightValueInput = document.getElementById('weightValue') as HTMLInputElement;
+const weightUnitInput = document.getElementById('weightUnit') as HTMLSelectElement;
+const weightNotesInput = document.getElementById('weightNotes') as HTMLTextAreaElement;
+const closeWeightModal = document.getElementById('closeWeightModal') as HTMLButtonElement;
+const cancelWeightBtn = document.getElementById('cancelWeightBtn') as HTMLButtonElement;
+
+const sleepModal = document.getElementById('sleepModal') as HTMLElement;
+const sleepForm = document.getElementById('sleepForm') as HTMLFormElement;
+const sleepIdInput = document.getElementById('sleepId') as HTMLInputElement;
+const sleepDateInput = document.getElementById('sleepDate') as HTMLInputElement;
+const sleepStartTimeInput = document.getElementById('sleepStartTime') as HTMLInputElement;
+const sleepEndTimeInput = document.getElementById('sleepEndTime') as HTMLInputElement;
+const sleepQualityInput = document.getElementById('sleepQuality') as HTMLSelectElement;
+const sleepNotesInput = document.getElementById('sleepNotes') as HTMLTextAreaElement;
+const closeSleepModal = document.getElementById('closeSleepModal') as HTMLButtonElement;
+const cancelSleepBtn = document.getElementById('cancelSleepBtn') as HTMLButtonElement;
+
+const bpModal = document.getElementById('bpModal') as HTMLElement;
+const bpForm = document.getElementById('bpForm') as HTMLFormElement;
+const bpIdInput = document.getElementById('bpId') as HTMLInputElement;
+const bpDateInput = document.getElementById('bpDate') as HTMLInputElement;
+const bpTimeInput = document.getElementById('bpTime') as HTMLInputElement;
+const bpSystolicInput = document.getElementById('bpSystolic') as HTMLInputElement;
+const bpDiastolicInput = document.getElementById('bpDiastolic') as HTMLInputElement;
+const bpPulseInput = document.getElementById('bpPulse') as HTMLInputElement;
+const bpNotesInput = document.getElementById('bpNotes') as HTMLTextAreaElement;
+const closeBPModal = document.getElementById('closeBPModal') as HTMLButtonElement;
+const cancelBPBtn = document.getElementById('cancelBPBtn') as HTMLButtonElement;
+
+const medicationModal = document.getElementById('medicationModal') as HTMLElement;
+const medicationForm = document.getElementById('medicationForm') as HTMLFormElement;
+const medicationIdInput = document.getElementById('medicationId') as HTMLInputElement;
+const medicationNameInput = document.getElementById('medicationName') as HTMLInputElement;
+const medicationDosageInput = document.getElementById('medicationDosage') as HTMLInputElement;
+const medicationFrequencyInput = document.getElementById('medicationFrequency') as HTMLSelectElement;
+const medicationTimesInput = document.getElementById('medicationTimes') as HTMLInputElement;
+const medicationStartDateInput = document.getElementById('medicationStartDate') as HTMLInputElement;
+const medicationEndDateInput = document.getElementById('medicationEndDate') as HTMLInputElement;
+const medicationNotesInput = document.getElementById('medicationNotes') as HTMLTextAreaElement;
+const closeMedicationModal = document.getElementById('closeMedicationModal') as HTMLButtonElement;
+const cancelMedicationBtn = document.getElementById('cancelMedicationBtn') as HTMLButtonElement;
+
+// Bookmarks Module Elements
+const addBookmarkBtn = document.getElementById('addBookmarkBtn') as HTMLButtonElement;
+const bookmarksGrid = document.getElementById('bookmarksGrid') as HTMLElement;
+const bookmarkCategoryFilter = document.getElementById('bookmarkCategoryFilter') as HTMLSelectElement;
+const bookmarkTypeFilter = document.getElementById('bookmarkTypeFilter') as HTMLSelectElement;
+
+const bookmarkModal = document.getElementById('bookmarkModal') as HTMLElement;
+const bookmarkForm = document.getElementById('bookmarkForm') as HTMLFormElement;
+const bookmarkIdInput = document.getElementById('bookmarkId') as HTMLInputElement;
+const bookmarkLabelInput = document.getElementById('bookmarkLabel') as HTMLInputElement;
+const bookmarkTypeInput = document.getElementById('bookmarkType') as HTMLSelectElement;
+const bookmarkCategoryInput = document.getElementById('bookmarkCategory') as HTMLSelectElement;
+const bookmarkTargetInput = document.getElementById('bookmarkTarget') as HTMLInputElement;
+const closeBookmarkModal = document.getElementById('closeBookmarkModal') as HTMLButtonElement;
+const cancelBookmarkBtn = document.getElementById('cancelBookmarkBtn') as HTMLButtonElement;
+
+// VPN Module Elements - defined but not yet used (placeholder for future VPN feature)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const vpnElements = {
+  statusIndicator: document.getElementById('vpnStatusIndicator'),
+  statusLabel: document.getElementById('vpnStatusLabel'),
+  activeProfile: document.getElementById('vpnActiveProfile'),
+  statusDetails: document.getElementById('vpnStatusDetails'),
+  externalIP: document.getElementById('vpnExternalIP'),
+  uploadSpeed: document.getElementById('vpnUploadSpeed'),
+  downloadSpeed: document.getElementById('vpnDownloadSpeed'),
+  profilesList: document.getElementById('vpnProfilesList'),
+};
+const importVPNProfileBtn = document.getElementById('importVPNProfileBtn') as HTMLButtonElement;
+
+// Tools Module Elements
+const scanToolsBtn = document.getElementById('scanToolsBtn') as HTMLButtonElement;
+const toolsLastScan = document.getElementById('toolsLastScan') as HTMLElement;
+const toolsGrid = document.getElementById('toolsGrid') as HTMLElement;
+
+// Update Modal Elements
+const updateModal = document.getElementById('updateModal') as HTMLElement;
+const closeUpdateModal = document.getElementById('closeUpdateModal') as HTMLButtonElement;
+const currentVersionDisplay = document.getElementById('currentVersionDisplay') as HTMLElement;
+const latestVersionDisplay = document.getElementById('latestVersionDisplay') as HTMLElement;
+const updateNotes = document.getElementById('updateNotes') as HTMLElement;
+const ignoreUpdateBtn = document.getElementById('ignoreUpdateBtn') as HTMLButtonElement;
+const downloadUpdateBtn = document.getElementById('downloadUpdateBtn') as HTMLButtonElement;
 
 // Toast
 const toastContainer = document.getElementById('toastContainer') as HTMLElement;
@@ -94,6 +224,28 @@ let tasks: Task[] = [];
 let events: CalendarEvent[] = [];
 let currentCalendarDate = new Date();
 let selectedDate: Date | null = null;
+
+// New module states
+let healthData: HealthData = {
+  meals: [],
+  weightEntries: [],
+  sleepEntries: [],
+  bloodPressureEntries: [],
+  medications: [],
+  medicationReminders: [],
+};
+let bookmarksData: BookmarksData = {
+  bookmarks: [],
+  categories: ['General', 'Work', 'Personal', 'Entertainment'],
+};
+let toolsData: ToolsData = {
+  detectedTools: [],
+  lastFullScan: null,
+};
+
+// Easter egg state
+let konamiSequence: string[] = [];
+const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 // ========================================
 // Utility Functions
@@ -977,6 +1129,861 @@ function setupEventListeners(): void {
       applyTheme('system');
     }
   });
+
+  // ========================================
+  // Health Module Event Listeners
+  // ========================================
+  
+  addMealBtn?.addEventListener('click', openAddMealModal);
+  closeMealModal?.addEventListener('click', closeMealModalFn);
+  cancelMealBtn?.addEventListener('click', closeMealModalFn);
+  mealModal?.addEventListener('click', (e) => {
+    if (e.target === mealModal) closeMealModalFn();
+  });
+  mealForm?.addEventListener('submit', handleMealSubmit);
+
+  addWeightBtn?.addEventListener('click', openAddWeightModal);
+  closeWeightModal?.addEventListener('click', closeWeightModalFn);
+  cancelWeightBtn?.addEventListener('click', closeWeightModalFn);
+  weightModal?.addEventListener('click', (e) => {
+    if (e.target === weightModal) closeWeightModalFn();
+  });
+  weightForm?.addEventListener('submit', handleWeightSubmit);
+
+  addSleepBtn?.addEventListener('click', openAddSleepModal);
+  closeSleepModal?.addEventListener('click', closeSleepModalFn);
+  cancelSleepBtn?.addEventListener('click', closeSleepModalFn);
+  sleepModal?.addEventListener('click', (e) => {
+    if (e.target === sleepModal) closeSleepModalFn();
+  });
+  sleepForm?.addEventListener('submit', handleSleepSubmit);
+
+  addBPBtn?.addEventListener('click', openAddBPModal);
+  closeBPModal?.addEventListener('click', closeBPModalFn);
+  cancelBPBtn?.addEventListener('click', closeBPModalFn);
+  bpModal?.addEventListener('click', (e) => {
+    if (e.target === bpModal) closeBPModalFn();
+  });
+  bpForm?.addEventListener('submit', handleBPSubmit);
+
+  addMedicationBtn?.addEventListener('click', openAddMedicationModal);
+  closeMedicationModal?.addEventListener('click', closeMedicationModalFn);
+  cancelMedicationBtn?.addEventListener('click', closeMedicationModalFn);
+  medicationModal?.addEventListener('click', (e) => {
+    if (e.target === medicationModal) closeMedicationModalFn();
+  });
+  medicationForm?.addEventListener('submit', handleMedicationSubmit);
+
+  // ========================================
+  // Bookmarks Module Event Listeners
+  // ========================================
+  
+  addBookmarkBtn?.addEventListener('click', openAddBookmarkModal);
+  closeBookmarkModal?.addEventListener('click', closeBookmarkModalFn);
+  cancelBookmarkBtn?.addEventListener('click', closeBookmarkModalFn);
+  bookmarkModal?.addEventListener('click', (e) => {
+    if (e.target === bookmarkModal) closeBookmarkModalFn();
+  });
+  bookmarkForm?.addEventListener('submit', handleBookmarkSubmit);
+  bookmarkCategoryFilter?.addEventListener('change', renderBookmarks);
+  bookmarkTypeFilter?.addEventListener('change', renderBookmarks);
+
+  // ========================================
+  // Tools Module Event Listeners
+  // ========================================
+  
+  scanToolsBtn?.addEventListener('click', handleScanTools);
+
+  // ========================================
+  // Update Module Event Listeners
+  // ========================================
+  
+  checkUpdatesBtn?.addEventListener('click', handleCheckForUpdates);
+  closeUpdateModal?.addEventListener('click', closeUpdateModalFn);
+  ignoreUpdateBtn?.addEventListener('click', closeUpdateModalFn);
+  downloadUpdateBtn?.addEventListener('click', handleDownloadUpdate);
+  updateModal?.addEventListener('click', (e) => {
+    if (e.target === updateModal) closeUpdateModalFn();
+  });
+
+  // ========================================
+  // VPN Module Event Listeners
+  // ========================================
+  
+  importVPNProfileBtn?.addEventListener('click', handleImportVPNProfile);
+
+  // ========================================
+  // Easter Egg - Konami Code Listener
+  // ========================================
+  
+  document.addEventListener('keydown', handleKonamiCode);
+}
+
+// ========================================
+// Health Module Functions
+// ========================================
+
+async function loadHealthData(): Promise<void> {
+  if (window.jarvisAPI) {
+    healthData = await window.jarvisAPI.getHealthData();
+  } else {
+    const saved = localStorage.getItem('jarvis-health');
+    if (saved) healthData = JSON.parse(saved);
+  }
+  updateHealthDashboard();
+}
+
+function updateHealthDashboard(): void {
+  const today = getDateString(new Date());
+  
+  // Today's calories
+  const todayMeals = healthData.meals.filter(m => m.date === today);
+  const totalCalories = todayMeals.reduce((sum, m) => sum + (m.calories || 0), 0);
+  if (todayCalories) todayCalories.textContent = totalCalories.toString();
+  
+  // Latest weight
+  if (healthData.weightEntries.length > 0) {
+    const latest = healthData.weightEntries[healthData.weightEntries.length - 1];
+    if (currentWeight) currentWeight.textContent = `${latest.weight} ${latest.unit}`;
+  }
+  
+  // Latest sleep
+  if (healthData.sleepEntries.length > 0) {
+    const latest = healthData.sleepEntries[healthData.sleepEntries.length - 1];
+    const hours = Math.floor(latest.durationMinutes / 60);
+    const mins = latest.durationMinutes % 60;
+    if (lastSleep) lastSleep.textContent = `${hours}h ${mins}m`;
+  }
+  
+  // Latest BP
+  if (healthData.bloodPressureEntries.length > 0) {
+    const latest = healthData.bloodPressureEntries[healthData.bloodPressureEntries.length - 1];
+    if (lastBP) lastBP.textContent = `${latest.systolic}/${latest.diastolic}`;
+  }
+  
+  renderMedications();
+  renderMeals();
+}
+
+function renderMedications(): void {
+  if (!medicationsList) return;
+  
+  const activeMeds = healthData.medications.filter(m => m.active);
+  
+  if (activeMeds.length === 0) {
+    medicationsList.innerHTML = '<div class="empty-state"><p>No medications added</p></div>';
+    return;
+  }
+  
+  medicationsList.innerHTML = activeMeds.map(med => `
+    <div class="medication-item" data-id="${med.id}">
+      <div class="medication-info">
+        <span class="medication-name">${escapeHtml(med.name)}</span>
+        <span class="medication-dosage">${escapeHtml(med.dosage)} - ${med.frequency.replace(/-/g, ' ')}</span>
+      </div>
+      <span class="medication-status active">Active</span>
+      <div class="task-actions">
+        <button class="task-action-btn delete" data-id="${med.id}" aria-label="Delete medication">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  medicationsList.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      if (confirm('Are you sure you want to delete this medication?')) {
+        await deleteMedication(id);
+      }
+    });
+  });
+}
+
+function renderMeals(): void {
+  if (!mealsList) return;
+  
+  const today = getDateString(new Date());
+  const todayMeals = healthData.meals.filter(m => m.date === today);
+  
+  if (todayMeals.length === 0) {
+    mealsList.innerHTML = '<div class="empty-state"><p>No meals logged today</p></div>';
+    return;
+  }
+  
+  mealsList.innerHTML = todayMeals.map(meal => `
+    <div class="meal-item" data-id="${meal.id}">
+      <div class="meal-info">
+        <span class="meal-name">${escapeHtml(meal.items.join(', '))}</span>
+        <span class="meal-calories">${meal.calories} calories • ${formatTime(meal.time)}</span>
+      </div>
+      <div class="task-actions">
+        <button class="task-action-btn delete" data-id="${meal.id}" aria-label="Delete meal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  mealsList.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      if (confirm('Are you sure you want to delete this meal?')) {
+        await deleteMeal(id);
+      }
+    });
+  });
+}
+
+function openAddMealModal(): void {
+  if (mealModal && mealForm) {
+    mealForm.reset();
+    mealIdInput.value = '';
+    mealDateInput.value = getDateString(new Date());
+    mealModal.classList.add('active');
+  }
+}
+
+function closeMealModalFn(): void {
+  mealModal?.classList.remove('active');
+}
+
+async function handleMealSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  const mealData = {
+    date: mealDateInput.value,
+    time: mealTimeInput.value,
+    items: mealItemsInput.value.split(',').map(i => i.trim()),
+    calories: parseInt(mealCaloriesInput.value) || 0,
+    notes: mealNotesInput.value,
+  };
+  
+  if (window.jarvisAPI) {
+    const newMeal = await window.jarvisAPI.createMeal(mealData);
+    healthData.meals.push(newMeal);
+  } else {
+    const newMeal: Meal = {
+      ...mealData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    healthData.meals.push(newMeal);
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  
+  closeMealModalFn();
+  updateHealthDashboard();
+  showToast('Meal logged successfully', 'success');
+}
+
+async function deleteMeal(id: string): Promise<void> {
+  if (window.jarvisAPI) {
+    await window.jarvisAPI.deleteMeal(id);
+  }
+  healthData.meals = healthData.meals.filter(m => m.id !== id);
+  if (!window.jarvisAPI) {
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  updateHealthDashboard();
+  showToast('Meal deleted', 'info');
+}
+
+function openAddWeightModal(): void {
+  if (weightModal && weightForm) {
+    weightForm.reset();
+    weightIdInput.value = '';
+    weightDateInput.value = getDateString(new Date());
+    weightModal.classList.add('active');
+  }
+}
+
+function closeWeightModalFn(): void {
+  weightModal?.classList.remove('active');
+}
+
+async function handleWeightSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  const entryData = {
+    date: weightDateInput.value,
+    weight: parseFloat(weightValueInput.value),
+    unit: weightUnitInput.value as 'kg' | 'lbs',
+    notes: weightNotesInput.value,
+  };
+  
+  if (window.jarvisAPI) {
+    const newEntry = await window.jarvisAPI.createWeightEntry(entryData);
+    healthData.weightEntries.push(newEntry);
+  } else {
+    const newEntry: WeightEntry = {
+      ...entryData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    healthData.weightEntries.push(newEntry);
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  
+  closeWeightModalFn();
+  updateHealthDashboard();
+  showToast('Weight logged successfully', 'success');
+}
+
+function openAddSleepModal(): void {
+  if (sleepModal && sleepForm) {
+    sleepForm.reset();
+    sleepIdInput.value = '';
+    sleepDateInput.value = getDateString(new Date());
+    sleepModal.classList.add('active');
+  }
+}
+
+function closeSleepModalFn(): void {
+  sleepModal?.classList.remove('active');
+}
+
+async function handleSleepSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  
+  // Calculate duration in minutes
+  const start = sleepStartTimeInput.value.split(':').map(Number);
+  const end = sleepEndTimeInput.value.split(':').map(Number);
+  let durationMinutes = (end[0] * 60 + end[1]) - (start[0] * 60 + start[1]);
+  if (durationMinutes < 0) durationMinutes += 24 * 60; // Handle overnight sleep
+  
+  const entryData = {
+    date: sleepDateInput.value,
+    startTime: sleepStartTimeInput.value,
+    endTime: sleepEndTimeInput.value,
+    durationMinutes,
+    quality: sleepQualityInput.value as SleepEntry['quality'],
+    notes: sleepNotesInput.value,
+  };
+  
+  if (window.jarvisAPI) {
+    const newEntry = await window.jarvisAPI.createSleepEntry(entryData);
+    healthData.sleepEntries.push(newEntry);
+  } else {
+    const newEntry: SleepEntry = {
+      ...entryData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    healthData.sleepEntries.push(newEntry);
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  
+  closeSleepModalFn();
+  updateHealthDashboard();
+  showToast('Sleep logged successfully', 'success');
+}
+
+function openAddBPModal(): void {
+  if (bpModal && bpForm) {
+    bpForm.reset();
+    bpIdInput.value = '';
+    bpDateInput.value = getDateString(new Date());
+    bpModal.classList.add('active');
+  }
+}
+
+function closeBPModalFn(): void {
+  bpModal?.classList.remove('active');
+}
+
+async function handleBPSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  const entryData = {
+    date: bpDateInput.value,
+    time: bpTimeInput.value,
+    systolic: parseInt(bpSystolicInput.value),
+    diastolic: parseInt(bpDiastolicInput.value),
+    pulse: bpPulseInput.value ? parseInt(bpPulseInput.value) : null,
+    notes: bpNotesInput.value,
+  };
+  
+  if (window.jarvisAPI) {
+    const newEntry = await window.jarvisAPI.createBloodPressureEntry(entryData);
+    healthData.bloodPressureEntries.push(newEntry);
+  } else {
+    const newEntry: BloodPressureEntry = {
+      ...entryData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    healthData.bloodPressureEntries.push(newEntry);
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  
+  closeBPModalFn();
+  updateHealthDashboard();
+  showToast('Blood pressure logged successfully', 'success');
+}
+
+function openAddMedicationModal(): void {
+  if (medicationModal && medicationForm) {
+    medicationForm.reset();
+    medicationIdInput.value = '';
+    medicationStartDateInput.value = getDateString(new Date());
+    medicationModal.classList.add('active');
+  }
+}
+
+function closeMedicationModalFn(): void {
+  medicationModal?.classList.remove('active');
+}
+
+async function handleMedicationSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  const medData = {
+    name: medicationNameInput.value,
+    dosage: medicationDosageInput.value,
+    frequency: medicationFrequencyInput.value as Medication['frequency'],
+    times: medicationTimesInput.value.split(',').map(t => t.trim()).filter(t => t),
+    startDate: medicationStartDateInput.value || getDateString(new Date()),
+    endDate: medicationEndDateInput.value || null,
+    active: true,
+    notes: medicationNotesInput.value,
+  };
+  
+  if (window.jarvisAPI) {
+    const newMed = await window.jarvisAPI.createMedication(medData);
+    healthData.medications.push(newMed);
+  } else {
+    const newMed: Medication = {
+      ...medData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    healthData.medications.push(newMed);
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  
+  closeMedicationModalFn();
+  updateHealthDashboard();
+  showToast('Medication added successfully', 'success');
+}
+
+async function deleteMedication(id: string): Promise<void> {
+  if (window.jarvisAPI) {
+    await window.jarvisAPI.deleteMedication(id);
+  }
+  healthData.medications = healthData.medications.filter(m => m.id !== id);
+  if (!window.jarvisAPI) {
+    localStorage.setItem('jarvis-health', JSON.stringify(healthData));
+  }
+  updateHealthDashboard();
+  showToast('Medication deleted', 'info');
+}
+
+// ========================================
+// Bookmarks Module Functions
+// ========================================
+
+async function loadBookmarksData(): Promise<void> {
+  if (window.jarvisAPI) {
+    bookmarksData = await window.jarvisAPI.getBookmarksData();
+  } else {
+    const saved = localStorage.getItem('jarvis-bookmarks');
+    if (saved) bookmarksData = JSON.parse(saved);
+  }
+  populateBookmarkCategories();
+  renderBookmarks();
+}
+
+function populateBookmarkCategories(): void {
+  if (!bookmarkCategoryFilter || !bookmarkCategoryInput) return;
+  
+  // Update category filter
+  bookmarkCategoryFilter.innerHTML = '<option value="all">All Categories</option>' +
+    bookmarksData.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+  
+  // Update category input in modal
+  bookmarkCategoryInput.innerHTML = bookmarksData.categories
+    .map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function renderBookmarks(): void {
+  if (!bookmarksGrid) return;
+  
+  let filtered = [...bookmarksData.bookmarks];
+  
+  // Apply filters
+  const categoryFilter = bookmarkCategoryFilter?.value || 'all';
+  const typeFilter = bookmarkTypeFilter?.value || 'all';
+  
+  if (categoryFilter !== 'all') {
+    filtered = filtered.filter(b => b.category === categoryFilter);
+  }
+  if (typeFilter !== 'all') {
+    filtered = filtered.filter(b => b.type === typeFilter);
+  }
+  
+  // Sort by order
+  filtered.sort((a, b) => a.order - b.order);
+  
+  if (filtered.length === 0) {
+    bookmarksGrid.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>No bookmarks yet</p>
+        <span>Click "Add Bookmark" to create your first bookmark</span>
+      </div>
+    `;
+    return;
+  }
+  
+  bookmarksGrid.innerHTML = filtered.map(bookmark => `
+    <div class="bookmark-card" data-id="${bookmark.id}">
+      <div class="bookmark-icon">
+        ${getBookmarkIcon(bookmark.type)}
+      </div>
+      <span class="bookmark-label">${escapeHtml(bookmark.label)}</span>
+      <span class="bookmark-type">${bookmark.type}</span>
+      <div class="bookmark-actions">
+        <button class="task-action-btn launch" data-id="${bookmark.id}" aria-label="Launch bookmark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </button>
+        <button class="task-action-btn delete" data-id="${bookmark.id}" aria-label="Delete bookmark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  // Add event listeners
+  bookmarksGrid.querySelectorAll('.bookmark-card').forEach(card => {
+    card.addEventListener('dblclick', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      await launchBookmark(id);
+    });
+  });
+  
+  bookmarksGrid.querySelectorAll('.task-action-btn.launch').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      await launchBookmark(id);
+    });
+  });
+  
+  bookmarksGrid.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      if (confirm('Are you sure you want to delete this bookmark?')) {
+        await deleteBookmark(id);
+      }
+    });
+  });
+}
+
+function getBookmarkIcon(type: string): string {
+  const icons: Record<string, string> = {
+    url: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+    app: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+    game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+    file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+  };
+  return icons[type] || icons.file;
+}
+
+function openAddBookmarkModal(): void {
+  if (bookmarkModal && bookmarkForm) {
+    bookmarkForm.reset();
+    bookmarkIdInput.value = '';
+    bookmarkModal.classList.add('active');
+  }
+}
+
+function closeBookmarkModalFn(): void {
+  bookmarkModal?.classList.remove('active');
+}
+
+async function handleBookmarkSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  const bookmarkData = {
+    label: bookmarkLabelInput.value,
+    type: bookmarkTypeInput.value as Bookmark['type'],
+    target: bookmarkTargetInput.value,
+    icon: null,
+    category: bookmarkCategoryInput.value,
+    order: bookmarksData.bookmarks.length,
+  };
+  
+  if (window.jarvisAPI) {
+    const newBookmark = await window.jarvisAPI.createBookmark(bookmarkData);
+    bookmarksData.bookmarks.push(newBookmark);
+  } else {
+    const newBookmark: Bookmark = {
+      ...bookmarkData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    bookmarksData.bookmarks.push(newBookmark);
+    localStorage.setItem('jarvis-bookmarks', JSON.stringify(bookmarksData));
+  }
+  
+  closeBookmarkModalFn();
+  renderBookmarks();
+  showToast('Bookmark added successfully', 'success');
+}
+
+async function launchBookmark(id: string): Promise<void> {
+  if (window.jarvisAPI) {
+    const success = await window.jarvisAPI.launchBookmark(id);
+    if (success) {
+      showToast('Launching...', 'info');
+    } else {
+      showToast('Failed to launch bookmark', 'error');
+    }
+  } else {
+    const bookmark = bookmarksData.bookmarks.find(b => b.id === id);
+    if (bookmark && bookmark.type === 'url') {
+      window.open(bookmark.target, '_blank');
+      showToast('Opening in browser...', 'info');
+    }
+  }
+}
+
+async function deleteBookmark(id: string): Promise<void> {
+  if (window.jarvisAPI) {
+    await window.jarvisAPI.deleteBookmark(id);
+  }
+  bookmarksData.bookmarks = bookmarksData.bookmarks.filter(b => b.id !== id);
+  if (!window.jarvisAPI) {
+    localStorage.setItem('jarvis-bookmarks', JSON.stringify(bookmarksData));
+  }
+  renderBookmarks();
+  showToast('Bookmark deleted', 'info');
+}
+
+// ========================================
+// Tools Module Functions
+// ========================================
+
+async function loadToolsData(): Promise<void> {
+  if (window.jarvisAPI) {
+    toolsData = await window.jarvisAPI.getToolsData();
+  } else {
+    const saved = localStorage.getItem('jarvis-tools');
+    if (saved) toolsData = JSON.parse(saved);
+  }
+  renderTools();
+}
+
+function renderTools(): void {
+  if (!toolsGrid) return;
+  
+  if (toolsData.lastFullScan && toolsLastScan) {
+    toolsLastScan.textContent = `Last scan: ${formatDate(toolsData.lastFullScan)}`;
+  }
+  
+  if (toolsData.detectedTools.length === 0) {
+    toolsGrid.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+        <p>No tools detected yet</p>
+        <span>Click "Scan Tools" to detect installed DevOps tools</span>
+      </div>
+    `;
+    return;
+  }
+  
+  const toolIcons: Record<string, string> = {
+    terraform: '🏗️',
+    docker: '🐳',
+    ansible: '🔧',
+    python: '🐍',
+    node: '💚',
+    go: '🔵',
+    kubectl: '☸️',
+    'aws-cli': '☁️',
+  };
+  
+  toolsGrid.innerHTML = toolsData.detectedTools.map(tool => `
+    <div class="tool-card" data-name="${tool.name}">
+      <div class="tool-icon">${toolIcons[tool.name] || '🔧'}</div>
+      <div class="tool-info">
+        <span class="tool-name">${tool.displayName}</span>
+        <span class="tool-version">${tool.installed ? `v${tool.version}` : 'Not installed'}</span>
+      </div>
+      <span class="tool-status ${tool.installed ? 'installed' : 'missing'}">${tool.installed ? 'Installed' : 'Missing'}</span>
+      <div class="tool-actions">
+        <button class="task-action-btn docs" data-name="${tool.name}" aria-label="Open docs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  toolsGrid.querySelectorAll('.task-action-btn.docs').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const name = (e.currentTarget as HTMLElement).dataset.name!;
+      if (window.jarvisAPI) {
+        await window.jarvisAPI.openToolDocs(name as DetectedTool['name']);
+      } else {
+        const tool = toolsData.detectedTools.find(t => t.name === name);
+        if (tool) {
+          window.open(tool.docsUrl, '_blank');
+        }
+      }
+    });
+  });
+}
+
+async function handleScanTools(): Promise<void> {
+  if (scanToolsBtn) {
+    scanToolsBtn.disabled = true;
+    scanToolsBtn.textContent = 'Scanning...';
+  }
+  
+  try {
+    if (window.jarvisAPI) {
+      toolsData.detectedTools = await window.jarvisAPI.scanTools();
+    } else {
+      // Mock scan for browser testing
+      toolsData.detectedTools = [
+        { name: 'node', displayName: 'Node.js', installed: true, version: '18.0.0', path: null, docsUrl: 'https://nodejs.org/docs', lastChecked: new Date().toISOString() },
+        { name: 'python', displayName: 'Python', installed: true, version: '3.11.0', path: null, docsUrl: 'https://docs.python.org', lastChecked: new Date().toISOString() },
+      ];
+      localStorage.setItem('jarvis-tools', JSON.stringify(toolsData));
+    }
+    toolsData.lastFullScan = new Date().toISOString();
+    renderTools();
+    showToast('Tool scan complete', 'success');
+  } catch {
+    showToast('Failed to scan tools', 'error');
+  } finally {
+    if (scanToolsBtn) {
+      scanToolsBtn.disabled = false;
+      scanToolsBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        Scan Tools
+      `;
+    }
+  }
+}
+
+// ========================================
+// Update Module Functions
+// ========================================
+
+async function handleCheckForUpdates(): Promise<void> {
+  if (checkUpdatesBtn) {
+    checkUpdatesBtn.disabled = true;
+    checkUpdatesBtn.textContent = 'Checking...';
+  }
+  
+  try {
+    let updateInfo: UpdateInfo | null = null;
+    
+    if (window.jarvisAPI) {
+      updateInfo = await window.jarvisAPI.checkForUpdates();
+    }
+    
+    if (updateInfo && updateInfo.isOutdated) {
+      showUpdateModal(updateInfo);
+    } else {
+      showToast('You are using the latest version', 'success');
+    }
+  } catch {
+    showToast('Failed to check for updates', 'error');
+  } finally {
+    if (checkUpdatesBtn) {
+      checkUpdatesBtn.disabled = false;
+      checkUpdatesBtn.textContent = 'Check for Updates';
+    }
+  }
+}
+
+function showUpdateModal(info: UpdateInfo): void {
+  if (currentVersionDisplay) currentVersionDisplay.textContent = `v${info.currentVersion}`;
+  if (latestVersionDisplay) latestVersionDisplay.textContent = `v${info.latestVersion}`;
+  if (updateNotes) updateNotes.innerHTML = `<p>${escapeHtml(info.releaseNotes) || 'No release notes available.'}</p>`;
+  updateModal?.classList.add('active');
+}
+
+function closeUpdateModalFn(): void {
+  updateModal?.classList.remove('active');
+}
+
+async function handleDownloadUpdate(): Promise<void> {
+  if (window.jarvisAPI) {
+    showToast('Starting download...', 'info');
+    const success = await window.jarvisAPI.downloadUpdate();
+    if (success) {
+      showToast('Download complete. Installing...', 'success');
+      await window.jarvisAPI.installUpdate();
+    } else {
+      showToast('Download not available. Please update manually.', 'warning');
+    }
+  }
+  closeUpdateModalFn();
+}
+
+// ========================================
+// VPN Module Functions
+// ========================================
+
+async function handleImportVPNProfile(): Promise<void> {
+  showToast('VPN profile import requires full Electron integration', 'info');
+}
+
+// ========================================
+// Easter Egg Functions
+// ========================================
+
+function handleKonamiCode(e: KeyboardEvent): void {
+  konamiSequence.push(e.key);
+  
+  if (konamiSequence.length > KONAMI_CODE.length) {
+    konamiSequence.shift();
+  }
+  
+  if (konamiSequence.join(',') === KONAMI_CODE.join(',')) {
+    activateEasterEgg();
+    konamiSequence = [];
+  }
+}
+
+function activateEasterEgg(): void {
+  document.body.classList.add('konami-activated');
+  showToast('🎮 Konami Code Activated! You found a secret!', 'success');
+  
+  setTimeout(() => {
+    document.body.classList.remove('konami-activated');
+  }, 5000);
 }
 
 // ========================================
@@ -987,8 +1994,17 @@ async function init(): Promise<void> {
   await loadSettings();
   await loadTasks();
   await loadEvents();
+  await loadHealthData();
+  await loadBookmarksData();
+  await loadToolsData();
   setupEventListeners();
   renderCalendar();
+  
+  // Update app version display
+  if (appVersion && window.jarvisAPI) {
+    const version = await window.jarvisAPI.getAppVersion();
+    if (version) appVersion.textContent = `Version ${version}`;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

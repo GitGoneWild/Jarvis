@@ -479,21 +479,44 @@
                 </svg>
                 Add Task
               </button>
-              <div class="tasks-filter">
-                <select id="taskFilter" aria-label="Filter tasks">
-                  <option value="all">All Tasks</option>
-                  <option value="pending">Pending</option>
-                  <option value="completed">Completed</option>
-                  <option value="overdue">Overdue</option>
-                </select>
-                <select id="taskSort" aria-label="Sort tasks">
-                  <option value="dueDate">Sort by Due Date</option>
-                  <option value="priority">Sort by Priority</option>
-                  <option value="createdAt">Sort by Created</option>
-                </select>
+              <div class="tasks-toolbar-right">
+                <div class="tasks-view-toggle">
+                  <button class="view-btn active" id="listViewBtn" aria-label="List view">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="8" y1="6" x2="21" y2="6"/>
+                      <line x1="8" y1="12" x2="21" y2="12"/>
+                      <line x1="8" y1="18" x2="21" y2="18"/>
+                      <line x1="3" y1="6" x2="3.01" y2="6"/>
+                      <line x1="3" y1="12" x2="3.01" y2="12"/>
+                      <line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                  </button>
+                  <button class="view-btn" id="boardViewBtn" aria-label="Board view">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7"/>
+                      <rect x="14" y="3" width="7" height="7"/>
+                      <rect x="14" y="14" width="7" height="7"/>
+                      <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="tasks-filter">
+                  <select id="taskFilter" aria-label="Filter tasks">
+                    <option value="all">All Tasks</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="overdue">Overdue</option>
+                  </select>
+                  <select id="taskSort" aria-label="Sort tasks">
+                    <option value="dueDate">Sort by Due Date</option>
+                    <option value="priority">Sort by Priority</option>
+                    <option value="createdAt">Sort by Created</option>
+                  </select>
+                </div>
               </div>
             </div>
             
+            <!-- List View -->
             <div class="task-list" id="taskList">
               <div class="empty-state">
                 <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -502,6 +525,31 @@
                 </svg>
                 <p>No tasks yet</p>
                 <span>Click "Add Task" to create your first task</span>
+              </div>
+            </div>
+            
+            <!-- Board View (hidden by default) -->
+            <div class="task-board" id="taskBoard" style="display: none;">
+              <div class="task-column" data-status="pending">
+                <div class="task-column-header">
+                  <span class="column-title">📋 To Do</span>
+                  <span class="column-count" id="todoCount">0</span>
+                </div>
+                <div class="task-column-content" id="todoBoardList"></div>
+              </div>
+              <div class="task-column" data-status="in-progress">
+                <div class="task-column-header">
+                  <span class="column-title">🔄 In Progress</span>
+                  <span class="column-count" id="inProgressCount">0</span>
+                </div>
+                <div class="task-column-content" id="inProgressBoardList"></div>
+              </div>
+              <div class="task-column" data-status="completed">
+                <div class="task-column-header">
+                  <span class="column-title">✅ Done</span>
+                  <span class="column-count" id="doneCount">0</span>
+                </div>
+                <div class="task-column-content" id="doneBoardList"></div>
               </div>
             </div>
           </div>

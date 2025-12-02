@@ -76,8 +76,11 @@ const resetSettingsBtn = document.getElementById('resetSettingsBtn') as HTMLButt
 // Tasks
 const addTaskBtn = document.getElementById('addTaskBtn') as HTMLButtonElement;
 const taskList = document.getElementById('taskList') as HTMLElement;
+const taskBoard = document.getElementById('taskBoard') as HTMLElement;
 const taskFilter = document.getElementById('taskFilter') as HTMLSelectElement;
 const taskSort = document.getElementById('taskSort') as HTMLSelectElement;
+const listViewBtn = document.getElementById('listViewBtn') as HTMLButtonElement;
+const boardViewBtn = document.getElementById('boardViewBtn') as HTMLButtonElement;
 
 // Task Modal
 const taskModal = document.getElementById('taskModal') as HTMLElement;
@@ -297,6 +300,7 @@ let tasks: Task[] = [];
 let events: CalendarEvent[] = [];
 let currentCalendarDate = new Date();
 let selectedDate: Date | null = null;
+let taskViewMode: 'list' | 'board' = 'list';
 
 // New module states
 let healthData: HealthData = {
@@ -701,6 +705,126 @@ function renderTasks(): void {
       }
     });
   });
+  
+  // Also update board view if visible
+  if (taskViewMode === 'board') {
+    renderTaskBoard();
+  }
+}
+
+function renderTaskBoard(): void {
+  const todoBoardList = document.getElementById('todoBoardList');
+  const inProgressBoardList = document.getElementById('inProgressBoardList');
+  const doneBoardList = document.getElementById('doneBoardList');
+  const todoCount = document.getElementById('todoCount');
+  const inProgressCount = document.getElementById('inProgressCount');
+  const doneCount = document.getElementById('doneCount');
+  
+  if (!todoBoardList || !inProgressBoardList || !doneBoardList) return;
+  
+  // Group tasks by status
+  const todoTasks = tasks.filter(t => t.status === 'pending' && !isOverdue(t.dueDate));
+  const overdueTasks = tasks.filter(t => t.status === 'pending' && isOverdue(t.dueDate));
+  const allTodoTasks = [...overdueTasks, ...todoTasks]; // Show overdue first
+  const inProgressTasks: Task[] = []; // Future: support in-progress status
+  const doneTasks = tasks.filter(t => t.status === 'completed');
+  
+  // Update counts
+  if (todoCount) todoCount.textContent = String(allTodoTasks.length);
+  if (inProgressCount) inProgressCount.textContent = String(inProgressTasks.length);
+  if (doneCount) doneCount.textContent = String(doneTasks.length);
+  
+  // Render each column
+  const renderBoardCard = (task: Task): string => `
+    <div class="board-card ${task.status === 'completed' ? 'completed' : ''} ${isOverdue(task.dueDate) && task.status === 'pending' ? 'overdue' : ''}" data-id="${task.id}">
+      <div class="board-card-header">
+        <div class="task-checkbox ${task.status === 'completed' ? 'checked' : ''}" data-id="${task.id}"></div>
+        <span class="priority-dot ${task.priority}"></span>
+      </div>
+      <div class="board-card-title">${escapeHtml(task.title)}</div>
+      ${task.description ? `<div class="board-card-desc">${escapeHtml(task.description.substring(0, 80))}${task.description.length > 80 ? '...' : ''}</div>` : ''}
+      <div class="board-card-footer">
+        ${task.dueDate ? `<span class="board-card-date ${isOverdue(task.dueDate) && task.status === 'pending' ? 'overdue' : ''}">${formatDate(task.dueDate)}</span>` : ''}
+        <span class="priority-badge small ${task.priority}">${task.priority}</span>
+      </div>
+      <div class="board-card-actions">
+        <button class="task-action-btn edit" data-id="${task.id}" aria-label="Edit task">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="task-action-btn delete" data-id="${task.id}" aria-label="Delete task">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  todoBoardList.innerHTML = allTodoTasks.length > 0 
+    ? allTodoTasks.map(renderBoardCard).join('')
+    : '<div class="board-empty">No tasks to do</div>';
+    
+  inProgressBoardList.innerHTML = inProgressTasks.length > 0
+    ? inProgressTasks.map(renderBoardCard).join('')
+    : '<div class="board-empty">No tasks in progress</div>';
+    
+  doneBoardList.innerHTML = doneTasks.length > 0
+    ? doneTasks.map(renderBoardCard).join('')
+    : '<div class="board-empty">No completed tasks</div>';
+  
+  // Add event listeners for board cards
+  const addBoardListeners = (container: HTMLElement): void => {
+    container.querySelectorAll('.task-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id!;
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+          updateTask(id, { status: task.status === 'completed' ? 'pending' : 'completed' });
+        }
+      });
+    });
+    
+    container.querySelectorAll('.task-action-btn.edit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id!;
+        openEditTaskModal(id);
+      });
+    });
+    
+    container.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id!;
+        if (confirm('Are you sure you want to delete this task?')) {
+          deleteTask(id);
+        }
+      });
+    });
+  };
+  
+  addBoardListeners(todoBoardList);
+  addBoardListeners(inProgressBoardList);
+  addBoardListeners(doneBoardList);
+}
+
+function toggleTaskView(view: 'list' | 'board'): void {
+  taskViewMode = view;
+  
+  // Update button states
+  listViewBtn?.classList.toggle('active', view === 'list');
+  boardViewBtn?.classList.toggle('active', view === 'board');
+  
+  // Show/hide views
+  if (taskList) taskList.style.display = view === 'list' ? 'flex' : 'none';
+  if (taskBoard) taskBoard.style.display = view === 'board' ? 'grid' : 'none';
+  
+  // Render appropriate view
+  if (view === 'board') {
+    renderTaskBoard();
+  }
 }
 
 function openAddTaskModal(): void {
@@ -1477,6 +1601,10 @@ function setupEventListeners(): void {
 
   taskFilter.addEventListener('change', renderTasks);
   taskSort.addEventListener('change', renderTasks);
+  
+  // Task view toggle
+  listViewBtn?.addEventListener('click', () => toggleTaskView('list'));
+  boardViewBtn?.addEventListener('click', () => toggleTaskView('board'));
 
   taskForm.addEventListener('submit', async (e) => {
     e.preventDefault();

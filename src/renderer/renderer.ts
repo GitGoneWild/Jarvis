@@ -12,6 +12,12 @@ import type {
   BookmarksData,
   ToolsData,
   UpdateInfo,
+  TimerData,
+  ActivityTimer,
+  NewsData,
+  MovieTVRecommendation,
+  RecommendationAnswer,
+  ApiServiceName,
 } from '../modules/shared/types';
 
 // ========================================
@@ -204,6 +210,39 @@ const scanToolsBtn = document.getElementById('scanToolsBtn') as HTMLButtonElemen
 const toolsLastScan = document.getElementById('toolsLastScan') as HTMLElement;
 const toolsGrid = document.getElementById('toolsGrid') as HTMLElement;
 
+// Timer Module Elements
+const startTimerBtn = document.getElementById('startTimerBtn') as HTMLButtonElement;
+const stopTimerBtn = document.getElementById('stopTimerBtn') as HTMLButtonElement;
+const activeTimerDisplay = document.getElementById('activeTimerDisplay') as HTMLElement;
+const timerFormCard = document.getElementById('timerFormCard') as HTMLElement;
+const timerForm = document.getElementById('timerForm') as HTMLFormElement;
+const timerNameInput = document.getElementById('timerName') as HTMLInputElement;
+const timerCategoryInput = document.getElementById('timerCategory') as HTMLSelectElement;
+const timerTagsInput = document.getElementById('timerTags') as HTMLInputElement;
+const cancelTimerBtn = document.getElementById('cancelTimerBtn') as HTMLButtonElement;
+const activitiesList = document.getElementById('activitiesList') as HTMLElement;
+const activityCategoryFilter = document.getElementById('activityCategoryFilter') as HTMLSelectElement;
+const totalTimeToday = document.getElementById('totalTimeToday') as HTMLElement;
+const activitiesCountToday = document.getElementById('activitiesCountToday') as HTMLElement;
+const topCategoryToday = document.getElementById('topCategoryToday') as HTMLElement;
+
+// News Module Elements
+const refreshNewsBtn = document.getElementById('refreshNewsBtn') as HTMLButtonElement;
+const newsLastUpdated = document.getElementById('newsLastUpdated') as HTMLElement;
+const newsArticlesList = document.getElementById('newsArticlesList') as HTMLElement;
+const sportsScoresList = document.getElementById('sportsScoresList') as HTMLElement;
+
+// Recommender Module Elements
+const questionnaireCard = document.getElementById('questionnaireCard') as HTMLElement;
+const recommendationsCard = document.getElementById('recommendationsCard') as HTMLElement;
+const currentQuestion = document.getElementById('currentQuestion') as HTMLElement;
+const optionsGrid = document.getElementById('optionsGrid') as HTMLElement;
+const progressText = document.getElementById('progressText') as HTMLElement;
+const questionProgressFill = document.getElementById('questionProgressFill') as HTMLElement;
+const restartQuestionnaireBtn = document.getElementById('restartQuestionnaireBtn') as HTMLButtonElement;
+const newRecommendationsBtn = document.getElementById('newRecommendationsBtn') as HTMLButtonElement;
+const recommendationsGrid = document.getElementById('recommendationsGrid') as HTMLElement;
+
 // Update Modal Elements
 const updateModal = document.getElementById('updateModal') as HTMLElement;
 const closeUpdateModal = document.getElementById('closeUpdateModal') as HTMLButtonElement;
@@ -243,9 +282,38 @@ let toolsData: ToolsData = {
   lastFullScan: null,
 };
 
+// Timer module state
+let timerData: TimerData = {
+  activities: [],
+  activeTimer: null,
+};
+let timerInterval: ReturnType<typeof setInterval> | null = null;
+
+// News module state
+let newsData: NewsData = {
+  articles: [],
+  sports: [],
+  lastUpdated: null,
+};
+
+// Recommender module state
+const recommendationQuestions = [
+  { id: 'q1', question: 'What genre are you in the mood for?', options: ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Romance', 'Documentary'] },
+  { id: 'q2', question: 'How much time do you have?', options: ['Quick (under 90 min)', 'Standard (90-120 min)', 'Long (over 2 hours)', 'Series (multiple episodes)'] },
+  { id: 'q3', question: 'What era do you prefer?', options: ['Classic (before 2000)', 'Modern (2000-2015)', 'Recent (2015-present)', 'No preference'] },
+  { id: 'q4', question: 'What rating are you looking for?', options: ['Critically acclaimed (8+)', 'Good (7-8)', 'Anything watchable (6+)', 'Hidden gems'] },
+  { id: 'q5', question: 'What mood are you in?', options: ['Feel-good', 'Thrilling', 'Thought-provoking', 'Relaxing', 'Intense'] },
+];
+let currentQuestionIndex = 0;
+let recommendationAnswers: RecommendationAnswer[] = [];
+
 // Easter egg state
 let konamiSequence: string[] = [];
 const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+// Additional Easter Egg codes
+const GTA_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight']; // Party mode
+const RETRO_CODE = ['ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowDown']; // Retro filter
 
 // ========================================
 // Utility Functions
@@ -1961,29 +2029,700 @@ async function handleImportVPNProfile(): Promise<void> {
 }
 
 // ========================================
+// Timer Module Functions
+// ========================================
+
+async function loadTimerData(): Promise<void> {
+  if (window.jarvisAPI) {
+    timerData = await window.jarvisAPI.getTimerData();
+  } else {
+    const saved = localStorage.getItem('jarvis-timer');
+    if (saved) timerData = JSON.parse(saved);
+  }
+  renderActiveTimer();
+  renderActivities();
+  updateTimerSummary();
+}
+
+function renderActiveTimer(): void {
+  if (!activeTimerDisplay) return;
+  
+  if (timerData.activeTimer) {
+    const startTime = new Date(timerData.activeTimer.startTime);
+    
+    activeTimerDisplay.innerHTML = `
+      <div class="timer-status-active">
+        <span class="timer-name">${escapeHtml(timerData.activeTimer.name)}</span>
+        <span class="timer-category-badge">${escapeHtml(timerData.activeTimer.category)}</span>
+        <span class="timer-elapsed" id="timerElapsed">00:00:00</span>
+        <span class="timer-started-at">Started at ${formatTime(startTime.toTimeString().slice(0, 5))}</span>
+      </div>
+    `;
+    
+    if (startTimerBtn) startTimerBtn.style.display = 'none';
+    if (stopTimerBtn) stopTimerBtn.style.display = 'inline-flex';
+    
+    // Start interval to update elapsed time
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateElapsedTime, 1000);
+    updateElapsedTime();
+  } else {
+    activeTimerDisplay.innerHTML = `
+      <div class="timer-status-idle">
+        <span class="timer-idle-text">No timer running</span>
+      </div>
+    `;
+    
+    if (startTimerBtn) startTimerBtn.style.display = 'inline-flex';
+    if (stopTimerBtn) stopTimerBtn.style.display = 'none';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+}
+
+function updateElapsedTime(): void {
+  if (!timerData.activeTimer) return;
+  
+  const timerElapsed = document.getElementById('timerElapsed');
+  if (!timerElapsed) return;
+  
+  const startTime = new Date(timerData.activeTimer.startTime);
+  const now = new Date();
+  const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+  
+  const hours = Math.floor(elapsed / 3600);
+  const minutes = Math.floor((elapsed % 3600) / 60);
+  const seconds = elapsed % 60;
+  
+  timerElapsed.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
+}
+
+function renderActivities(): void {
+  if (!activitiesList) return;
+  
+  const filter = activityCategoryFilter?.value || 'all';
+  let filtered = [...timerData.activities];
+  
+  if (filter !== 'all') {
+    filtered = filtered.filter(a => a.category === filter);
+  }
+  
+  // Sort by most recent
+  filtered.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+  
+  if (filtered.length === 0) {
+    activitiesList.innerHTML = `
+      <div class="empty-state">
+        <p>No activities recorded yet</p>
+        <span>Start a timer to track your activities</span>
+      </div>
+    `;
+    return;
+  }
+  
+  const categoryIcons: Record<string, string> = {
+    'Work': '💼',
+    'Exercise': '🏃',
+    'Learning': '📚',
+    'Personal': '🏠',
+    'Other': '📌',
+  };
+  
+  activitiesList.innerHTML = filtered.slice(0, 20).map(activity => `
+    <div class="activity-item" data-id="${activity.id}">
+      <div class="activity-icon">${categoryIcons[activity.category] || '📌'}</div>
+      <div class="activity-info">
+        <span class="activity-name">${escapeHtml(activity.name)}</span>
+        <span class="activity-meta">${activity.category} • ${formatDate(activity.startTime)}</span>
+      </div>
+      <span class="activity-duration">${formatDuration(activity.duration)}</span>
+      <div class="task-actions">
+        <button class="task-action-btn delete" data-id="${activity.id}" aria-label="Delete activity">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  activitiesList.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      if (confirm('Are you sure you want to delete this activity?')) {
+        await deleteActivity(id);
+      }
+    });
+  });
+}
+
+async function deleteActivity(id: string): Promise<void> {
+  if (window.jarvisAPI) {
+    await window.jarvisAPI.deleteActivity(id);
+  }
+  timerData.activities = timerData.activities.filter(a => a.id !== id);
+  if (!window.jarvisAPI) {
+    localStorage.setItem('jarvis-timer', JSON.stringify(timerData));
+  }
+  renderActivities();
+  updateTimerSummary();
+  showToast('Activity deleted', 'info');
+}
+
+function updateTimerSummary(): void {
+  const today = getDateString(new Date());
+  const todayActivities = timerData.activities.filter(a => 
+    a.startTime.startsWith(today)
+  );
+  
+  const totalSeconds = todayActivities.reduce((sum, a) => sum + a.duration, 0);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  
+  if (totalTimeToday) totalTimeToday.textContent = `${hours}h ${minutes}m`;
+  if (activitiesCountToday) activitiesCountToday.textContent = todayActivities.length.toString();
+  
+  // Find top category
+  const categoryCounts: Record<string, number> = {};
+  todayActivities.forEach(a => {
+    categoryCounts[a.category] = (categoryCounts[a.category] || 0) + a.duration;
+  });
+  
+  const topCategory = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0];
+  if (topCategoryToday) topCategoryToday.textContent = topCategory ? topCategory[0] : '--';
+}
+
+function showTimerForm(): void {
+  if (timerFormCard) timerFormCard.style.display = 'block';
+  if (timerNameInput) timerNameInput.focus();
+}
+
+function hideTimerForm(): void {
+  if (timerFormCard) timerFormCard.style.display = 'none';
+  if (timerForm) timerForm.reset();
+}
+
+async function handleTimerFormSubmit(e: Event): Promise<void> {
+  e.preventDefault();
+  
+  const name = timerNameInput.value.trim();
+  const category = timerCategoryInput.value;
+  const tags = timerTagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+  
+  if (window.jarvisAPI) {
+    timerData.activeTimer = await window.jarvisAPI.startTimer(name, category, tags);
+  } else {
+    timerData.activeTimer = {
+      id: crypto.randomUUID(),
+      name,
+      category,
+      startTime: new Date().toISOString(),
+      tags,
+    };
+    localStorage.setItem('jarvis-timer', JSON.stringify(timerData));
+  }
+  
+  hideTimerForm();
+  renderActiveTimer();
+  showToast('Timer started', 'success');
+}
+
+async function handleStopTimer(): Promise<void> {
+  if (!timerData.activeTimer) return;
+  
+  if (window.jarvisAPI) {
+    const activity = await window.jarvisAPI.stopTimer('');
+    if (activity) {
+      timerData.activities.push(activity);
+      timerData.activeTimer = null;
+    }
+  } else {
+    const now = new Date();
+    const startTime = new Date(timerData.activeTimer.startTime);
+    const duration = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+    
+    const activity: ActivityTimer = {
+      id: timerData.activeTimer.id,
+      name: timerData.activeTimer.name,
+      category: timerData.activeTimer.category,
+      startTime: timerData.activeTimer.startTime,
+      endTime: now.toISOString(),
+      duration,
+      tags: timerData.activeTimer.tags,
+      notes: '',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    };
+    
+    timerData.activities.push(activity);
+    timerData.activeTimer = null;
+    localStorage.setItem('jarvis-timer', JSON.stringify(timerData));
+  }
+  
+  renderActiveTimer();
+  renderActivities();
+  updateTimerSummary();
+  showToast('Timer stopped and activity saved', 'success');
+}
+
+// ========================================
+// News Module Functions
+// ========================================
+
+async function loadNewsData(): Promise<void> {
+  if (window.jarvisAPI) {
+    newsData = await window.jarvisAPI.getNewsData();
+  } else {
+    const saved = localStorage.getItem('jarvis-news');
+    if (saved) newsData = JSON.parse(saved);
+  }
+  renderNews();
+}
+
+function renderNews(): void {
+  if (newsLastUpdated && newsData.lastUpdated) {
+    const date = new Date(newsData.lastUpdated);
+    newsLastUpdated.textContent = `Last updated: ${date.toLocaleTimeString()}`;
+  }
+  
+  renderNewsArticles();
+  renderSportsScores();
+}
+
+function renderNewsArticles(): void {
+  if (!newsArticlesList) return;
+  
+  if (newsData.articles.length === 0) {
+    newsArticlesList.innerHTML = `
+      <div class="empty-state">
+        <p>No news articles yet</p>
+        <span>Click "Refresh News" to load latest headlines</span>
+      </div>
+    `;
+    return;
+  }
+  
+  newsArticlesList.innerHTML = newsData.articles.map(article => `
+    <div class="news-article" data-url="${escapeHtml(article.url)}">
+      ${article.imageUrl ? `<img src="${escapeHtml(article.imageUrl)}" alt="" class="news-article-image">` : ''}
+      <div class="news-article-content">
+        <div class="news-article-title">${escapeHtml(article.title)}</div>
+        <div class="news-article-meta">
+          <span class="news-article-source">${escapeHtml(article.source)}</span>
+          <span>${formatDate(article.publishedAt)}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  
+  newsArticlesList.querySelectorAll('.news-article').forEach(article => {
+    article.addEventListener('click', () => {
+      const url = (article as HTMLElement).dataset.url;
+      if (url) window.open(url, '_blank');
+    });
+  });
+}
+
+function renderSportsScores(): void {
+  if (!sportsScoresList) return;
+  
+  if (newsData.sports.length === 0) {
+    sportsScoresList.innerHTML = `
+      <div class="empty-state">
+        <p>No sports news yet</p>
+        <span>Click "Refresh News" to load sports updates</span>
+      </div>
+    `;
+    return;
+  }
+  
+  sportsScoresList.innerHTML = newsData.sports.map(item => `
+    <div class="sports-item">
+      <div class="sports-item-title">${escapeHtml(item.homeTeam)}</div>
+      <div class="sports-item-meta">${item.competition} • ${formatDate(item.startTime)}</div>
+    </div>
+  `).join('');
+}
+
+async function handleRefreshNews(): Promise<void> {
+  if (refreshNewsBtn) {
+    refreshNewsBtn.disabled = true;
+    refreshNewsBtn.textContent = 'Loading...';
+  }
+  
+  try {
+    if (window.jarvisAPI) {
+      newsData.articles = await window.jarvisAPI.fetchNews();
+      newsData.sports = await window.jarvisAPI.fetchSportsScores();
+      newsData.lastUpdated = new Date().toISOString();
+    } else {
+      // Mock data for browser testing
+      newsData.articles = [
+        { id: '1', title: 'Sample News Article', description: 'This is a sample article.', source: 'Demo', url: '#', imageUrl: null, publishedAt: new Date().toISOString(), category: 'general' },
+      ];
+      newsData.sports = [
+        { id: '1', homeTeam: 'Team A', awayTeam: 'Team B', homeScore: 2, awayScore: 1, status: 'finished', competition: 'Demo League', startTime: new Date().toISOString() },
+      ];
+      newsData.lastUpdated = new Date().toISOString();
+      localStorage.setItem('jarvis-news', JSON.stringify(newsData));
+    }
+    
+    renderNews();
+    showToast('News updated successfully', 'success');
+  } catch {
+    showToast('Failed to fetch news', 'error');
+  } finally {
+    if (refreshNewsBtn) {
+      refreshNewsBtn.disabled = false;
+      refreshNewsBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10"/>
+          <polyline points="23 20 23 14 17 14"/>
+          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+        </svg>
+        Refresh News
+      `;
+    }
+  }
+}
+
+// ========================================
+// Recommender Module Functions
+// ========================================
+
+function initRecommender(): void {
+  currentQuestionIndex = 0;
+  recommendationAnswers = [];
+  renderQuestion();
+}
+
+function renderQuestion(): void {
+  if (currentQuestionIndex >= recommendationQuestions.length) {
+    getRecommendations();
+    return;
+  }
+  
+  const question = recommendationQuestions[currentQuestionIndex];
+  
+  if (currentQuestion) currentQuestion.textContent = question.question;
+  if (progressText) progressText.textContent = `Question ${currentQuestionIndex + 1} of ${recommendationQuestions.length}`;
+  if (questionProgressFill) questionProgressFill.style.width = `${((currentQuestionIndex + 1) / recommendationQuestions.length) * 100}%`;
+  
+  if (optionsGrid) {
+    optionsGrid.innerHTML = question.options.map(option => 
+      `<button class="option-btn" data-value="${escapeHtml(option)}">${escapeHtml(option)}</button>`
+    ).join('');
+    
+    optionsGrid.querySelectorAll('.option-btn').forEach(btn => {
+      btn.addEventListener('click', () => handleOptionSelect((btn as HTMLElement).dataset.value!));
+    });
+  }
+  
+  if (restartQuestionnaireBtn) {
+    restartQuestionnaireBtn.style.display = currentQuestionIndex > 0 ? 'inline-flex' : 'none';
+  }
+}
+
+function handleOptionSelect(value: string): void {
+  const question = recommendationQuestions[currentQuestionIndex];
+  recommendationAnswers.push({ questionId: question.id, answer: value });
+  currentQuestionIndex++;
+  renderQuestion();
+}
+
+async function getRecommendations(): Promise<void> {
+  if (questionnaireCard) questionnaireCard.style.display = 'none';
+  if (recommendationsCard) recommendationsCard.style.display = 'block';
+  
+  if (recommendationsGrid) {
+    recommendationsGrid.innerHTML = '<div class="empty-state"><p>Loading recommendations...</p></div>';
+  }
+  
+  try {
+    let recommendations: MovieTVRecommendation[] = [];
+    
+    if (window.jarvisAPI) {
+      recommendations = await window.jarvisAPI.getRecommendations(recommendationAnswers);
+    } else {
+      // Mock recommendations for browser testing
+      recommendations = [
+        { id: '1', title: 'The Dark Knight', type: 'movie', year: 2008, rating: 9.0, genre: ['Action', 'Drama'], description: 'When the menace known as the Joker emerges...', posterUrl: null, backdropUrl: null },
+        { id: '2', title: 'Breaking Bad', type: 'tv', year: 2008, rating: 9.5, genre: ['Crime', 'Drama'], description: 'A high school chemistry teacher turned drug maker.', posterUrl: null, backdropUrl: null },
+      ];
+    }
+    
+    renderRecommendations(recommendations);
+  } catch {
+    showToast('Failed to get recommendations', 'error');
+  }
+}
+
+function renderRecommendations(recommendations: MovieTVRecommendation[]): void {
+  if (!recommendationsGrid) return;
+  
+  if (recommendations.length === 0) {
+    recommendationsGrid.innerHTML = '<div class="empty-state"><p>No recommendations found. Try different preferences!</p></div>';
+    return;
+  }
+  
+  recommendationsGrid.innerHTML = recommendations.map(rec => `
+    <div class="recommendation-card">
+      ${rec.posterUrl 
+        ? `<img src="${escapeHtml(rec.posterUrl)}" alt="${escapeHtml(rec.title)}" class="recommendation-poster">`
+        : `<div class="recommendation-poster-placeholder">${rec.type === 'movie' ? '🎬' : '📺'}</div>`
+      }
+      <div class="recommendation-info">
+        <span class="recommendation-type">${rec.type}</span>
+        <div class="recommendation-title">${escapeHtml(rec.title)}</div>
+        <div class="recommendation-meta">
+          <span>${rec.year}</span>
+          <span class="recommendation-rating">⭐ ${rec.rating.toFixed(1)}</span>
+        </div>
+        <div class="recommendation-description">${escapeHtml(rec.description)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function handleRestartQuestionnaire(): void {
+  currentQuestionIndex = 0;
+  recommendationAnswers = [];
+  if (questionnaireCard) questionnaireCard.style.display = 'block';
+  if (recommendationsCard) recommendationsCard.style.display = 'none';
+  renderQuestion();
+}
+
+// ========================================
+// API Integrations Module Functions
+// ========================================
+
+async function loadIntegrationsData(): Promise<void> {
+  await updateIntegrationStatuses();
+}
+
+async function updateIntegrationStatuses(): Promise<void> {
+  // Update status displays based on settings
+  if (!settings?.modules?.apiIntegrations) return;
+  
+  const lastfmStatus = document.getElementById('lastfmStatus');
+  const sonarrStatus = document.getElementById('sonarrStatus');
+  const radarrStatus = document.getElementById('radarrStatus');
+  
+  if (lastfmStatus) {
+    const config = settings.modules.apiIntegrations.lastfm;
+    lastfmStatus.textContent = config.apiKey ? (config.status === 'connected' ? 'Connected' : 'Configured') : 'Not configured';
+    lastfmStatus.className = `integration-status ${config.status === 'connected' ? 'connected' : ''}`;
+  }
+  
+  if (sonarrStatus) {
+    const config = settings.modules.apiIntegrations.sonarr;
+    sonarrStatus.textContent = config.apiKey ? (config.status === 'connected' ? 'Connected' : 'Configured') : 'Not configured';
+    sonarrStatus.className = `integration-status ${config.status === 'connected' ? 'connected' : ''}`;
+  }
+  
+  if (radarrStatus) {
+    const config = settings.modules.apiIntegrations.radarr;
+    radarrStatus.textContent = config.apiKey ? (config.status === 'connected' ? 'Connected' : 'Configured') : 'Not configured';
+    radarrStatus.className = `integration-status ${config.status === 'connected' ? 'connected' : ''}`;
+  }
+}
+
+async function handleTestConnection(service: ApiServiceName): Promise<void> {
+  const btn = document.querySelector(`.test-connection-btn[data-service="${service}"]`) as HTMLButtonElement;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Testing...';
+  }
+  
+  try {
+    if (window.jarvisAPI) {
+      const result = await window.jarvisAPI.testApiConnection(service);
+      
+      if (result.success) {
+        showToast(`${service} connection successful!`, 'success');
+        
+        // Load additional data for connected services
+        if (service === 'lastfm') {
+          await loadLastFMData();
+        } else if (service === 'sonarr') {
+          await loadSonarrData();
+        } else if (service === 'radarr') {
+          await loadRadarrData();
+        }
+      } else {
+        showToast(`${service} connection failed: ${result.error}`, 'error');
+      }
+    } else {
+      showToast('API testing requires Electron integration', 'info');
+    }
+  } catch {
+    showToast(`Failed to test ${service} connection`, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Test Connection';
+    }
+  }
+}
+
+async function loadLastFMData(): Promise<void> {
+  if (!window.jarvisAPI) return;
+  
+  const userInfo = await window.jarvisAPI.getLastFMUserInfo();
+  const lastfmUser = document.getElementById('lastfmUser');
+  const lastfmUserImage = document.getElementById('lastfmUserImage') as HTMLImageElement;
+  const lastfmUsername = document.getElementById('lastfmUsername');
+  const lastfmPlayCount = document.getElementById('lastfmPlayCount');
+  
+  if (userInfo && lastfmUser) {
+    lastfmUser.style.display = 'flex';
+    if (lastfmUserImage && userInfo.imageUrl) lastfmUserImage.src = userInfo.imageUrl;
+    if (lastfmUsername) lastfmUsername.textContent = userInfo.realName || userInfo.username;
+    if (lastfmPlayCount) lastfmPlayCount.textContent = `${userInfo.playCount.toLocaleString()} scrobbles`;
+    
+    // Load recent tracks
+    const tracks = await window.jarvisAPI.getLastFMRecentTracks();
+    const lastfmRecentTracks = document.getElementById('lastfmRecentTracks');
+    const lastfmTracksList = document.getElementById('lastfmTracksList');
+    
+    if (tracks.length > 0 && lastfmRecentTracks && lastfmTracksList) {
+      lastfmRecentTracks.style.display = 'block';
+      lastfmTracksList.innerHTML = tracks.slice(0, 5).map(track => `
+        <div class="track-item">
+          ${track.imageUrl ? `<img src="${escapeHtml(track.imageUrl)}" alt="" class="track-image">` : ''}
+          <div class="track-info">
+            <span class="track-name">${escapeHtml(track.name)}</span>
+            <span class="track-artist">${escapeHtml(track.artist)}</span>
+          </div>
+          ${track.nowPlaying ? '<span class="now-playing-badge">▶ Now Playing</span>' : ''}
+        </div>
+      `).join('');
+    }
+  }
+}
+
+async function loadSonarrData(): Promise<void> {
+  if (!window.jarvisAPI) return;
+  
+  const status = await window.jarvisAPI.getSonarrStatus();
+  const sonarrStats = document.getElementById('sonarrStats');
+  const sonarrSeriesCount = document.getElementById('sonarrSeriesCount');
+  const sonarrEpisodeCount = document.getElementById('sonarrEpisodeCount');
+  const sonarrQueueCount = document.getElementById('sonarrQueueCount');
+  
+  if (status && sonarrStats) {
+    sonarrStats.style.display = 'grid';
+    if (sonarrSeriesCount) sonarrSeriesCount.textContent = status.seriesCount.toString();
+    if (sonarrEpisodeCount) sonarrEpisodeCount.textContent = status.episodeCount.toString();
+    if (sonarrQueueCount) sonarrQueueCount.textContent = status.queueCount.toString();
+  }
+}
+
+async function loadRadarrData(): Promise<void> {
+  if (!window.jarvisAPI) return;
+  
+  const status = await window.jarvisAPI.getRadarrStatus();
+  const radarrStats = document.getElementById('radarrStats');
+  const radarrMovieCount = document.getElementById('radarrMovieCount');
+  const radarrQueueCount = document.getElementById('radarrQueueCount');
+  
+  if (status && radarrStats) {
+    radarrStats.style.display = 'grid';
+    if (radarrMovieCount) radarrMovieCount.textContent = status.movieCount.toString();
+    if (radarrQueueCount) radarrQueueCount.textContent = status.queueCount.toString();
+  }
+}
+
+// ========================================
 // Easter Egg Functions
 // ========================================
 
 function handleKonamiCode(e: KeyboardEvent): void {
   konamiSequence.push(e.key);
   
-  if (konamiSequence.length > KONAMI_CODE.length) {
+  // Keep sequence at max length of longest code
+  if (konamiSequence.length > 10) {
     konamiSequence.shift();
   }
   
-  if (konamiSequence.join(',') === KONAMI_CODE.join(',')) {
-    activateEasterEgg();
+  // Check for Konami Code
+  if (konamiSequence.slice(-KONAMI_CODE.length).join(',') === KONAMI_CODE.join(',')) {
+    activateKonamiEasterEgg();
     konamiSequence = [];
+    return;
+  }
+  
+  // Check for GTA Code (Party Mode)
+  if (konamiSequence.slice(-GTA_CODE.length).join(',') === GTA_CODE.join(',')) {
+    activatePartyMode();
+    konamiSequence = [];
+    return;
+  }
+  
+  // Check for Retro Code
+  if (konamiSequence.slice(-RETRO_CODE.length).join(',') === RETRO_CODE.join(',')) {
+    activateRetroMode();
+    konamiSequence = [];
+    return;
   }
 }
 
-function activateEasterEgg(): void {
+function activateKonamiEasterEgg(): void {
   document.body.classList.add('konami-activated');
   showToast('🎮 Konami Code Activated! You found a secret!', 'success');
+  spawnConfetti();
   
   setTimeout(() => {
     document.body.classList.remove('konami-activated');
   }, 5000);
+}
+
+function activatePartyMode(): void {
+  document.body.classList.add('party-mode');
+  showToast('🎉 Party Mode Activated! Let\'s dance!', 'success');
+  
+  setTimeout(() => {
+    document.body.classList.remove('party-mode');
+  }, 5000);
+}
+
+function activateRetroMode(): void {
+  document.body.classList.add('retro-mode');
+  showToast('📺 Retro Mode Activated! Welcome to the past!', 'success');
+  
+  setTimeout(() => {
+    document.body.classList.remove('retro-mode');
+  }, 5000);
+}
+
+function spawnConfetti(): void {
+  const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#fd79a8', '#a29bfe'];
+  
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = `${Math.random() * 100}vw`;
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animationDelay = `${Math.random() * 2}s`;
+    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => confetti.remove(), 3000);
+  }
 }
 
 // ========================================
@@ -1997,14 +2736,43 @@ async function init(): Promise<void> {
   await loadHealthData();
   await loadBookmarksData();
   await loadToolsData();
+  await loadTimerData();
+  await loadNewsData();
+  await loadIntegrationsData();
   setupEventListeners();
+  setupNewModuleEventListeners();
   renderCalendar();
+  initRecommender();
   
   // Update app version display
   if (appVersion && window.jarvisAPI) {
     const version = await window.jarvisAPI.getAppVersion();
     if (version) appVersion.textContent = `Version ${version}`;
   }
+}
+
+function setupNewModuleEventListeners(): void {
+  // Timer Module
+  if (startTimerBtn) startTimerBtn.addEventListener('click', showTimerForm);
+  if (stopTimerBtn) stopTimerBtn.addEventListener('click', handleStopTimer);
+  if (cancelTimerBtn) cancelTimerBtn.addEventListener('click', hideTimerForm);
+  if (timerForm) timerForm.addEventListener('submit', handleTimerFormSubmit);
+  if (activityCategoryFilter) activityCategoryFilter.addEventListener('change', renderActivities);
+  
+  // News Module
+  if (refreshNewsBtn) refreshNewsBtn.addEventListener('click', handleRefreshNews);
+  
+  // Recommender Module
+  if (restartQuestionnaireBtn) restartQuestionnaireBtn.addEventListener('click', handleRestartQuestionnaire);
+  if (newRecommendationsBtn) newRecommendationsBtn.addEventListener('click', handleRestartQuestionnaire);
+  
+  // API Integrations
+  document.querySelectorAll('.test-connection-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const service = (btn as HTMLElement).dataset.service as ApiServiceName;
+      handleTestConnection(service);
+    });
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

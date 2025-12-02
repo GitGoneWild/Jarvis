@@ -22,6 +22,19 @@ import type {
   VPNData,
   BookmarksData,
   ToolsData,
+  TimerData,
+  ActivityTimer,
+  ActiveTimer,
+  NewsData,
+  NewsArticle,
+  SportsScore,
+  MovieTVRecommendation,
+  RecommendationAnswer,
+  ApiServiceName,
+  LastFMUserInfo,
+  LastFMRecentTrack,
+  SonarrStatus,
+  RadarrStatus,
 } from '../modules/shared/types';
 import { defaultModuleSettings as defaultModules } from '../modules/shared/types';
 
@@ -83,6 +96,17 @@ const defaultToolsData: ToolsData = {
   lastFullScan: null,
 };
 
+const defaultTimerData: TimerData = {
+  activities: [],
+  activeTimer: null,
+};
+
+const defaultNewsData: NewsData = {
+  articles: [],
+  sports: [],
+  lastUpdated: null,
+};
+
 // Initialize electron-store
 const store = new Store<StoreSchema>({
   defaults: {
@@ -93,6 +117,8 @@ const store = new Store<StoreSchema>({
     vpn: defaultVPNData,
     bookmarks: defaultBookmarksData,
     tools: defaultToolsData,
+    timer: defaultTimerData,
+    news: defaultNewsData,
   },
 });
 
@@ -721,6 +747,479 @@ ipcMain.handle('validate-real-debrid-key', async (_event, apiKey: string): Promi
       email: user.email,
       premium: user.type === 'premium',
       expirationDate: user.expiration || null,
+    };
+  } catch {
+    return null;
+  }
+});
+
+// ========================================
+// Timer Module IPC Handlers
+// ========================================
+
+ipcMain.handle('get-timer-data', (): TimerData => {
+  return store.get('timer', defaultTimerData);
+});
+
+ipcMain.handle('start-timer', (_event, name: string, category: string, tags: string[] = []): ActiveTimer => {
+  const timer = store.get('timer', defaultTimerData);
+  
+  // If there's already an active timer, stop it first
+  if (timer.activeTimer) {
+    const activity = createActivityFromTimer(timer.activeTimer, '');
+    timer.activities.push(activity);
+  }
+  
+  const activeTimer: ActiveTimer = {
+    id: generateId(),
+    name,
+    category,
+    startTime: new Date().toISOString(),
+    tags,
+  };
+  
+  timer.activeTimer = activeTimer;
+  store.set('timer', timer);
+  return activeTimer;
+});
+
+function createActivityFromTimer(activeTimer: ActiveTimer, notes: string): ActivityTimer {
+  const now = new Date();
+  const startTime = new Date(activeTimer.startTime);
+  const duration = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+  
+  return {
+    id: activeTimer.id,
+    name: activeTimer.name,
+    category: activeTimer.category,
+    startTime: activeTimer.startTime,
+    endTime: now.toISOString(),
+    duration,
+    tags: activeTimer.tags,
+    notes,
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
+  };
+}
+
+ipcMain.handle('stop-timer', (_event, notes: string = ''): ActivityTimer | null => {
+  const timer = store.get('timer', defaultTimerData);
+  
+  if (!timer.activeTimer) return null;
+  
+  const activity = createActivityFromTimer(timer.activeTimer, notes);
+  timer.activities.push(activity);
+  timer.activeTimer = null;
+  store.set('timer', timer);
+  
+  return activity;
+});
+
+ipcMain.handle('get-active-timer', (): ActiveTimer | null => {
+  const timer = store.get('timer', defaultTimerData);
+  return timer.activeTimer;
+});
+
+ipcMain.handle('get-activities', (_event, startDate?: string, endDate?: string): ActivityTimer[] => {
+  const timer = store.get('timer', defaultTimerData);
+  let activities = timer.activities;
+  
+  if (startDate) {
+    const start = new Date(startDate);
+    activities = activities.filter(a => new Date(a.startTime) >= start);
+  }
+  
+  if (endDate) {
+    const end = new Date(endDate);
+    activities = activities.filter(a => new Date(a.startTime) <= end);
+  }
+  
+  return activities.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+});
+
+ipcMain.handle('delete-activity', (_event, id: string): boolean => {
+  const timer = store.get('timer', defaultTimerData);
+  const originalLength = timer.activities.length;
+  timer.activities = timer.activities.filter(a => a.id !== id);
+  if (timer.activities.length === originalLength) return false;
+  store.set('timer', timer);
+  return true;
+});
+
+ipcMain.handle('update-activity', (_event, id: string, updates: Partial<ActivityTimer>): ActivityTimer | null => {
+  const timer = store.get('timer', defaultTimerData);
+  const index = timer.activities.findIndex(a => a.id === id);
+  if (index === -1) return null;
+  timer.activities[index] = { ...timer.activities[index], ...updates, updatedAt: new Date().toISOString() };
+  store.set('timer', timer);
+  return timer.activities[index];
+});
+
+// ========================================
+// News Module IPC Handlers
+// ========================================
+
+ipcMain.handle('get-news-data', (): NewsData => {
+  return store.get('news', defaultNewsData);
+});
+
+ipcMain.handle('fetch-news', async (): Promise<NewsArticle[]> => {
+  try {
+    // Using a free RSS-to-JSON service for BBC News
+    const response = await net.fetch('https://api.rss2json.com/v1/api.json?rss_url=https://feeds.bbci.co.uk/news/world/rss.xml');
+    
+    if (!response.ok) return [];
+    
+    const data = await response.json() as {
+      items: Array<{
+        title: string;
+        description: string;
+        link: string;
+        enclosure?: { link: string };
+        pubDate: string;
+      }>;
+      feed: { title: string };
+    };
+    
+    const articles: NewsArticle[] = data.items.slice(0, 10).map((item, index) => ({
+      id: `news-${Date.now()}-${index}`,
+      title: item.title,
+      description: item.description?.replace(/<[^>]*>/g, '') || '',
+      source: data.feed?.title || 'BBC News',
+      url: item.link,
+      imageUrl: item.enclosure?.link || null,
+      publishedAt: item.pubDate,
+      category: 'general' as const,
+    }));
+    
+    const news = store.get('news', defaultNewsData);
+    news.articles = articles;
+    news.lastUpdated = new Date().toISOString();
+    store.set('news', news);
+    
+    return articles;
+  } catch {
+    return [];
+  }
+});
+
+ipcMain.handle('fetch-sports-scores', async (): Promise<SportsScore[]> => {
+  try {
+    // Using a free RSS-to-JSON service for BBC Sport
+    const response = await net.fetch('https://api.rss2json.com/v1/api.json?rss_url=https://feeds.bbci.co.uk/sport/rss.xml');
+    
+    if (!response.ok) return [];
+    
+    const data = await response.json() as {
+      items: Array<{
+        title: string;
+        description: string;
+        link: string;
+        pubDate: string;
+      }>;
+    };
+    
+    // Parse sport headlines as "scores" - this is a simplified representation
+    const scores: SportsScore[] = data.items.slice(0, 5).map((item, index) => ({
+      id: `sport-${Date.now()}-${index}`,
+      homeTeam: item.title.split(' - ')[0] || item.title,
+      awayTeam: item.title.split(' - ')[1] || '',
+      homeScore: 0,
+      awayScore: 0,
+      status: 'finished' as const,
+      competition: 'Sports News',
+      startTime: item.pubDate,
+    }));
+    
+    const news = store.get('news', defaultNewsData);
+    news.sports = scores;
+    store.set('news', news);
+    
+    return scores;
+  } catch {
+    return [];
+  }
+});
+
+// ========================================
+// Recommender Module IPC Handlers
+// ========================================
+
+ipcMain.handle('get-recommendations', async (_event, answers: RecommendationAnswer[]): Promise<MovieTVRecommendation[]> => {
+  // Map user answers to search parameters
+  const genreAnswer = answers.find(a => a.questionId === 'q1')?.answer || 'Action';
+  const settings = store.get('settings', defaultSettings);
+  const includeTV = settings.modules.recommender.includeTVShows;
+  const includeMovies = settings.modules.recommender.includeMovies;
+  
+  // Genre mapping for API query
+  const genreMap: Record<string, string> = {
+    'Action': 'action',
+    'Comedy': 'comedy',
+    'Drama': 'drama',
+    'Horror': 'horror',
+    'Sci-Fi': 'sci-fi',
+    'Romance': 'romance',
+    'Documentary': 'documentary',
+  };
+  
+  const genre = genreMap[genreAnswer] || 'action';
+  
+  try {
+    // Using a free movie database API
+    const response = await net.fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(genre)}`);
+    
+    if (!response.ok) return generateFallbackRecommendations(genreAnswer);
+    
+    const data = await response.json() as Array<{
+      show: {
+        id: number;
+        name: string;
+        type: string;
+        premiered: string;
+        rating: { average: number | null };
+        genres: string[];
+        summary: string;
+        image: { medium: string; original: string } | null;
+      };
+    }>;
+    
+    const recommendations: MovieTVRecommendation[] = data.slice(0, 6).map(item => ({
+      id: `rec-${item.show.id}`,
+      title: item.show.name,
+      type: (item.show.type === 'Scripted' && !includeMovies) ? 'tv' : 
+            (includeTV ? 'tv' : 'movie'),
+      year: item.show.premiered ? parseInt(item.show.premiered.split('-')[0]) : 2020,
+      rating: item.show.rating?.average || 7.0,
+      genre: item.show.genres || [genreAnswer],
+      description: item.show.summary?.replace(/<[^>]*>/g, '') || 'No description available.',
+      posterUrl: item.show.image?.medium || null,
+      backdropUrl: item.show.image?.original || null,
+    }));
+    
+    return recommendations;
+  } catch {
+    return generateFallbackRecommendations(genreAnswer);
+  }
+});
+
+function generateFallbackRecommendations(genre: string): MovieTVRecommendation[] {
+  // Fallback recommendations when API fails
+  const fallbackData: Record<string, MovieTVRecommendation[]> = {
+    'Action': [
+      { id: 'fb-1', title: 'Die Hard', type: 'movie', year: 1988, rating: 8.2, genre: ['Action', 'Thriller'], description: 'An NYPD officer tries to save his wife and several others taken hostage by German terrorists during a Christmas party.', posterUrl: null, backdropUrl: null },
+      { id: 'fb-2', title: 'Mad Max: Fury Road', type: 'movie', year: 2015, rating: 8.1, genre: ['Action', 'Adventure'], description: 'In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler.', posterUrl: null, backdropUrl: null },
+    ],
+    'Comedy': [
+      { id: 'fb-3', title: 'The Office', type: 'tv', year: 2005, rating: 8.9, genre: ['Comedy'], description: 'A mockumentary on a group of typical office workers.', posterUrl: null, backdropUrl: null },
+      { id: 'fb-4', title: 'Brooklyn Nine-Nine', type: 'tv', year: 2013, rating: 8.4, genre: ['Comedy', 'Crime'], description: 'Jake Peralta, an immature but talented NYPD detective.', posterUrl: null, backdropUrl: null },
+    ],
+    'Drama': [
+      { id: 'fb-5', title: 'Breaking Bad', type: 'tv', year: 2008, rating: 9.5, genre: ['Crime', 'Drama', 'Thriller'], description: 'A high school chemistry teacher turned methamphetamine manufacturer.', posterUrl: null, backdropUrl: null },
+      { id: 'fb-6', title: 'The Shawshank Redemption', type: 'movie', year: 1994, rating: 9.3, genre: ['Drama'], description: 'Two imprisoned men bond over a number of years.', posterUrl: null, backdropUrl: null },
+    ],
+  };
+  
+  return fallbackData[genre] || fallbackData['Action'];
+}
+
+// ========================================
+// API Integrations Module IPC Handlers
+// ========================================
+
+ipcMain.handle('test-api-connection', async (_event, service: ApiServiceName): Promise<{ success: boolean; error?: string }> => {
+  const settings = store.get('settings', defaultSettings);
+  const integration = settings.modules.apiIntegrations[service];
+  
+  if (!integration.apiKey) {
+    return { success: false, error: 'API key not configured' };
+  }
+  
+  try {
+    switch (service) {
+      case 'lastfm': {
+        const response = await net.fetch(
+          `https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${encodeURIComponent(integration.username || '')}&api_key=${encodeURIComponent(integration.apiKey)}&format=json`
+        );
+        if (!response.ok) throw new Error('Invalid API key or username');
+        return { success: true };
+      }
+      case 'sonarr': {
+        if (!integration.baseUrl) return { success: false, error: 'Base URL not configured' };
+        const url = new URL('/api/v3/system/status', integration.baseUrl);
+        const response = await net.fetch(url.toString(), {
+          headers: { 'X-Api-Key': integration.apiKey },
+        });
+        if (!response.ok) throw new Error('Connection failed');
+        return { success: true };
+      }
+      case 'radarr': {
+        if (!integration.baseUrl) return { success: false, error: 'Base URL not configured' };
+        const url = new URL('/api/v3/system/status', integration.baseUrl);
+        const response = await net.fetch(url.toString(), {
+          headers: { 'X-Api-Key': integration.apiKey },
+        });
+        if (!response.ok) throw new Error('Connection failed');
+        return { success: true };
+      }
+      default:
+        return { success: false, error: 'Unknown service' };
+    }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Connection failed';
+    return { success: false, error };
+  }
+});
+
+ipcMain.handle('get-lastfm-user-info', async (): Promise<LastFMUserInfo | null> => {
+  const settings = store.get('settings', defaultSettings);
+  const integration = settings.modules.apiIntegrations.lastfm;
+  
+  if (!integration.apiKey || !integration.username) return null;
+  
+  try {
+    const response = await net.fetch(
+      `https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${encodeURIComponent(integration.username)}&api_key=${encodeURIComponent(integration.apiKey)}&format=json`
+    );
+    
+    if (!response.ok) return null;
+    
+    const data = await response.json() as {
+      user: {
+        name: string;
+        realname: string;
+        playcount: string;
+        registered: { unixtime: string };
+        image: Array<{ '#text': string }>;
+      };
+    };
+    
+    return {
+      username: data.user.name,
+      realName: data.user.realname || '',
+      playCount: parseInt(data.user.playcount) || 0,
+      registeredAt: new Date(parseInt(data.user.registered.unixtime) * 1000).toISOString(),
+      imageUrl: data.user.image?.[2]?.['#text'] || null,
+    };
+  } catch {
+    return null;
+  }
+});
+
+ipcMain.handle('get-lastfm-recent-tracks', async (): Promise<LastFMRecentTrack[]> => {
+  const settings = store.get('settings', defaultSettings);
+  const integration = settings.modules.apiIntegrations.lastfm;
+  
+  if (!integration.apiKey || !integration.username) return [];
+  
+  try {
+    const response = await net.fetch(
+      `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(integration.username)}&api_key=${encodeURIComponent(integration.apiKey)}&format=json&limit=10`
+    );
+    
+    if (!response.ok) return [];
+    
+    const data = await response.json() as {
+      recenttracks: {
+        track: Array<{
+          name: string;
+          artist: { '#text': string };
+          album: { '#text': string };
+          image: Array<{ '#text': string }>;
+          date?: { uts: string };
+          '@attr'?: { nowplaying: string };
+        }>;
+      };
+    };
+    
+    return data.recenttracks.track.map(track => ({
+      name: track.name,
+      artist: track.artist['#text'],
+      album: track.album['#text'],
+      imageUrl: track.image?.[2]?.['#text'] || null,
+      playedAt: track.date ? new Date(parseInt(track.date.uts) * 1000).toISOString() : null,
+      nowPlaying: track['@attr']?.nowplaying === 'true',
+    }));
+  } catch {
+    return [];
+  }
+});
+
+ipcMain.handle('get-sonarr-status', async (): Promise<SonarrStatus | null> => {
+  const settings = store.get('settings', defaultSettings);
+  const integration = settings.modules.apiIntegrations.sonarr;
+  
+  if (!integration.apiKey || !integration.baseUrl) return null;
+  
+  try {
+    const statusUrl = new URL('/api/v3/system/status', integration.baseUrl);
+    const statusResponse = await net.fetch(statusUrl.toString(), {
+      headers: { 'X-Api-Key': integration.apiKey },
+    });
+    
+    if (!statusResponse.ok) return null;
+    
+    const statusData = await statusResponse.json() as { version: string };
+    
+    // Get series count
+    const seriesUrl = new URL('/api/v3/series', integration.baseUrl);
+    const seriesResponse = await net.fetch(seriesUrl.toString(), {
+      headers: { 'X-Api-Key': integration.apiKey },
+    });
+    const seriesData = await seriesResponse.json() as Array<{ episodeCount: number }>;
+    
+    // Get queue count
+    const queueUrl = new URL('/api/v3/queue', integration.baseUrl);
+    const queueResponse = await net.fetch(queueUrl.toString(), {
+      headers: { 'X-Api-Key': integration.apiKey },
+    });
+    const queueData = await queueResponse.json() as { totalRecords: number };
+    
+    return {
+      version: statusData.version,
+      seriesCount: seriesData.length,
+      episodeCount: seriesData.reduce((sum, s) => sum + (s.episodeCount || 0), 0),
+      queueCount: queueData.totalRecords || 0,
+    };
+  } catch {
+    return null;
+  }
+});
+
+ipcMain.handle('get-radarr-status', async (): Promise<RadarrStatus | null> => {
+  const settings = store.get('settings', defaultSettings);
+  const integration = settings.modules.apiIntegrations.radarr;
+  
+  if (!integration.apiKey || !integration.baseUrl) return null;
+  
+  try {
+    const statusUrl = new URL('/api/v3/system/status', integration.baseUrl);
+    const statusResponse = await net.fetch(statusUrl.toString(), {
+      headers: { 'X-Api-Key': integration.apiKey },
+    });
+    
+    if (!statusResponse.ok) return null;
+    
+    const statusData = await statusResponse.json() as { version: string };
+    
+    // Get movie count
+    const movieUrl = new URL('/api/v3/movie', integration.baseUrl);
+    const movieResponse = await net.fetch(movieUrl.toString(), {
+      headers: { 'X-Api-Key': integration.apiKey },
+    });
+    const movieData = await movieResponse.json() as Array<unknown>;
+    
+    // Get queue count
+    const queueUrl = new URL('/api/v3/queue', integration.baseUrl);
+    const queueResponse = await net.fetch(queueUrl.toString(), {
+      headers: { 'X-Api-Key': integration.apiKey },
+    });
+    const queueData = await queueResponse.json() as { totalRecords: number };
+    
+    return {
+      version: statusData.version,
+      movieCount: movieData.length,
+      queueCount: queueData.totalRecords || 0,
     };
   } catch {
     return null;

@@ -237,7 +237,7 @@ async function createTask(taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
   } else {
     const newTask: Task = {
       ...taskData,
-      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -428,7 +428,7 @@ async function createEvent(eventData: Omit<CalendarEvent, 'id' | 'createdAt' | '
   } else {
     const newEvent: CalendarEvent = {
       ...eventData,
-      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -751,7 +751,7 @@ function updateDashboard(): void {
       const thisYearDate = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
       return `
         <div class="preview-item">
-          <span class="event-type-badge birthday">🎂</span>
+          <span class="event-type-badge birthday" role="img" aria-label="Birthday">🎂</span>
           <div class="preview-item-content">
             <div class="preview-item-title">${escapeHtml(event.title)}</div>
             <div class="preview-item-meta">${thisYearDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>

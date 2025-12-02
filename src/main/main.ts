@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import * as path from 'path';
+import * as crypto from 'crypto';
 import Store from 'electron-store';
 import type { StoreSchema, UserSettings, Task, CalendarEvent } from '../types/global';
 
@@ -31,9 +32,9 @@ const store = new Store<StoreSchema>({
   },
 });
 
-// Generate unique ID
+// Generate unique ID using crypto for security
 function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  return crypto.randomUUID();
 }
 
 function createWindow(): void {

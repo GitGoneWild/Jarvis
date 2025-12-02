@@ -1,5 +1,8 @@
 # Jarvis
 
+[![CI](https://github.com/GitGoneWild/Jarvis/actions/workflows/ci.yml/badge.svg)](https://github.com/GitGoneWild/Jarvis/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A cross-platform desktop personal productivity app built with ElectronJS, TypeScript, and modern web technologies. Inspired by GitHub Desktop's clean UI/UX design.
 
 ## Features
@@ -95,6 +98,14 @@ All data is stored locally in the user's app data directory.
 - **TypeScript** - Type-safe JavaScript
 - **HTML/CSS** - Modern styling with CSS variables for theming
 - **electron-store** - Simple data persistence
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on the process for submitting pull requests.
+
+## Security
+
+For security concerns, please review our [Security Policy](SECURITY.md).
 
 ## License
 

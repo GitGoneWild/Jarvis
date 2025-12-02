@@ -187,7 +187,7 @@ export interface OnThisDay {
   id: string;
   year: number;
   event: string;
-  category: 'historical' | 'birth' | 'death' | 'holiday';
+  category: 'historical' | 'birth' | 'death' | 'holiday' | 'science' | 'technology' | 'invention';
 }
 
 export interface PlaygroundData {

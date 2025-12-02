@@ -76,8 +76,11 @@ const resetSettingsBtn = document.getElementById('resetSettingsBtn') as HTMLButt
 // Tasks
 const addTaskBtn = document.getElementById('addTaskBtn') as HTMLButtonElement;
 const taskList = document.getElementById('taskList') as HTMLElement;
+const taskBoard = document.getElementById('taskBoard') as HTMLElement;
 const taskFilter = document.getElementById('taskFilter') as HTMLSelectElement;
 const taskSort = document.getElementById('taskSort') as HTMLSelectElement;
+const listViewBtn = document.getElementById('listViewBtn') as HTMLButtonElement;
+const boardViewBtn = document.getElementById('boardViewBtn') as HTMLButtonElement;
 
 // Task Modal
 const taskModal = document.getElementById('taskModal') as HTMLElement;
@@ -127,6 +130,16 @@ const taskReminders = document.getElementById('taskReminders') as HTMLInputEleme
 const eventReminders = document.getElementById('eventReminders') as HTMLInputElement;
 const checkUpdatesBtn = document.getElementById('checkUpdatesBtn') as HTMLButtonElement;
 const appVersion = document.getElementById('appVersion') as HTMLElement;
+
+// Module Toggle Settings
+const healthEnabledToggle = document.getElementById('healthEnabled') as HTMLInputElement;
+const bookmarksEnabledToggle = document.getElementById('bookmarksEnabled') as HTMLInputElement;
+const vpnEnabledToggle = document.getElementById('vpnEnabled') as HTMLInputElement;
+const toolsEnabledToggle = document.getElementById('toolsEnabled') as HTMLInputElement;
+const timerEnabledToggle = document.getElementById('timerEnabled') as HTMLInputElement;
+const newsEnabledToggle = document.getElementById('newsEnabled') as HTMLInputElement;
+const playgroundEnabledToggle = document.getElementById('playgroundEnabled') as HTMLInputElement;
+const mp3EnabledToggle = document.getElementById('mp3Enabled') as HTMLInputElement;
 
 // Health Module Elements
 const todayCalories = document.getElementById('todayCalories') as HTMLElement;
@@ -287,6 +300,7 @@ let tasks: Task[] = [];
 let events: CalendarEvent[] = [];
 let currentCalendarDate = new Date();
 let selectedDate: Date | null = null;
+let taskViewMode: 'list' | 'board' = 'list';
 
 // New module states
 let healthData: HealthData = {
@@ -449,6 +463,9 @@ function applySettings(): void {
     sidebarToggle.setAttribute('aria-expanded', 'true');
   }
 
+  // Apply module visibility in navbar
+  updateNavbarModuleVisibility();
+
   // Navigate to default start page
   navigateToSection(settings.defaultStartPage);
 
@@ -457,6 +474,32 @@ function applySettings(): void {
     const platform = window.jarvisAPI.getPlatform();
     document.body.classList.add(`platform-${platform}`);
   }
+}
+
+// Update navbar visibility based on module settings
+function updateNavbarModuleVisibility(): void {
+  if (!settings?.modules) return;
+
+  // Map navbar sections to their module settings
+  const moduleMapping: Record<string, boolean> = {
+    'health': settings.modules.health?.enabled ?? true,
+    'vpn': settings.modules.vpn?.enabled ?? true,
+    'bookmarks': settings.modules.bookmarks?.enabled ?? true,
+    'tools': settings.modules.tools?.enabled ?? true,
+    'timers': settings.modules.timer?.enabled ?? true,
+    'news': settings.modules.news?.enabled ?? true,
+    'playground': settings.modules.playground?.enabled ?? true,
+    'mp3': settings.modules.mp3?.enabled ?? true,
+  };
+
+  // Update visibility of each nav item based on module settings
+  navItems.forEach((item) => {
+    const section = item.getAttribute('data-section');
+    if (section && section in moduleMapping) {
+      const isEnabled = moduleMapping[section];
+      item.style.display = isEnabled ? '' : 'none';
+    }
+  });
 }
 
 function applyTheme(theme: 'dark' | 'light' | 'system'): void {
@@ -487,6 +530,18 @@ function populateSettingsUI(): void {
   soundsEnabled.checked = settings.notifications.sounds;
   taskReminders.checked = settings.notifications.taskReminders;
   eventReminders.checked = settings.notifications.eventReminders;
+
+  // Populate module toggles
+  if (settings.modules) {
+    if (healthEnabledToggle) healthEnabledToggle.checked = settings.modules.health?.enabled ?? true;
+    if (bookmarksEnabledToggle) bookmarksEnabledToggle.checked = settings.modules.bookmarks?.enabled ?? true;
+    if (vpnEnabledToggle) vpnEnabledToggle.checked = settings.modules.vpn?.enabled ?? true;
+    if (toolsEnabledToggle) toolsEnabledToggle.checked = settings.modules.tools?.enabled ?? true;
+    if (timerEnabledToggle) timerEnabledToggle.checked = settings.modules.timer?.enabled ?? true;
+    if (newsEnabledToggle) newsEnabledToggle.checked = settings.modules.news?.enabled ?? true;
+    if (playgroundEnabledToggle) playgroundEnabledToggle.checked = settings.modules.playground?.enabled ?? true;
+    if (mp3EnabledToggle) mp3EnabledToggle.checked = settings.modules.mp3?.enabled ?? true;
+  }
 }
 
 // ========================================
@@ -650,6 +705,126 @@ function renderTasks(): void {
       }
     });
   });
+  
+  // Also update board view if visible
+  if (taskViewMode === 'board') {
+    renderTaskBoard();
+  }
+}
+
+function renderTaskBoard(): void {
+  const todoBoardList = document.getElementById('todoBoardList');
+  const inProgressBoardList = document.getElementById('inProgressBoardList');
+  const doneBoardList = document.getElementById('doneBoardList');
+  const todoCount = document.getElementById('todoCount');
+  const inProgressCount = document.getElementById('inProgressCount');
+  const doneCount = document.getElementById('doneCount');
+  
+  if (!todoBoardList || !inProgressBoardList || !doneBoardList) return;
+  
+  // Group tasks by status
+  const todoTasks = tasks.filter(t => t.status === 'pending' && !isOverdue(t.dueDate));
+  const overdueTasks = tasks.filter(t => t.status === 'pending' && isOverdue(t.dueDate));
+  const allTodoTasks = [...overdueTasks, ...todoTasks]; // Show overdue first
+  const inProgressTasks: Task[] = []; // Future: support in-progress status
+  const doneTasks = tasks.filter(t => t.status === 'completed');
+  
+  // Update counts
+  if (todoCount) todoCount.textContent = String(allTodoTasks.length);
+  if (inProgressCount) inProgressCount.textContent = String(inProgressTasks.length);
+  if (doneCount) doneCount.textContent = String(doneTasks.length);
+  
+  // Render each column
+  const renderBoardCard = (task: Task): string => `
+    <div class="board-card ${task.status === 'completed' ? 'completed' : ''} ${isOverdue(task.dueDate) && task.status === 'pending' ? 'overdue' : ''}" data-id="${task.id}">
+      <div class="board-card-header">
+        <div class="task-checkbox ${task.status === 'completed' ? 'checked' : ''}" data-id="${task.id}"></div>
+        <span class="priority-dot ${task.priority}"></span>
+      </div>
+      <div class="board-card-title">${escapeHtml(task.title)}</div>
+      ${task.description ? `<div class="board-card-desc">${escapeHtml(task.description.substring(0, 80))}${task.description.length > 80 ? '...' : ''}</div>` : ''}
+      <div class="board-card-footer">
+        ${task.dueDate ? `<span class="board-card-date ${isOverdue(task.dueDate) && task.status === 'pending' ? 'overdue' : ''}">${formatDate(task.dueDate)}</span>` : ''}
+        <span class="priority-badge small ${task.priority}">${task.priority}</span>
+      </div>
+      <div class="board-card-actions">
+        <button class="task-action-btn edit" data-id="${task.id}" aria-label="Edit task">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="task-action-btn delete" data-id="${task.id}" aria-label="Delete task">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  todoBoardList.innerHTML = allTodoTasks.length > 0 
+    ? allTodoTasks.map(renderBoardCard).join('')
+    : '<div class="board-empty">No tasks to do</div>';
+    
+  inProgressBoardList.innerHTML = inProgressTasks.length > 0
+    ? inProgressTasks.map(renderBoardCard).join('')
+    : '<div class="board-empty">No tasks in progress</div>';
+    
+  doneBoardList.innerHTML = doneTasks.length > 0
+    ? doneTasks.map(renderBoardCard).join('')
+    : '<div class="board-empty">No completed tasks</div>';
+  
+  // Add event listeners for board cards
+  const addBoardListeners = (container: HTMLElement): void => {
+    container.querySelectorAll('.task-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id!;
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+          updateTask(id, { status: task.status === 'completed' ? 'pending' : 'completed' });
+        }
+      });
+    });
+    
+    container.querySelectorAll('.task-action-btn.edit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id!;
+        openEditTaskModal(id);
+      });
+    });
+    
+    container.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id!;
+        if (confirm('Are you sure you want to delete this task?')) {
+          deleteTask(id);
+        }
+      });
+    });
+  };
+  
+  addBoardListeners(todoBoardList);
+  addBoardListeners(inProgressBoardList);
+  addBoardListeners(doneBoardList);
+}
+
+function toggleTaskView(view: 'list' | 'board'): void {
+  taskViewMode = view;
+  
+  // Update button states
+  listViewBtn?.classList.toggle('active', view === 'list');
+  boardViewBtn?.classList.toggle('active', view === 'board');
+  
+  // Show/hide views
+  if (taskList) taskList.style.display = view === 'list' ? 'flex' : 'none';
+  if (taskBoard) taskBoard.style.display = view === 'board' ? 'grid' : 'none';
+  
+  // Render appropriate view
+  if (view === 'board') {
+    renderTaskBoard();
+  }
 }
 
 function openAddTaskModal(): void {
@@ -1309,6 +1484,23 @@ function formatRelativeTime(dateStr: string): string {
 // ========================================
 
 function navigateToSection(sectionId: string): void {
+  // Check if the target module is disabled - if so, redirect to home
+  const moduleMapping: Record<string, boolean | undefined> = {
+    'health': settings?.modules?.health?.enabled,
+    'vpn': settings?.modules?.vpn?.enabled,
+    'bookmarks': settings?.modules?.bookmarks?.enabled,
+    'tools': settings?.modules?.tools?.enabled,
+    'timers': settings?.modules?.timer?.enabled,
+    'news': settings?.modules?.news?.enabled,
+    'playground': settings?.modules?.playground?.enabled,
+    'mp3': settings?.modules?.mp3?.enabled,
+  };
+
+  // If the module is explicitly disabled, redirect to home
+  if (sectionId in moduleMapping && moduleMapping[sectionId] === false) {
+    sectionId = 'home';
+  }
+
   navItems.forEach((item) => {
     item.classList.remove('active');
     if (item.getAttribute('data-section') === sectionId) {
@@ -1409,6 +1601,10 @@ function setupEventListeners(): void {
 
   taskFilter.addEventListener('change', renderTasks);
   taskSort.addEventListener('change', renderTasks);
+  
+  // Task view toggle
+  listViewBtn?.addEventListener('click', () => toggleTaskView('list'));
+  boardViewBtn?.addEventListener('click', () => toggleTaskView('board'));
 
   taskForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1580,6 +1776,71 @@ function setupEventListeners(): void {
   eventReminders.addEventListener('change', () => {
     settings.notifications.eventReminders = eventReminders.checked;
     saveSettings();
+  });
+
+  // Module toggle event listeners
+  healthEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.health) {
+      settings.modules.health.enabled = healthEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  bookmarksEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.bookmarks) {
+      settings.modules.bookmarks.enabled = bookmarksEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  vpnEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.vpn) {
+      settings.modules.vpn.enabled = vpnEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  toolsEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.tools) {
+      settings.modules.tools.enabled = toolsEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  timerEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.timer) {
+      settings.modules.timer.enabled = timerEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  newsEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.news) {
+      settings.modules.news.enabled = newsEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  playgroundEnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.playground) {
+      settings.modules.playground.enabled = playgroundEnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
+  });
+
+  mp3EnabledToggle?.addEventListener('change', () => {
+    if (settings.modules?.mp3) {
+      settings.modules.mp3.enabled = mp3EnabledToggle.checked;
+      saveSettings();
+      updateNavbarModuleVisibility();
+    }
   });
 
   // System theme change listener
@@ -2327,25 +2588,81 @@ function renderTools(): void {
 async function handleScanTools(): Promise<void> {
   if (scanToolsBtn) {
     scanToolsBtn.disabled = true;
-    scanToolsBtn.textContent = 'Scanning...';
+    scanToolsBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinning">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      Scanning...
+    `;
+  }
+  
+  // Show scanning indicator in the tools grid
+  if (toolsGrid) {
+    toolsGrid.innerHTML = `
+      <div class="scanning-indicator">
+        <div class="scanning-spinner"></div>
+        <p>Scanning for DevOps tools...</p>
+        <span>This may take a few seconds</span>
+      </div>
+    `;
   }
   
   try {
     if (window.jarvisAPI) {
       toolsData.detectedTools = await window.jarvisAPI.scanTools();
     } else {
-      // Mock scan for browser testing
+      // Mock scan for browser testing - simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
       toolsData.detectedTools = [
         { name: 'node', displayName: 'Node.js', installed: true, version: '18.0.0', path: null, docsUrl: 'https://nodejs.org/docs', lastChecked: new Date().toISOString() },
         { name: 'python', displayName: 'Python', installed: true, version: '3.11.0', path: null, docsUrl: 'https://docs.python.org', lastChecked: new Date().toISOString() },
+        { name: 'docker', displayName: 'Docker', installed: true, version: '24.0.0', path: null, docsUrl: 'https://docs.docker.com', lastChecked: new Date().toISOString() },
+        { name: 'go', displayName: 'Go', installed: false, version: '', path: null, docsUrl: 'https://go.dev/doc/', lastChecked: new Date().toISOString() },
+        { name: 'kubectl', displayName: 'kubectl', installed: false, version: '', path: null, docsUrl: 'https://kubernetes.io/docs/', lastChecked: new Date().toISOString() },
       ];
       localStorage.setItem('jarvis-tools', JSON.stringify(toolsData));
     }
     toolsData.lastFullScan = new Date().toISOString();
     renderTools();
-    showToast('Tool scan complete', 'success');
-  } catch {
-    showToast('Failed to scan tools', 'error');
+    
+    // Show success with count
+    const installedCount = toolsData.detectedTools.filter(t => t.installed).length;
+    const totalCount = toolsData.detectedTools.length;
+    showToast(`Scan complete: ${installedCount} of ${totalCount} tools installed`, 'success');
+  } catch (error) {
+    console.error('Tool scan failed:', error);
+    
+    // Show specific error message based on error type
+    let errorMessage = 'Failed to scan tools. ';
+    if (error instanceof Error) {
+      if (error.message.includes('permission')) {
+        errorMessage += 'Check file permissions and try again.';
+      } else if (error.message.includes('timeout')) {
+        errorMessage += 'The scan timed out. Try again later.';
+      } else {
+        errorMessage += 'Please try again or check the console for details.';
+      }
+    } else {
+      errorMessage += 'Please try again or check the console for details.';
+    }
+    
+    showToast(errorMessage, 'error');
+    
+    // Show error state in the grid
+    if (toolsGrid) {
+      toolsGrid.innerHTML = `
+        <div class="empty-state error-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Scan failed</p>
+          <span>Click "Scan Tools" to try again</span>
+        </div>
+      `;
+    }
   } finally {
     if (scanToolsBtn) {
       scanToolsBtn.disabled = false;
@@ -2421,8 +2738,225 @@ async function handleDownloadUpdate(): Promise<void> {
 // VPN Module Functions
 // ========================================
 
+// VPN state
+let vpnProfiles: Array<{
+  id: string;
+  name: string;
+  type: string;
+  status: 'disconnected' | 'connecting' | 'connected';
+}> = [];
+
+async function loadVPNData(): Promise<void> {
+  try {
+    if (window.jarvisAPI) {
+      const vpnData = await window.jarvisAPI.getVPNData();
+      // Use the data from the API
+      if (vpnData && vpnData.profiles) {
+        vpnProfiles = vpnData.profiles.map(p => ({
+          id: p.id,
+          name: p.name,
+          type: 'OpenVPN',
+          status: 'disconnected' as const,
+        }));
+      }
+    }
+    renderVPNProfiles();
+  } catch (error) {
+    console.error('Failed to load VPN data:', error);
+  }
+}
+
+function renderVPNProfiles(): void {
+  const vpnProfilesList = document.getElementById('vpnProfilesList');
+  if (!vpnProfilesList) return;
+
+  if (vpnProfiles.length === 0) {
+    vpnProfilesList.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <p>No VPN profiles</p>
+        <span>Import an OVPN configuration file to get started</span>
+      </div>
+    `;
+    return;
+  }
+
+  vpnProfilesList.innerHTML = vpnProfiles.map(profile => `
+    <div class="vpn-profile-item" data-id="${profile.id}">
+      <div class="vpn-profile-info">
+        <div class="vpn-profile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="vpn-profile-details">
+          <span class="vpn-profile-name">${escapeHtml(profile.name)}</span>
+          <span class="vpn-profile-type">${escapeHtml(profile.type)}</span>
+        </div>
+      </div>
+      <div class="vpn-profile-actions">
+        <span class="vpn-profile-status ${profile.status}">${profile.status}</span>
+        <button class="vpn-connect-btn ${profile.status === 'connected' ? 'disconnect' : ''}" data-id="${profile.id}">
+          ${profile.status === 'connected' ? 'Disconnect' : 'Connect'}
+        </button>
+        <button class="task-action-btn delete" data-id="${profile.id}" aria-label="Delete profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  // Add event listeners for connect/disconnect buttons
+  vpnProfilesList.querySelectorAll('.vpn-connect-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      const profile = vpnProfiles.find(p => p.id === id);
+      if (profile) {
+        if (profile.status === 'connected') {
+          await handleVPNDisconnect();
+        } else {
+          await handleVPNConnect(id);
+        }
+      }
+    });
+  });
+
+  // Add event listeners for delete buttons
+  vpnProfilesList.querySelectorAll('.task-action-btn.delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.id!;
+      if (confirm('Are you sure you want to delete this VPN profile?')) {
+        await handleDeleteVPNProfile(id);
+      }
+    });
+  });
+}
+
 async function handleImportVPNProfile(): Promise<void> {
-  showToast('VPN profile import requires full Electron integration', 'info');
+  if (window.jarvisAPI) {
+    // In a full implementation, this would open a file dialog
+    showToast('Select an OVPN file to import', 'info');
+    // For now, show a placeholder since file dialog requires more integration
+    showToast('VPN profile import requires selecting a file from your system', 'info');
+  } else {
+    // Demo mode - add a mock profile
+    const mockProfile = {
+      id: `vpn-${Date.now()}`,
+      name: `Demo VPN ${vpnProfiles.length + 1}`,
+      type: 'OpenVPN',
+      status: 'disconnected' as const,
+    };
+    vpnProfiles.push(mockProfile);
+    renderVPNProfiles();
+    showToast('Demo VPN profile added', 'success');
+  }
+}
+
+async function handleVPNConnect(profileId: string): Promise<void> {
+  const profile = vpnProfiles.find(p => p.id === profileId);
+  if (!profile) return;
+
+  profile.status = 'connecting';
+  renderVPNProfiles();
+  updateVPNStatus('connecting', profile.name);
+
+  try {
+    if (window.jarvisAPI) {
+      const success = await window.jarvisAPI.connectVPN(profileId);
+      if (success) {
+        profile.status = 'connected';
+        updateVPNStatus('connected', profile.name);
+        showToast(`Connected to ${profile.name}`, 'success');
+      } else {
+        profile.status = 'disconnected';
+        updateVPNStatus('disconnected', null);
+        showToast('Failed to connect to VPN', 'error');
+      }
+    } else {
+      // Demo mode - simulate connection
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      profile.status = 'connected';
+      updateVPNStatus('connected', profile.name);
+      showToast(`Connected to ${profile.name}`, 'success');
+    }
+  } catch (error) {
+    console.error('VPN connection failed:', error);
+    profile.status = 'disconnected';
+    updateVPNStatus('disconnected', null);
+    showToast('VPN connection failed', 'error');
+  }
+
+  renderVPNProfiles();
+}
+
+async function handleVPNDisconnect(): Promise<void> {
+  const connectedProfile = vpnProfiles.find(p => p.status === 'connected');
+  
+  try {
+    if (window.jarvisAPI) {
+      await window.jarvisAPI.disconnectVPN();
+    } else {
+      // Demo mode - simulate disconnection
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    vpnProfiles.forEach(p => p.status = 'disconnected');
+    updateVPNStatus('disconnected', null);
+    renderVPNProfiles();
+    showToast(connectedProfile ? `Disconnected from ${connectedProfile.name}` : 'VPN disconnected', 'info');
+  } catch (error) {
+    console.error('VPN disconnection failed:', error);
+    showToast('Failed to disconnect VPN', 'error');
+  }
+}
+
+async function handleDeleteVPNProfile(profileId: string): Promise<void> {
+  const profile = vpnProfiles.find(p => p.id === profileId);
+  if (!profile) return;
+
+  try {
+    if (window.jarvisAPI) {
+      await window.jarvisAPI.deleteVPNProfile(profileId);
+    }
+    vpnProfiles = vpnProfiles.filter(p => p.id !== profileId);
+    renderVPNProfiles();
+    showToast(`Deleted profile: ${profile.name}`, 'info');
+  } catch (error) {
+    console.error('Failed to delete VPN profile:', error);
+    showToast('Failed to delete VPN profile', 'error');
+  }
+}
+
+function updateVPNStatus(status: 'disconnected' | 'connecting' | 'connected', profileName: string | null): void {
+  const statusIndicator = document.getElementById('vpnStatusIndicator');
+  const statusLabel = document.getElementById('vpnStatusLabel');
+  const activeProfile = document.getElementById('vpnActiveProfile');
+  const statusDetails = document.getElementById('vpnStatusDetails');
+  const statusIcon = statusIndicator?.querySelector('.vpn-status-icon');
+
+  if (statusLabel) {
+    statusLabel.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  if (activeProfile) {
+    activeProfile.textContent = profileName ? `Connected to: ${profileName}` : 'No active connection';
+  }
+
+  if (statusIcon) {
+    statusIcon.classList.remove('disconnected', 'connecting', 'connected');
+    statusIcon.classList.add(status);
+  }
+
+  if (statusDetails) {
+    statusDetails.style.display = status === 'connected' ? 'flex' : 'none';
+  }
 }
 
 // ========================================
@@ -3256,29 +3790,56 @@ async function handleRefreshFunFact(): Promise<void> {
     refreshBtn.disabled = true;
   }
   
+  // Show loading state
+  if (funFactContent) {
+    funFactContent.innerHTML = '<p class="fun-fact-text loading">Loading fun fact...</p>';
+  }
+  
   try {
     if (window.jarvisAPI) {
       currentFunFact = await window.jarvisAPI.fetchFunFact();
     } else {
-      // Mock data for browser testing
+      // Enhanced mock data for browser testing with variety of facts
+      const funFacts = [
+        { fact: 'A group of flamingos is called a "flamboyance".', category: 'animals', source: 'Nature Facts' },
+        { fact: 'Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still edible.', category: 'food', source: 'Science Daily' },
+        { fact: 'Octopuses have three hearts and blue blood.', category: 'animals', source: 'Marine Biology' },
+        { fact: 'The shortest war in history lasted only 38-45 minutes between Britain and Zanzibar.', category: 'history', source: 'Historical Records' },
+        { fact: 'A day on Venus is longer than a year on Venus.', category: 'space', source: 'NASA' },
+        { fact: 'Bananas are berries, but strawberries are not.', category: 'food', source: 'Botany Facts' },
+        { fact: 'The Eiffel Tower can grow up to 6 inches taller during the summer due to thermal expansion.', category: 'science', source: 'Engineering Facts' },
+        { fact: 'Cows have best friends and get stressed when separated.', category: 'animals', source: 'Animal Behavior Studies' },
+      ];
+      
+      const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
       currentFunFact = {
         id: `fact-${Date.now()}`,
-        fact: 'A group of flamingos is called a "flamboyance".',
-        category: 'random',
-        source: 'Nature Facts',
+        fact: randomFact.fact,
+        category: randomFact.category,
+        source: randomFact.source,
       };
     }
     
     if (funFactContent && currentFunFact) {
       funFactContent.innerHTML = `
         <p class="fun-fact-text">${escapeHtml(currentFunFact.fact)}</p>
-        ${currentFunFact.source ? `<span class="fun-fact-source">Source: ${escapeHtml(currentFunFact.source)}</span>` : ''}
+        <div class="fun-fact-footer">
+          ${currentFunFact.category ? `<span class="fun-fact-category">${escapeHtml(currentFunFact.category)}</span>` : ''}
+          ${currentFunFact.source ? `<span class="fun-fact-source">Source: ${escapeHtml(currentFunFact.source)}</span>` : ''}
+        </div>
       `;
     }
   } catch (error) {
     console.error('Failed to fetch fun fact:', error);
     if (funFactContent) {
-      funFactContent.innerHTML = '<p class="fun-fact-text">Failed to load fun fact. Try again!</p>';
+      funFactContent.innerHTML = `
+        <div class="playground-error">
+          <span class="error-icon">⚠️</span>
+          <p>Failed to load fun fact</p>
+          <button class="secondary-btn retry-btn" id="retryFunFactBtn">Try Again</button>
+        </div>
+      `;
+      document.getElementById('retryFunFactBtn')?.addEventListener('click', handleRefreshFunFact);
     }
   } finally {
     if (refreshBtn) {
@@ -3295,23 +3856,62 @@ async function handleRefreshOnThisDay(): Promise<void> {
     refreshBtn.disabled = true;
   }
   
+  // Show loading state
+  if (onThisDayContent) {
+    onThisDayContent.innerHTML = '<div class="loading-state"><div class="scanning-spinner small"></div><p>Loading historical events...</p></div>';
+  }
+  
   try {
     if (window.jarvisAPI) {
       currentOnThisDay = await window.jarvisAPI.fetchOnThisDay();
     } else {
-      // Mock data for browser testing
-      currentOnThisDay = [
-        { id: '1', year: 1969, event: 'Apollo 11 landed on the Moon', category: 'historical' },
-        { id: '2', year: 1776, event: 'Declaration of Independence signed', category: 'historical' },
-        { id: '3', year: 1946, event: 'Famous person was born', category: 'birth' },
+      // Enhanced mock data - generate based on current date
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+      
+      type CategoryType = 'historical' | 'birth' | 'death' | 'holiday' | 'science' | 'technology' | 'invention';
+      
+      // Collection of historical events by date
+      const historicalEvents: Record<string, Array<{year: number; event: string; category: CategoryType}>> = {
+        '1-1': [{ year: 1863, event: 'Emancipation Proclamation takes effect, freeing slaves in Confederate states', category: 'historical' }],
+        '7-4': [{ year: 1776, event: 'United States Declaration of Independence adopted', category: 'historical' }],
+        '7-20': [{ year: 1969, event: 'Apollo 11: Neil Armstrong and Buzz Aldrin become first humans to walk on the Moon', category: 'science' }],
+        '12-25': [{ year: 1991, event: 'Mikhail Gorbachev resigns as president of the Soviet Union', category: 'historical' }],
+      };
+      
+      // Default events if no specific date match
+      const defaultEvents: Array<{year: number; event: string; category: CategoryType}> = [
+        { year: 1969, event: 'Apollo 11 landed on the Moon - A giant leap for mankind', category: 'science' },
+        { year: 1989, event: 'The Berlin Wall begins to fall, unifying East and West Germany', category: 'historical' },
+        { year: 2004, event: 'Facebook was launched by Mark Zuckerberg', category: 'technology' },
+        { year: 1876, event: 'Alexander Graham Bell patents the telephone', category: 'invention' },
+        { year: 1903, event: 'Wright Brothers achieve first powered flight', category: 'science' },
       ];
+      
+      const dateKey = `${month}-${day}`;
+      const events = historicalEvents[dateKey] || defaultEvents;
+      
+      currentOnThisDay = events.map((e, i) => ({
+        id: `${i + 1}`,
+        year: e.year,
+        event: e.event,
+        category: e.category,
+      }));
     }
     
     renderOnThisDay();
   } catch (error) {
     console.error('Failed to fetch On This Day:', error);
     if (onThisDayContent) {
-      onThisDayContent.innerHTML = '<div class="empty-state"><p>Failed to load events. Try again!</p></div>';
+      onThisDayContent.innerHTML = `
+        <div class="playground-error">
+          <span class="error-icon">📅</span>
+          <p>Failed to load historical events</p>
+          <button class="secondary-btn retry-btn" id="retryOnThisDayBtn">Try Again</button>
+        </div>
+      `;
+      document.getElementById('retryOnThisDayBtn')?.addEventListener('click', handleRefreshOnThisDay);
     }
   } finally {
     if (refreshBtn) {
@@ -3325,19 +3925,43 @@ function renderOnThisDay(): void {
   if (!onThisDayContent) return;
   
   if (currentOnThisDay.length === 0) {
-    onThisDayContent.innerHTML = '<div class="empty-state"><p>No events found for today.</p></div>';
+    onThisDayContent.innerHTML = `
+      <div class="empty-state-modern">
+        <div class="empty-icon-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <p class="empty-title">No events found</p>
+        <p class="empty-subtitle">Click refresh to try again</p>
+      </div>
+    `;
     return;
   }
   
-  onThisDayContent.innerHTML = currentOnThisDay.map(event => `
-    <div class="on-this-day-item">
-      <span class="on-this-day-year">${event.year}</span>
-      <div class="on-this-day-event">
-        ${escapeHtml(event.event)}
-        <span class="on-this-day-category ${event.category}">${event.category}</span>
-      </div>
+  // Show current date header
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  
+  onThisDayContent.innerHTML = `
+    <div class="on-this-day-header">
+      <span class="on-this-day-date">${dateStr}</span>
     </div>
-  `).join('');
+    <div class="on-this-day-list">
+      ${currentOnThisDay.map(event => `
+        <div class="on-this-day-item">
+          <span class="on-this-day-year">${event.year}</span>
+          <div class="on-this-day-event">
+            <p class="on-this-day-text">${escapeHtml(event.event)}</p>
+            <span class="on-this-day-category ${event.category}">${event.category}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
 // ========================================
@@ -3497,6 +4121,7 @@ async function init(): Promise<void> {
   await loadIntegrationsData();
   await loadPlaygroundData();
   await loadMP3Data();
+  await loadVPNData();
   setupEventListeners();
   setupNewModuleEventListeners();
   renderCalendar();

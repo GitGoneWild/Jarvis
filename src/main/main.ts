@@ -43,6 +43,20 @@ const execAsync = promisify(exec);
 // GitHub repository for auto-update checks
 const GITHUB_REPO = 'GitGoneWild/Jarvis';
 
+// Secure HTML sanitization - removes all HTML tags iteratively until no more are found
+function sanitizeHtml(input: string | null | undefined): string {
+  if (!input) return '';
+  let result = input;
+  let previous = '';
+  // Iteratively remove tags until the string doesn't change
+  while (result !== previous) {
+    previous = result;
+    result = result.replace(/<[^>]*>/g, '');
+  }
+  // Also escape any remaining angle brackets
+  return result.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 let mainWindow: BrowserWindow | null = null;
 
 // Get the base path for resources
@@ -883,8 +897,8 @@ ipcMain.handle('fetch-news', async (): Promise<NewsArticle[]> => {
     
     const articles: NewsArticle[] = data.items.slice(0, 10).map((item, index) => ({
       id: `news-${Date.now()}-${index}`,
-      title: item.title,
-      description: item.description?.replace(/<[^>]*>/g, '') || '',
+      title: sanitizeHtml(item.title),
+      description: sanitizeHtml(item.description),
       source: data.feed?.title || 'BBC News',
       url: item.link,
       imageUrl: item.enclosure?.link || null,
@@ -898,7 +912,8 @@ ipcMain.handle('fetch-news', async (): Promise<NewsArticle[]> => {
     store.set('news', news);
     
     return articles;
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch news:', error);
     return [];
   }
 });
@@ -936,7 +951,8 @@ ipcMain.handle('fetch-sports-scores', async (): Promise<SportsScore[]> => {
     store.set('news', news);
     
     return scores;
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch sports scores:', error);
     return [];
   }
 });
@@ -992,13 +1008,14 @@ ipcMain.handle('get-recommendations', async (_event, answers: RecommendationAnsw
       year: item.show.premiered ? parseInt(item.show.premiered.split('-')[0]) : 2020,
       rating: item.show.rating?.average || 7.0,
       genre: item.show.genres || [genreAnswer],
-      description: item.show.summary?.replace(/<[^>]*>/g, '') || 'No description available.',
+      description: sanitizeHtml(item.show.summary) || 'No description available.',
       posterUrl: item.show.image?.medium || null,
       backdropUrl: item.show.image?.original || null,
     }));
     
     return recommendations;
-  } catch {
+  } catch (error) {
+    console.error('Failed to get recommendations from API:', error);
     return generateFallbackRecommendations(genreAnswer);
   }
 });
@@ -1101,7 +1118,8 @@ ipcMain.handle('get-lastfm-user-info', async (): Promise<LastFMUserInfo | null> 
       registeredAt: new Date(parseInt(data.user.registered.unixtime) * 1000).toISOString(),
       imageUrl: data.user.image?.[2]?.['#text'] || null,
     };
-  } catch {
+  } catch (error) {
+    console.error('Failed to get LastFM user info:', error);
     return null;
   }
 });
@@ -1140,7 +1158,8 @@ ipcMain.handle('get-lastfm-recent-tracks', async (): Promise<LastFMRecentTrack[]
       playedAt: track.date ? new Date(parseInt(track.date.uts) * 1000).toISOString() : null,
       nowPlaying: track['@attr']?.nowplaying === 'true',
     }));
-  } catch {
+  } catch (error) {
+    console.error('Failed to get LastFM recent tracks:', error);
     return [];
   }
 });
@@ -1181,7 +1200,8 @@ ipcMain.handle('get-sonarr-status', async (): Promise<SonarrStatus | null> => {
       episodeCount: seriesData.reduce((sum, s) => sum + (s.episodeCount || 0), 0),
       queueCount: queueData.totalRecords || 0,
     };
-  } catch {
+  } catch (error) {
+    console.error('Failed to get Sonarr status:', error);
     return null;
   }
 });
@@ -1221,7 +1241,8 @@ ipcMain.handle('get-radarr-status', async (): Promise<RadarrStatus | null> => {
       movieCount: movieData.length,
       queueCount: queueData.totalRecords || 0,
     };
-  } catch {
+  } catch (error) {
+    console.error('Failed to get Radarr status:', error);
     return null;
   }
 });

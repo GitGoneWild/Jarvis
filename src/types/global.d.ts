@@ -1,4 +1,22 @@
-import type { ModuleSettings, HealthData, VPNData, BookmarksData, ToolsData, TimerData, NewsData, ActivityTimer, ActiveTimer, NewsArticle, SportsScore, MovieTVRecommendation, LastFMUserInfo, LastFMRecentTrack, SonarrStatus, RadarrStatus, ApiServiceName } from '../modules/shared/types';
+import type {
+  ModuleSettings,
+  HealthData,
+  VPNData,
+  BookmarksData,
+  ToolsData,
+  TimerData,
+  NewsData,
+  ActivityTimer,
+  ActiveTimer,
+  NewsArticle,
+  SportsScore,
+  MovieTVRecommendation,
+  LastFMUserInfo,
+  LastFMRecentTrack,
+  SonarrStatus,
+  RadarrStatus,
+  ApiServiceName,
+} from '../modules/shared/types';
 
 // User Settings
 export interface UserSettings {

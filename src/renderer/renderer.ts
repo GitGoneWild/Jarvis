@@ -2383,7 +2383,8 @@ async function handleRefreshNews(): Promise<void> {
     
     renderNews();
     showToast('News updated successfully', 'success');
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch news:', error);
     showToast('Failed to fetch news', 'error');
   } finally {
     if (refreshNewsBtn) {
@@ -2466,7 +2467,8 @@ async function getRecommendations(): Promise<void> {
     }
     
     renderRecommendations(recommendations);
-  } catch {
+  } catch (error) {
+    console.error('Failed to get recommendations:', error);
     showToast('Failed to get recommendations', 'error');
   }
 }
@@ -2569,7 +2571,8 @@ async function handleTestConnection(service: ApiServiceName): Promise<void> {
     } else {
       showToast('API testing requires Electron integration', 'info');
     }
-  } catch {
+  } catch (error) {
+    console.error(`Failed to test ${service} connection:`, error);
     showToast(`Failed to test ${service} connection`, 'error');
   } finally {
     if (btn) {
@@ -2711,18 +2714,29 @@ function activateRetroMode(): void {
 
 function spawnConfetti(): void {
   const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#fd79a8', '#a29bfe'];
+  const particleCount = 25; // Reduced from 50 for better performance
   
-  for (let i = 0; i < 50; i++) {
+  // Use document fragment for batch DOM updates
+  const fragment = document.createDocumentFragment();
+  const particles: HTMLDivElement[] = [];
+  
+  for (let i = 0; i < particleCount; i++) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti';
     confetti.style.left = `${Math.random() * 100}vw`;
     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.animationDelay = `${Math.random() * 2}s`;
+    confetti.style.animationDelay = `${Math.random() * 1.5}s`;
     confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-    document.body.appendChild(confetti);
-    
-    setTimeout(() => confetti.remove(), 3000);
+    fragment.appendChild(confetti);
+    particles.push(confetti);
   }
+  
+  document.body.appendChild(fragment);
+  
+  // Batch remove all particles after animation
+  setTimeout(() => {
+    particles.forEach(p => p.remove());
+  }, 3500);
 }
 
 // ========================================

@@ -3836,9 +3836,10 @@ async function handleRefreshFunFact(): Promise<void> {
         <div class="playground-error">
           <span class="error-icon">⚠️</span>
           <p>Failed to load fun fact</p>
-          <button class="secondary-btn retry-btn" onclick="handleRefreshFunFact()">Try Again</button>
+          <button class="secondary-btn retry-btn" id="retryFunFactBtn">Try Again</button>
         </div>
       `;
+      document.getElementById('retryFunFactBtn')?.addEventListener('click', handleRefreshFunFact);
     }
   } finally {
     if (refreshBtn) {
@@ -3873,7 +3874,7 @@ async function handleRefreshOnThisDay(): Promise<void> {
       
       // Collection of historical events by date
       const historicalEvents: Record<string, Array<{year: number; event: string; category: CategoryType}>> = {
-        '1-1': [{ year: 1863, event: 'Abraham Lincoln signs the Emancipation Proclamation', category: 'historical' }],
+        '1-1': [{ year: 1863, event: 'Emancipation Proclamation takes effect, freeing slaves in Confederate states', category: 'historical' }],
         '7-4': [{ year: 1776, event: 'United States Declaration of Independence adopted', category: 'historical' }],
         '7-20': [{ year: 1969, event: 'Apollo 11: Neil Armstrong and Buzz Aldrin become first humans to walk on the Moon', category: 'science' }],
         '12-25': [{ year: 1991, event: 'Mikhail Gorbachev resigns as president of the Soviet Union', category: 'historical' }],
@@ -3907,9 +3908,10 @@ async function handleRefreshOnThisDay(): Promise<void> {
         <div class="playground-error">
           <span class="error-icon">📅</span>
           <p>Failed to load historical events</p>
-          <button class="secondary-btn retry-btn" onclick="handleRefreshOnThisDay()">Try Again</button>
+          <button class="secondary-btn retry-btn" id="retryOnThisDayBtn">Try Again</button>
         </div>
       `;
+      document.getElementById('retryOnThisDayBtn')?.addEventListener('click', handleRefreshOnThisDay);
     }
   } finally {
     if (refreshBtn) {

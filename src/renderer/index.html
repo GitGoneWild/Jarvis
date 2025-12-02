@@ -167,94 +167,245 @@
       <main class="main-content">
         <!-- Home Section -->
         <section class="content-section active" id="home-section">
-          <div class="section-header">
-            <h1>Welcome to Jarvis</h1>
-            <p class="subtitle">Your personal productivity dashboard</p>
+          <div class="home-header">
+            <div class="home-greeting">
+              <h1 id="greetingText">Good morning</h1>
+              <p class="home-date" id="homeDate"></p>
+            </div>
+            <div class="home-quick-actions">
+              <button class="quick-action-pill" id="quickAddTask">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                </svg>
+                New Task
+              </button>
+              <button class="quick-action-pill" id="quickAddEvent">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M12 9v6M9 12h6" stroke-linecap="round"/>
+                </svg>
+                New Event
+              </button>
+              <button class="quick-action-pill secondary" id="goToToday">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Today
+              </button>
+            </div>
           </div>
           
-          <div class="dashboard">
-            <!-- Quick Actions -->
-            <div class="dashboard-card quick-actions">
-              <h3 class="card-title">Quick Actions</h3>
-              <div class="quick-action-buttons">
-                <button class="quick-action-btn" id="quickAddTask">
+          <div class="dashboard-modern">
+            <!-- Status Cards Row -->
+            <div class="status-cards-row">
+              <div class="status-card tasks-card">
+                <div class="status-card-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
                   </svg>
-                  <span>Add Task</span>
-                </button>
-                <button class="quick-action-btn" id="quickAddEvent">
+                </div>
+                <div class="status-card-content">
+                  <span class="status-card-value" id="tasksToday">0</span>
+                  <span class="status-card-label">Tasks Due Today</span>
+                </div>
+                <div class="status-card-action" data-navigate="tasks">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </div>
+              </div>
+              
+              <div class="status-card events-card">
+                <div class="status-card-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <path d="M12 9v6M9 12h6" stroke-linecap="round"/>
-                  </svg>
-                  <span>Add Event</span>
-                </button>
-                <button class="quick-action-btn" id="goToToday">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
                     <line x1="3" y1="10" x2="21" y2="10"/>
-                    <circle cx="12" cy="16" r="2" fill="currentColor"/>
                   </svg>
-                  <span>Today's Calendar</span>
-                </button>
+                </div>
+                <div class="status-card-content">
+                  <span class="status-card-value" id="eventsToday">0</span>
+                  <span class="status-card-label">Events Today</span>
+                </div>
+                <div class="status-card-action" data-navigate="calendar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </div>
               </div>
-            </div>
+              
+              <div class="status-card overdue-card">
+                <div class="status-card-icon warning">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <div class="status-card-content">
+                  <span class="status-card-value warning" id="overdueCount">0</span>
+                  <span class="status-card-label">Overdue</span>
+                </div>
+                <div class="status-card-action" data-navigate="tasks">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </div>
+              </div>
 
-            <!-- Today's Overview -->
-            <div class="dashboard-card today-overview">
-              <h3 class="card-title">Today's Overview</h3>
-              <div class="today-date" id="todayDate"></div>
-              <div class="today-stats">
-                <div class="stat-item">
-                  <span class="stat-value" id="tasksToday">0</span>
-                  <span class="stat-label">Tasks Due</span>
+              <div class="status-card week-card">
+                <div class="status-card-icon accent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                  </svg>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value" id="eventsToday">0</span>
-                  <span class="stat-label">Events</span>
-                </div>
-                <div class="stat-item overdue">
-                  <span class="stat-value" id="overdueCount">0</span>
-                  <span class="stat-label">Overdue</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Upcoming Tasks -->
-            <div class="dashboard-card upcoming-tasks">
-              <div class="card-header">
-                <h3 class="card-title">Upcoming Tasks</h3>
-                <button class="see-all-btn" data-navigate="tasks">See All</button>
-              </div>
-              <div class="task-list-preview" id="upcomingTasksList">
-                <div class="empty-state">
-                  <p>No upcoming tasks</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Upcoming Events -->
-            <div class="dashboard-card upcoming-events">
-              <div class="card-header">
-                <h3 class="card-title">Upcoming Events</h3>
-                <button class="see-all-btn" data-navigate="calendar">See All</button>
-              </div>
-              <div class="events-list-preview" id="upcomingEventsList">
-                <div class="empty-state">
-                  <p>No upcoming events</p>
+                <div class="status-card-content">
+                  <span class="status-card-value" id="weekTasksCount">0</span>
+                  <span class="status-card-label">This Week</span>
                 </div>
               </div>
             </div>
 
-            <!-- Birthdays -->
-            <div class="dashboard-card birthdays">
-              <div class="card-header">
-                <h3 class="card-title">🎂 Birthdays This Week</h3>
+            <!-- Main Content Grid -->
+            <div class="dashboard-grid">
+              <!-- Next Up Section -->
+              <div class="dashboard-card next-up-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">🎯</span>
+                    <h3 class="card-title">Next Up</h3>
+                  </div>
+                  <button class="see-all-btn" data-navigate="tasks">View All</button>
+                </div>
+                <div class="next-up-content" id="nextUpContent">
+                  <div class="empty-state-modern">
+                    <div class="empty-icon-container">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                      </svg>
+                    </div>
+                    <p class="empty-title">All caught up!</p>
+                    <p class="empty-subtitle">No pending tasks for today</p>
+                  </div>
+                </div>
               </div>
-              <div class="birthdays-list" id="birthdaysList">
-                <div class="empty-state">
-                  <p>No birthdays this week</p>
+
+              <!-- Upcoming Tasks Card -->
+              <div class="dashboard-card upcoming-tasks-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">📋</span>
+                    <h3 class="card-title">Upcoming Tasks</h3>
+                  </div>
+                  <button class="see-all-btn" data-navigate="tasks">See All</button>
+                </div>
+                <div class="task-list-preview" id="upcomingTasksList">
+                  <div class="empty-state-modern">
+                    <div class="empty-icon-container">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                      </svg>
+                    </div>
+                    <p class="empty-title">No upcoming tasks</p>
+                    <p class="empty-subtitle">Click "New Task" to create one</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Upcoming Events Card -->
+              <div class="dashboard-card upcoming-events-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">📅</span>
+                    <h3 class="card-title">Upcoming Events</h3>
+                  </div>
+                  <button class="see-all-btn" data-navigate="calendar">See All</button>
+                </div>
+                <div class="events-list-preview" id="upcomingEventsList">
+                  <div class="empty-state-modern">
+                    <div class="empty-icon-container">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
+                    </div>
+                    <p class="empty-title">No upcoming events</p>
+                    <p class="empty-subtitle">Your schedule is clear</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- This Week Highlights -->
+              <div class="dashboard-card highlights-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">✨</span>
+                    <h3 class="card-title">This Week</h3>
+                  </div>
+                </div>
+                <div class="highlights-content" id="weekHighlights">
+                  <div class="highlight-section">
+                    <h4 class="highlight-section-title">
+                      <span class="highlight-icon">🎂</span>
+                      Birthdays
+                    </h4>
+                    <div class="birthdays-list" id="birthdaysList">
+                      <p class="highlight-empty">No birthdays this week</p>
+                    </div>
+                  </div>
+                  <div class="highlight-section">
+                    <h4 class="highlight-section-title">
+                      <span class="highlight-icon">📌</span>
+                      Important Events
+                    </h4>
+                    <div class="important-events-list" id="importantEventsList">
+                      <p class="highlight-empty">No important events</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Settings Quick Access -->
+              <div class="dashboard-card settings-quick-card">
+                <div class="card-header-modern">
+                  <div class="card-header-left">
+                    <span class="card-icon">⚙️</span>
+                    <h3 class="card-title">Quick Settings</h3>
+                  </div>
+                </div>
+                <div class="quick-settings-content">
+                  <div class="quick-setting-item" data-navigate="settings">
+                    <div class="quick-setting-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                      </svg>
+                    </div>
+                    <span class="quick-setting-label">Theme & Appearance</span>
+                    <svg class="quick-setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </div>
+                  <div class="quick-setting-item" data-navigate="settings">
+                    <div class="quick-setting-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                      </svg>
+                    </div>
+                    <span class="quick-setting-label">Notifications</span>
+                    <svg class="quick-setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
@@ -362,225 +513,408 @@
             <p class="subtitle">Customize your experience</p>
           </div>
           
-          <div class="settings-panel">
-            <div class="settings-group">
-              <h3 class="settings-group-title">Appearance</h3>
-              
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="themeSelect">Theme</label>
-                  <span class="setting-description">Choose your preferred color scheme</span>
+          <div class="settings-layout">
+            <!-- Settings Sidebar / Category Navigation -->
+            <nav class="settings-nav" aria-label="Settings categories">
+              <ul class="settings-nav-list">
+                <li class="settings-nav-item active" data-category="general">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                  </svg>
+                  <span>General</span>
+                </li>
+                <li class="settings-nav-item" data-category="appearance">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  </svg>
+                  <span>Appearance</span>
+                </li>
+                <li class="settings-nav-item" data-category="notifications">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  <span>Notifications</span>
+                </li>
+                <li class="settings-nav-item" data-category="integrations">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                  <span>Integrations</span>
+                </li>
+                <li class="settings-nav-item" data-category="about">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  <span>About</span>
+                </li>
+              </ul>
+            </nav>
+
+            <!-- Settings Content Area -->
+            <div class="settings-content">
+              <!-- General Settings -->
+              <div class="settings-category active" id="settings-general">
+                <div class="settings-category-header">
+                  <h2>General</h2>
+                  <p>Manage your default preferences and behavior</p>
                 </div>
-                <select id="themeSelect" class="setting-select">
-                  <option value="dark">Dark</option>
-                  <option value="light">Light</option>
-                  <option value="system">System</option>
-                </select>
-              </div>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="sidebarToggleSetting">Sidebar Expanded by Default</label>
-                  <span class="setting-description">Keep sidebar expanded on app start</span>
+                
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Startup</h3>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="startPageSelect">Default Start Page</label>
+                      <span class="setting-description">Choose which page to display when the app opens</span>
+                    </div>
+                    <select id="startPageSelect" class="setting-select">
+                      <option value="home">Home</option>
+                      <option value="tasks">Tasks</option>
+                      <option value="calendar">Calendar</option>
+                      <option value="settings">Settings</option>
+                    </select>
+                  </div>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="sidebarToggleSetting" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="startPageSelect">Default Start Page</label>
-                  <span class="setting-description">Page to show when app opens</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Modules</h3>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="timerEnabled">Activity Timer</label>
+                      <span class="setting-description">Track time spent on activities and projects</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="timerEnabled" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="timerShowInCalendar">Show Timer in Calendar</label>
+                      <span class="setting-description">Display timer activities in calendar view</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="timerShowInCalendar" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="newsEnabled">News Dashboard</label>
+                      <span class="setting-description">Show news and sports updates</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="newsEnabled" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="newsShowSports">Include Sports News</label>
+                      <span class="setting-description">Display sports headlines and scores</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="newsShowSports" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="newsRefreshInterval">News Refresh Interval</label>
+                      <span class="setting-description">How often to fetch new headlines</span>
+                    </div>
+                    <select id="newsRefreshInterval" class="setting-select">
+                      <option value="5">5 minutes</option>
+                      <option value="15" selected>15 minutes</option>
+                      <option value="30">30 minutes</option>
+                      <option value="60">1 hour</option>
+                    </select>
+                  </div>
                 </div>
-                <select id="startPageSelect" class="setting-select">
-                  <option value="home">Home</option>
-                  <option value="tasks">Tasks</option>
-                  <option value="calendar">Calendar</option>
-                  <option value="settings">Settings</option>
-                </select>
-              </div>
-            </div>
 
-            <div class="settings-group">
-              <h3 class="settings-group-title">Notifications</h3>
-              
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="notificationsEnabled">Enable Notifications</label>
-                  <span class="setting-description">Receive alerts and reminders</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Data</h3>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label>Reset All Settings</label>
+                      <span class="setting-description">Restore all settings to their default values</span>
+                    </div>
+                    <button class="secondary-btn danger-btn" id="resetSettingsBtn">Reset to Defaults</button>
+                  </div>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="notificationsEnabled" checked>
-                  <span class="toggle-slider"></span>
-                </label>
               </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="soundsEnabled">Sound Effects</label>
-                  <span class="setting-description">Play sounds for notifications</span>
+              <!-- Appearance Settings -->
+              <div class="settings-category" id="settings-appearance">
+                <div class="settings-category-header">
+                  <h2>Appearance</h2>
+                  <p>Customize how Jarvis looks and feels</p>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="soundsEnabled" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="taskReminders">Task Reminders</label>
-                  <span class="setting-description">Get reminded about due tasks</span>
+                
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Theme</h3>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="themeSelect">Color Theme</label>
+                      <span class="setting-description">Choose your preferred color scheme</span>
+                    </div>
+                    <div class="theme-selector">
+                      <label class="theme-option">
+                        <input type="radio" name="theme" value="dark" id="themeDark">
+                        <span class="theme-preview dark-preview">
+                          <span class="theme-preview-icon">🌙</span>
+                          <span class="theme-preview-label">Dark</span>
+                        </span>
+                      </label>
+                      <label class="theme-option">
+                        <input type="radio" name="theme" value="light" id="themeLight">
+                        <span class="theme-preview light-preview">
+                          <span class="theme-preview-icon">☀️</span>
+                          <span class="theme-preview-label">Light</span>
+                        </span>
+                      </label>
+                      <label class="theme-option">
+                        <input type="radio" name="theme" value="system" id="themeSystem">
+                        <span class="theme-preview system-preview">
+                          <span class="theme-preview-icon">💻</span>
+                          <span class="theme-preview-label">System</span>
+                        </span>
+                      </label>
+                    </div>
+                    <!-- Keep hidden select for backward compatibility -->
+                    <select id="themeSelect" class="setting-select" style="display: none;">
+                      <option value="dark">Dark</option>
+                      <option value="light">Light</option>
+                      <option value="system">System</option>
+                    </select>
+                  </div>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="taskReminders" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="eventReminders">Event Reminders</label>
-                  <span class="setting-description">Get reminded about upcoming events</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Sidebar</h3>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="sidebarToggleSetting">Expanded by Default</label>
+                      <span class="setting-description">Keep sidebar expanded when the app starts</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="sidebarToggleSetting" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="eventReminders" checked>
-                  <span class="toggle-slider"></span>
-                </label>
               </div>
-            </div>
 
-            <div class="settings-group">
-              <h3 class="settings-group-title">Timer Settings</h3>
-              
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="timerEnabled">Enable Timer Module</label>
-                  <span class="setting-description">Track time spent on activities</span>
+              <!-- Notifications Settings -->
+              <div class="settings-category" id="settings-notifications">
+                <div class="settings-category-header">
+                  <h2>Notifications</h2>
+                  <p>Control how and when you receive alerts</p>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="timerEnabled" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
+                
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Alerts</h3>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="notificationsEnabled">Enable Notifications</label>
+                      <span class="setting-description">Receive desktop alerts and reminders</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notificationsEnabled" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="timerShowInCalendar">Show in Calendar</label>
-                  <span class="setting-description">Display timer activities in calendar view</span>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="soundsEnabled">Sound Effects</label>
+                      <span class="setting-description">Play sounds for notifications and alerts</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="soundsEnabled" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="timerShowInCalendar" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
 
-            <div class="settings-group">
-              <h3 class="settings-group-title">News Settings</h3>
-              
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="newsEnabled">Enable News Module</label>
-                  <span class="setting-description">Show news dashboard</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Reminders</h3>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="taskReminders">Task Reminders</label>
+                      <span class="setting-description">Get notified about due and overdue tasks</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="taskReminders" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="eventReminders">Event Reminders</label>
+                      <span class="setting-description">Get notified before upcoming events</span>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="eventReminders" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="newsEnabled" checked>
-                  <span class="toggle-slider"></span>
-                </label>
               </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="newsShowSports">Show Sports News</label>
-                  <span class="setting-description">Include sports headlines</span>
+              <!-- Integrations Settings -->
+              <div class="settings-category" id="settings-integrations">
+                <div class="settings-category-header">
+                  <h2>Integrations</h2>
+                  <p>Connect your favorite external services</p>
                 </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="newsShowSports" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
+                
+                <div class="settings-group">
+                  <h3 class="settings-group-title">
+                    <span class="integration-title-icon">🎵</span>
+                    Last.fm
+                  </h3>
+                  <p class="settings-group-description">Track and display your music listening history</p>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="lastfmApiKey">API Key</label>
+                      <span class="setting-description">Your Last.fm API key from last.fm/api</span>
+                    </div>
+                    <input type="password" id="lastfmApiKey" class="setting-input" placeholder="Enter API key">
+                  </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="newsRefreshInterval">Refresh Interval</label>
-                  <span class="setting-description">How often to refresh news</span>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="lastfmUsername">Username</label>
+                      <span class="setting-description">Your Last.fm username</span>
+                    </div>
+                    <input type="text" id="lastfmUsername" class="setting-input" placeholder="Enter username">
+                  </div>
                 </div>
-                <select id="newsRefreshInterval" class="setting-select">
-                  <option value="5">5 minutes</option>
-                  <option value="15" selected>15 minutes</option>
-                  <option value="30">30 minutes</option>
-                  <option value="60">1 hour</option>
-                </select>
-              </div>
-            </div>
 
-            <div class="settings-group">
-              <h3 class="settings-group-title">API Integrations</h3>
-              
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="lastfmApiKey">Last.fm API Key</label>
-                  <span class="setting-description">Your Last.fm API key</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">
+                    <span class="integration-title-icon">📺</span>
+                    Sonarr
+                  </h3>
+                  <p class="settings-group-description">Manage your TV show collection</p>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="sonarrBaseUrl">Base URL</label>
+                      <span class="setting-description">e.g., http://localhost:8989</span>
+                    </div>
+                    <input type="text" id="sonarrBaseUrl" class="setting-input" placeholder="http://localhost:8989">
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="sonarrApiKey">API Key</label>
+                      <span class="setting-description">Found in Settings → General</span>
+                    </div>
+                    <input type="password" id="sonarrApiKey" class="setting-input" placeholder="Enter API key">
+                  </div>
                 </div>
-                <input type="password" id="lastfmApiKey" class="setting-input" placeholder="Enter API key">
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="lastfmUsername">Last.fm Username</label>
-                  <span class="setting-description">Your Last.fm username</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">
+                    <span class="integration-title-icon">🎬</span>
+                    Radarr
+                  </h3>
+                  <p class="settings-group-description">Manage your movie collection</p>
+                  
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="radarrBaseUrl">Base URL</label>
+                      <span class="setting-description">e.g., http://localhost:7878</span>
+                    </div>
+                    <input type="text" id="radarrBaseUrl" class="setting-input" placeholder="http://localhost:7878">
+                  </div>
+
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label for="radarrApiKey">API Key</label>
+                      <span class="setting-description">Found in Settings → General</span>
+                    </div>
+                    <input type="password" id="radarrApiKey" class="setting-input" placeholder="Enter API key">
+                  </div>
                 </div>
-                <input type="text" id="lastfmUsername" class="setting-input" placeholder="Enter username">
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="sonarrBaseUrl">Sonarr Base URL</label>
-                  <span class="setting-description">e.g., http://localhost:8989</span>
+                <div class="settings-group">
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label>Save Integration Settings</label>
+                      <span class="setting-description">Apply and test your API configurations</span>
+                    </div>
+                    <button class="primary-btn" id="saveApiIntegrationsBtn">Save & Test</button>
+                  </div>
                 </div>
-                <input type="text" id="sonarrBaseUrl" class="setting-input" placeholder="http://localhost:8989">
               </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="sonarrApiKey">Sonarr API Key</label>
-                  <span class="setting-description">Your Sonarr API key</span>
+              <!-- About Settings -->
+              <div class="settings-category" id="settings-about">
+                <div class="settings-category-header">
+                  <h2>About</h2>
+                  <p>Application information and updates</p>
                 </div>
-                <input type="password" id="sonarrApiKey" class="setting-input" placeholder="Enter API key">
-              </div>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="radarrBaseUrl">Radarr Base URL</label>
-                  <span class="setting-description">e.g., http://localhost:7878</span>
+                
+                <div class="settings-group about-card">
+                  <div class="about-logo">
+                    <svg class="about-logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                      <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                      <path d="M12 2V6M12 18V22M2 12H6M18 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="about-details">
+                    <h3>Jarvis</h3>
+                    <p class="about-tagline">Personal Productivity App</p>
+                    <p class="version" id="appVersion">Version 1.0.0</p>
+                    <p class="about-tech">Built with Electron & TypeScript</p>
+                  </div>
                 </div>
-                <input type="text" id="radarrBaseUrl" class="setting-input" placeholder="http://localhost:7878">
-              </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="radarrApiKey">Radarr API Key</label>
-                  <span class="setting-description">Your Radarr API key</span>
+                <div class="settings-group">
+                  <h3 class="settings-group-title">Updates</h3>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <label>Check for Updates</label>
+                      <span class="setting-description">Download the latest version of Jarvis</span>
+                    </div>
+                    <button class="secondary-btn" id="checkUpdatesBtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                        <polyline points="1 4 1 10 7 10"/>
+                        <polyline points="23 20 23 14 17 14"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                      </svg>
+                      Check for Updates
+                    </button>
+                  </div>
                 </div>
-                <input type="password" id="radarrApiKey" class="setting-input" placeholder="Enter API key">
-              </div>
-
-              <div class="setting-item">
-                <button class="secondary-btn" id="saveApiIntegrationsBtn">Save API Settings</button>
-              </div>
-            </div>
-
-            <div class="settings-group">
-              <h3 class="settings-group-title">About</h3>
-              <div class="about-info">
-                <p><strong>Jarvis</strong> - Personal Productivity App</p>
-                <p class="version" id="appVersion">Version 1.0.0</p>
-                <p class="copyright">Built with Electron</p>
-                <button class="secondary-btn update-check-btn" id="checkUpdatesBtn" style="margin-top: 12px;">
-                  Check for Updates
-                </button>
               </div>
             </div>
           </div>

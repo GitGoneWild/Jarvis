@@ -38,16 +38,25 @@ const navItems = document.querySelectorAll('.nav-item') as NodeListOf<HTMLElemen
 const contentSections = document.querySelectorAll('.content-section') as NodeListOf<HTMLElement>;
 
 // Home Dashboard
-const todayDate = document.getElementById('todayDate') as HTMLElement;
+const greetingText = document.getElementById('greetingText') as HTMLElement;
+const homeDate = document.getElementById('homeDate') as HTMLElement;
 const tasksToday = document.getElementById('tasksToday') as HTMLElement;
 const eventsToday = document.getElementById('eventsToday') as HTMLElement;
 const overdueCount = document.getElementById('overdueCount') as HTMLElement;
+const weekTasksCount = document.getElementById('weekTasksCount') as HTMLElement;
+const nextUpContent = document.getElementById('nextUpContent') as HTMLElement;
 const upcomingTasksList = document.getElementById('upcomingTasksList') as HTMLElement;
 const upcomingEventsList = document.getElementById('upcomingEventsList') as HTMLElement;
 const birthdaysList = document.getElementById('birthdaysList') as HTMLElement;
+const importantEventsList = document.getElementById('importantEventsList') as HTMLElement;
 const quickAddTask = document.getElementById('quickAddTask') as HTMLButtonElement;
 const quickAddEvent = document.getElementById('quickAddEvent') as HTMLButtonElement;
 const goToToday = document.getElementById('goToToday') as HTMLButtonElement;
+
+// Settings Navigation
+const settingsNavItems = document.querySelectorAll('.settings-nav-item') as NodeListOf<HTMLElement>;
+const settingsCategories = document.querySelectorAll('.settings-category') as NodeListOf<HTMLElement>;
+const resetSettingsBtn = document.getElementById('resetSettingsBtn') as HTMLButtonElement;
 
 // Tasks
 const addTaskBtn = document.getElementById('addTaskBtn') as HTMLButtonElement;
@@ -425,8 +434,19 @@ function applyTheme(theme: 'dark' | 'light' | 'system'): void {
   document.body.classList.add(`${effectiveTheme}-theme`);
 }
 
+function updateThemeRadioButtons(): void {
+  const themeDark = document.getElementById('themeDark') as HTMLInputElement;
+  const themeLight = document.getElementById('themeLight') as HTMLInputElement;
+  const themeSystem = document.getElementById('themeSystem') as HTMLInputElement;
+  
+  if (themeDark) themeDark.checked = settings.theme === 'dark';
+  if (themeLight) themeLight.checked = settings.theme === 'light';
+  if (themeSystem) themeSystem.checked = settings.theme === 'system';
+}
+
 function populateSettingsUI(): void {
   themeSelect.value = settings.theme;
+  updateThemeRadioButtons();
   sidebarToggleSetting.checked = settings.sidebarExpanded;
   startPageSelect.value = settings.defaultStartPage;
   notificationsEnabled.checked = settings.notifications.enabled;
@@ -875,24 +895,96 @@ function closeEventModalFn(): void {
 // Dashboard Functions
 // ========================================
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
 function updateDashboard(): void {
   const today = new Date();
   const todayStr = getDateString(today);
 
-  // Update today's date display
-  todayDate.textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  // Update greeting and date
+  if (greetingText) {
+    greetingText.textContent = getGreeting();
+  }
+  if (homeDate) {
+    homeDate.textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
 
   // Count tasks due today
   const tasksDueToday = tasks.filter(t => t.dueDate === todayStr && t.status === 'pending').length;
-  tasksToday.textContent = tasksDueToday.toString();
+  if (tasksToday) tasksToday.textContent = tasksDueToday.toString();
 
   // Count events today
   const eventsTodayCount = getEventsForDate(today).length;
-  eventsToday.textContent = eventsTodayCount.toString();
+  if (eventsToday) eventsToday.textContent = eventsTodayCount.toString();
 
   // Count overdue tasks
   const overdueTasks = tasks.filter(t => t.status === 'pending' && isOverdue(t.dueDate)).length;
-  overdueCount.textContent = overdueTasks.toString();
+  if (overdueCount) overdueCount.textContent = overdueTasks.toString();
+
+  // Count tasks this week
+  const nextWeek = new Date();
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  const weekTasks = tasks.filter(t => {
+    if (t.status !== 'pending' || !t.dueDate) return false;
+    const dueDate = new Date(t.dueDate);
+    return dueDate >= today && dueDate <= nextWeek;
+  }).length;
+  if (weekTasksCount) weekTasksCount.textContent = weekTasks.toString();
+
+  // Render "Next Up" - most urgent task
+  const nextTask = tasks
+    .filter(t => t.status === 'pending')
+    .sort((a, b) => {
+      // Overdue first, then by due date
+      const aOverdue = isOverdue(a.dueDate);
+      const bOverdue = isOverdue(b.dueDate);
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+      // Then by priority
+      const priorities = { high: 0, medium: 1, low: 2 };
+      const priorityDiff = priorities[a.priority] - priorities[b.priority];
+      if (priorityDiff !== 0) return priorityDiff;
+      // Then by due date
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    })[0];
+
+  if (nextUpContent) {
+    if (nextTask) {
+      const isTaskOverdue = isOverdue(nextTask.dueDate);
+      nextUpContent.innerHTML = `
+        <div class="next-up-item">
+          <div class="next-up-priority ${nextTask.priority}"></div>
+          <div class="next-up-info">
+            <div class="next-up-title">${escapeHtml(nextTask.title)}</div>
+            <div class="next-up-meta ${isTaskOverdue ? 'overdue' : ''}">
+              ${isTaskOverdue ? '⚠️ Overdue: ' : ''}${nextTask.dueDate ? formatDate(nextTask.dueDate) : 'No due date'} 
+              · ${nextTask.priority.charAt(0).toUpperCase() + nextTask.priority.slice(1)} priority
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      nextUpContent.innerHTML = `
+        <div class="empty-state-modern">
+          <div class="empty-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+          </div>
+          <p class="empty-title">All caught up!</p>
+          <p class="empty-subtitle">No pending tasks for today</p>
+        </div>
+      `;
+    }
+  }
 
   // Render upcoming tasks (next 7 days, pending only)
   const upcomingTasks = tasks
@@ -904,34 +996,44 @@ function updateDashboard(): void {
     })
     .slice(0, 5);
 
-  if (upcomingTasks.length === 0) {
-    upcomingTasksList.innerHTML = '<div class="empty-state"><p>No upcoming tasks</p></div>';
-  } else {
-    upcomingTasksList.innerHTML = upcomingTasks.map(task => `
-      <div class="preview-item">
-        <div class="preview-item-checkbox ${task.status === 'completed' ? 'checked' : ''}" data-id="${task.id}"></div>
-        <div class="preview-item-content">
-          <div class="preview-item-title ${task.status === 'completed' ? 'completed' : ''}">${escapeHtml(task.title)}</div>
-          <div class="preview-item-meta ${isOverdue(task.dueDate) ? 'overdue' : ''}">${task.dueDate ? formatDate(task.dueDate) : 'No due date'}</div>
+  if (upcomingTasksList) {
+    if (upcomingTasks.length === 0) {
+      upcomingTasksList.innerHTML = `
+        <div class="empty-state-modern">
+          <div class="empty-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </div>
+          <p class="empty-title">No upcoming tasks</p>
+          <p class="empty-subtitle">Click "New Task" to create one</p>
         </div>
-      </div>
-    `).join('');
+      `;
+    } else {
+      upcomingTasksList.innerHTML = upcomingTasks.map(task => `
+        <div class="preview-item">
+          <div class="preview-item-checkbox ${task.status === 'completed' ? 'checked' : ''}" data-id="${task.id}"></div>
+          <div class="preview-item-content">
+            <div class="preview-item-title ${task.status === 'completed' ? 'completed' : ''}">${escapeHtml(task.title)}</div>
+            <div class="preview-item-meta ${isOverdue(task.dueDate) ? 'overdue' : ''}">${task.dueDate ? formatDate(task.dueDate) : 'No due date'}</div>
+          </div>
+        </div>
+      `).join('');
 
-    upcomingTasksList.querySelectorAll('.preview-item-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('click', (e) => {
-        const id = (e.currentTarget as HTMLElement).dataset.id!;
-        const task = tasks.find(t => t.id === id);
-        if (task) {
-          updateTask(id, { status: task.status === 'completed' ? 'pending' : 'completed' });
-        }
+      upcomingTasksList.querySelectorAll('.preview-item-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('click', (e) => {
+          const id = (e.currentTarget as HTMLElement).dataset.id!;
+          const task = tasks.find(t => t.id === id);
+          if (task) {
+            updateTask(id, { status: task.status === 'completed' ? 'pending' : 'completed' });
+          }
+        });
       });
-    });
+    }
   }
 
   // Render upcoming events (next 7 days)
-  const nextWeek = new Date();
-  nextWeek.setDate(nextWeek.getDate() + 7);
-
   const upcomingEvents = events
     .filter(e => {
       const eventDate = new Date(e.date);
@@ -940,18 +1042,33 @@ function updateDashboard(): void {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 5);
 
-  if (upcomingEvents.length === 0) {
-    upcomingEventsList.innerHTML = '<div class="empty-state"><p>No upcoming events</p></div>';
-  } else {
-    upcomingEventsList.innerHTML = upcomingEvents.map(event => `
-      <div class="preview-item">
-        <span class="event-type-badge ${event.type}">${event.type}</span>
-        <div class="preview-item-content">
-          <div class="preview-item-title">${escapeHtml(event.title)}</div>
-          <div class="preview-item-meta">${formatDate(event.date)}${event.startTime ? ` at ${formatTime(event.startTime)}` : ''}</div>
+  if (upcomingEventsList) {
+    if (upcomingEvents.length === 0) {
+      upcomingEventsList.innerHTML = `
+        <div class="empty-state-modern">
+          <div class="empty-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <p class="empty-title">No upcoming events</p>
+          <p class="empty-subtitle">Your schedule is clear</p>
         </div>
-      </div>
-    `).join('');
+      `;
+    } else {
+      upcomingEventsList.innerHTML = upcomingEvents.map(event => `
+        <div class="preview-item">
+          <span class="event-type-badge ${event.type}">${event.type}</span>
+          <div class="preview-item-content">
+            <div class="preview-item-title">${escapeHtml(event.title)}</div>
+            <div class="preview-item-meta">${formatDate(event.date)}${event.startTime ? ` at ${formatTime(event.startTime)}` : ''}</div>
+          </div>
+        </div>
+      `).join('');
+    }
   }
 
   // Render birthdays this week
@@ -963,22 +1080,49 @@ function updateDashboard(): void {
       return thisYearDate >= today && thisYearDate <= nextWeek;
     });
 
-  if (birthdays.length === 0) {
-    birthdaysList.innerHTML = '<div class="empty-state"><p>No birthdays this week</p></div>';
-  } else {
-    birthdaysList.innerHTML = birthdays.map(event => {
-      const eventDate = new Date(event.date);
-      const thisYearDate = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-      return `
-        <div class="preview-item">
-          <span class="event-type-badge birthday" role="img" aria-label="Birthday">🎂</span>
+  if (birthdaysList) {
+    if (birthdays.length === 0) {
+      birthdaysList.innerHTML = '<p class="highlight-empty">No birthdays this week</p>';
+    } else {
+      birthdaysList.innerHTML = birthdays.map(event => {
+        const eventDate = new Date(event.date);
+        const thisYearDate = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+        return `
+          <div class="preview-item">
+            <span class="event-type-badge birthday" role="img" aria-label="Birthday">🎂</span>
+            <div class="preview-item-content">
+              <div class="preview-item-title">${escapeHtml(event.title)}</div>
+              <div class="preview-item-meta">${thisYearDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // Render important events this week (meetings, reminders)
+  const importantEvents = events
+    .filter(e => e.type === 'meeting' || e.type === 'reminder')
+    .filter(e => {
+      const eventDate = new Date(e.date);
+      return eventDate >= today && eventDate <= nextWeek;
+    })
+    .slice(0, 3);
+
+  if (importantEventsList) {
+    if (importantEvents.length === 0) {
+      importantEventsList.innerHTML = '<p class="highlight-empty">No important events</p>';
+    } else {
+      importantEventsList.innerHTML = importantEvents.map(event => `
+        <div class="preview-item" style="padding: 8px 0;">
+          <span class="event-type-badge ${event.type}">${event.type}</span>
           <div class="preview-item-content">
             <div class="preview-item-title">${escapeHtml(event.title)}</div>
-            <div class="preview-item-meta">${thisYearDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            <div class="preview-item-meta">${formatDate(event.date)}</div>
           </div>
         </div>
-      `;
-    }).join('');
+      `).join('');
+    }
   }
 }
 
@@ -1159,6 +1303,75 @@ function setupEventListeners(): void {
     settings.theme = themeSelect.value as 'dark' | 'light' | 'system';
     applyTheme(settings.theme);
     saveSettings();
+    updateThemeRadioButtons();
+  });
+
+  // Theme radio buttons
+  document.querySelectorAll('input[name="theme"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const value = (e.target as HTMLInputElement).value as 'dark' | 'light' | 'system';
+      settings.theme = value;
+      themeSelect.value = value;
+      applyTheme(settings.theme);
+      saveSettings();
+    });
+  });
+
+  // Settings navigation
+  settingsNavItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      const category = item.dataset.category;
+      if (category) {
+        settingsNavItems.forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+        
+        settingsCategories.forEach(cat => {
+          cat.classList.remove('active');
+          if (cat.id === `settings-${category}`) {
+            cat.classList.add('active');
+          }
+        });
+      }
+    });
+  });
+
+  // Reset settings button
+  resetSettingsBtn?.addEventListener('click', async () => {
+    if (confirm('Are you sure you want to reset all settings to defaults? This cannot be undone.')) {
+      const defaultSettings: UserSettings = {
+        theme: 'dark',
+        sidebarExpanded: true,
+        defaultStartPage: 'home',
+        notifications: {
+          enabled: true,
+          sounds: true,
+          taskReminders: true,
+          eventReminders: true,
+        },
+        modules: settings.modules, // Keep existing module settings
+      };
+      settings = defaultSettings;
+      await saveSettings();
+      applySettings();
+      populateSettingsUI();
+      showToast('Settings reset to defaults', 'success');
+    }
+  });
+
+  // Status card navigation
+  document.querySelectorAll('.status-card-action').forEach(action => {
+    action.addEventListener('click', () => {
+      const section = (action as HTMLElement).dataset.navigate;
+      if (section) navigateToSection(section);
+    });
+  });
+
+  // Quick setting items navigation
+  document.querySelectorAll('.quick-setting-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const section = (item as HTMLElement).dataset.navigate;
+      if (section) navigateToSection(section);
+    });
   });
 
   sidebarToggleSetting.addEventListener('change', () => {

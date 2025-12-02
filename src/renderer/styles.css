@@ -4486,18 +4486,20 @@ select:focus {
 }
 
 .news-featured-card {
-  background: var(--bg-secondary);
+  background: linear-gradient(145deg, var(--bg-secondary) 0%, rgba(137, 180, 250, 0.05) 100%);
   border-radius: 16px;
   border: 1px solid var(--border-color);
   overflow: hidden;
-  min-height: 300px;
+  min-height: 320px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
 }
 
 .news-featured-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  border-color: var(--accent-primary);
 }
 
 .featured-news-placeholder {
@@ -4511,9 +4513,10 @@ select:focus {
 }
 
 .featured-news-placeholder svg {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 12px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
 }
 
 .featured-news-content {
@@ -4525,40 +4528,62 @@ select:focus {
 
 .featured-news-image {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
   background: var(--bg-tertiary);
 }
 
 .featured-news-source {
-  font-size: 0.75rem;
-  color: var(--accent-color);
+  display: inline-block;
+  font-size: 0.7rem;
+  color: white;
+  background: var(--accent-primary);
   text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  width: fit-content;
 }
 
 .featured-news-title {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.3;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featured-news-description {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.7;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featured-news-time {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 12px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.featured-news-time::before {
+  content: '•';
+  color: var(--accent-primary);
 }
 
 /* Top Stories Sidebar */
@@ -4570,13 +4595,15 @@ select:focus {
 }
 
 .news-category-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent-primary);
 }
 
 .top-stories-list {
@@ -4586,20 +4613,23 @@ select:focus {
 }
 
 .top-story-item {
-  padding: 12px;
+  padding: 14px;
   background: var(--bg-tertiary);
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
 }
 
 .top-story-item:hover {
-  background: var(--accent-color-alpha);
+  background: var(--bg-hover);
+  border-left-color: var(--accent-primary);
+  transform: translateX(4px);
 }
 
 .top-story-title {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-primary);
   line-height: 1.4;
   display: -webkit-box;
@@ -4611,7 +4641,7 @@ select:focus {
 .top-story-meta {
   font-size: 0.75rem;
   color: var(--text-muted);
-  margin-top: 6px;
+  margin-top: 8px;
   display: flex;
   gap: 8px;
 }
@@ -4628,34 +4658,44 @@ select:focus {
   border-radius: 12px;
   border: 1px solid var(--border-color);
   padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.news-category-card:hover {
+  border-color: var(--accent-primary);
 }
 
 .news-category-card.sports-card {
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(16, 185, 129, 0.1) 100%);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(166, 227, 161, 0.1) 100%);
 }
 
-.news-category-articles {
+.news-category-articles,
+.sports-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 250px;
+  max-height: 280px;
   overflow-y: auto;
 }
 
 .category-article-item {
-  padding: 10px;
+  padding: 12px;
   background: var(--bg-tertiary);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  border-left: 2px solid transparent;
 }
 
 .category-article-item:hover {
-  background: var(--accent-color-alpha);
+  background: var(--bg-hover);
+  border-left-color: var(--accent-primary);
+  transform: translateX(2px);
 }
 
 .category-article-title {
   font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text-primary);
   line-height: 1.4;
   display: -webkit-box;
@@ -4667,7 +4707,7 @@ select:focus {
 .category-article-source {
   font-size: 0.7rem;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* All Headlines Section */
@@ -4680,7 +4720,7 @@ select:focus {
 
 .news-articles-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 16px;
   max-height: 500px;
   overflow-y: auto;
@@ -4688,23 +4728,30 @@ select:focus {
 
 .news-article-card {
   background: var(--bg-tertiary);
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 18px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
+  transition: all 0.2s;
+  border: 1px solid transparent;
 }
 
 .news-article-card:hover {
-  transform: translateY(-2px);
-  background: var(--accent-color-alpha);
+  transform: translateY(-3px);
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .news-article-title {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.4;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .news-article-description {
@@ -4715,7 +4762,7 @@ select:focus {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .news-article-meta {
